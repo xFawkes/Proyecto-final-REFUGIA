@@ -1,0 +1,489 @@
+/* =========================================================
+   REFUGIA — Foro
+   ========================================================= */
+
+/* ---------- Variables ---------- */
+:root {
+  --amarillo: #E8BA63;
+  --cafe: #694E1C;
+  --azul: #1C5568;
+  --crema: #E4CEA4;
+  --vinotinto: #692300;
+  --celeste: #D2EEF8;
+  --blanco: #ffffff;
+
+  --fuente-logo: "Unbounded", sans-serif;
+  --fuente-titulo: "Manrope", sans-serif;
+  --fuente-texto: "Myanmar Khyay", "Manrope", sans-serif;
+
+  --transicion: 0.25s ease;
+  --escala-hover: 1.07;
+  --radio: 8px;
+}
+
+/* ---------- Reset básico ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  /* Los enlaces a secciones (#ancla) no quedan tapados por el encabezado fijo */
+  scroll-padding-top: 90px;
+}
+
+body {
+  font-family: var(--fuente-texto);
+  background-color: var(--azul);
+  color: var(--blanco);
+  line-height: 1.5;
+}
+
+img { display: block; max-width: 100%; }
+a { color: inherit; }
+ul { list-style: none; }
+button, input { font: inherit; }
+button { border: none; background: none; cursor: pointer; }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+:focus-visible {
+  outline: 3px solid var(--amarillo);
+  outline-offset: 3px;
+}
+
+/* =========================================================
+   Encabezado con navegación (mobile first)
+   ========================================================= */
+.encabezado {
+  /* El encabezado se queda fijo arriba al hacer scroll (escritorio y móvil) */
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  min-height: 76px;
+  padding: 0.6rem clamp(1rem, 3vw, 2rem);
+  background-color: var(--azul);
+}
+
+.encabezado__logo {
+  width: 52px;
+  aspect-ratio: 1;
+  display: inline-block;
+  transition: scale var(--transicion);
+}
+
+.encabezado__logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.encabezado__logo:hover { scale: 1.1; }
+
+.encabezado__toggle {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.encabezado__hamburguesa {
+  order: 2;
+  margin-left: auto;
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--amarillo);
+  cursor: pointer;
+  display: inline-block;
+  transition: scale var(--transicion), color var(--transicion);
+}
+
+.encabezado__hamburguesa:hover {
+  scale: 1.1;
+  color: var(--crema);
+}
+
+.encabezado__toggle:focus-visible + .encabezado__hamburguesa {
+  outline: 3px solid var(--amarillo);
+  outline-offset: 3px;
+}
+
+.perfil {
+  order: 3;
+  width: 52px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 1.8rem;
+  background-color: var(--amarillo);
+  color: var(--cafe);
+  border: 2px solid var(--cafe);
+  transition: scale var(--transicion), background-color var(--transicion), color var(--transicion);
+}
+
+.perfil:hover,
+.perfil:focus-visible {
+  scale: 1.1;
+  background-color: var(--cafe);
+  color: var(--amarillo);
+}
+
+.navegacion {
+  order: 4;
+  flex-basis: 100%;
+  display: none;
+}
+
+.encabezado__toggle:checked ~ .navegacion { display: block; }
+
+/* En móvil, si el menú desplegado es más alto que la pantalla, se desplaza por dentro */
+@media (max-width: 1023.98px) {
+  .encabezado__toggle:checked ~ .navegacion {
+    max-height: calc(100dvh - 76px);
+    overflow-y: auto;
+  }
+}
+
+.navegacion__lista {
+  display: flex;
+  flex-direction: column;
+  padding-block: 0.5rem;
+}
+
+.navegacion__lista li + li { border-top: 2px solid var(--amarillo); }
+
+.navegacion__enlace {
+  display: inline-block;
+  padding: 0.7rem 0.25rem;
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: 1rem;
+  text-decoration: none;
+  color: var(--amarillo);
+  transition: scale var(--transicion), color var(--transicion);
+}
+
+.navegacion__enlace:hover,
+.navegacion__enlace:focus-visible {
+  scale: 1.08;
+  color: var(--crema);
+}
+
+.navegacion__enlace--activo { color: var(--celeste); }
+
+@media (min-width: 1024px) {
+  .encabezado { flex-wrap: nowrap; }
+  .encabezado__hamburguesa { display: none; }
+
+  .navegacion {
+    order: 1;
+    display: block;
+    flex: 1;
+  }
+
+  .navegacion__lista {
+    flex-direction: row;
+    align-items: center;
+    padding: 0;
+  }
+
+  .navegacion__lista li {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    position: relative;
+    text-align: center;
+  }
+
+  .navegacion__lista li + li { border-top: none; }
+
+  .navegacion__lista li::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 50%;
+    translate: 0 -50%;
+    width: 2px;
+    height: 40px;
+    background-color: var(--amarillo);
+    border-radius: 2px;
+  }
+
+  .navegacion__enlace {
+    padding: 0.25rem 0.75rem;
+    font-size: clamp(0.9rem, 1.2vw, 1.05rem);
+    max-width: 12ch;
+    line-height: 1.25;
+  }
+
+  .perfil {
+    order: 2;
+    margin-left: 0.5rem;
+  }
+}
+
+/* =========================================================
+   Portada con imagen
+   ========================================================= */
+.portada {
+  position: relative;
+  min-height: clamp(260px, 32vw, 380px);
+  display: flex;
+  align-items: center;
+  padding: 1.5rem clamp(1rem, 6vw, 5rem);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.portada__imagen {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background-color: color-mix(in srgb, var(--azul) 60%, #000);
+}
+
+.portada__caja {
+  max-width: min(100%, 520px);
+  padding: clamp(1rem, 2.5vw, 1.75rem);
+  background-color: rgb(28 85 104 / 0.78);
+  box-shadow: 0 4px 16px rgb(0 0 0 / 0.3);
+}
+
+.portada__titulo {
+  margin-bottom: 0.6rem;
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  line-height: 1.1;
+  color: var(--celeste);
+}
+
+.portada__caja p {
+  font-size: clamp(0.85rem, 1.2vw, 0.95rem);
+}
+
+/* =========================================================
+   Contenido del foro
+   ========================================================= */
+
+.tabla {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.5rem, 1.2vw, 0.9rem);
+  width: min(92%, 1000px);
+  margin: clamp(1.25rem, 3vw, 2.5rem) auto 5.5rem;
+  padding: clamp(0.75rem, 2vw, 1.5rem);
+  background-color: var(--amarillo);
+  box-shadow: 0 4px 16px rgb(0 0 0 / 0.3);
+}
+
+/* ---------- Buscador ---------- */
+.busqueda {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: clamp(0.25rem, 1vw, 0.5rem);
+  padding: 0.35rem 1rem;
+  border-radius: 999px;
+  background-color: var(--celeste);
+  color: var(--azul);
+}
+
+.busqueda:focus-within {
+  outline: 3px solid var(--cafe);
+  outline-offset: 3px;
+}
+
+.busqueda__icono { font-size: 1.4rem; }
+
+.busqueda__input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.45rem 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--azul);
+  font-weight: 600;
+}
+
+.busqueda__input::placeholder {
+  color: var(--azul);
+  opacity: 0.6;
+}
+
+/* ---------- Tabla ---------- */
+
+.fila {
+  display: grid;
+  grid-template-columns: 1fr minmax(70px, 11%) minmax(80px, 11%) minmax(100px, 15%);
+  gap: clamp(0.35rem, 0.8vw, 0.6rem);
+  transition: translate var(--transicion), box-shadow var(--transicion);
+}
+
+.fila:not(.encabezado-filas):hover {
+  translate: 0.4% 0;
+  box-shadow: 0 6px 14px rgb(0 0 0 / 0.25);
+}
+
+.celda,
+.celda-avatar {
+  background-color: var(--celeste);
+  color: var(--azul);
+  transition: background-color var(--transicion);
+}
+
+.fila:not(.encabezado-filas):hover .celda,
+.fila:not(.encabezado-filas):hover .celda-avatar {
+  background-color: var(--blanco);
+}
+
+.celda { padding: 0.75rem; }
+
+.encabezado-filas .celda {
+  padding: 0.6rem 0.75rem;
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.encabezado-filas .celda:first-child { text-align: left; }
+
+.celda-avatar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.9rem 1rem;
+}
+
+.avatar {
+  width: clamp(38px, 6vw, 52px);
+  aspect-ratio: 1;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background-color: var(--blanco);
+  border: 2px solid var(--azul);
+  transition: scale var(--transicion), background-color var(--transicion);
+}
+
+.fila:hover .avatar {
+  scale: 1.12;
+  background-color: var(--amarillo);
+}
+
+.texto h2 {
+  margin-bottom: 0.2rem;
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+  font-size: 0.9rem;
+}
+
+.texto h2 a {
+  text-decoration: none;
+  transition: color var(--transicion);
+}
+
+.texto h2 a:hover,
+.texto h2 a:focus-visible { color: var(--vinotinto); }
+
+.texto p {
+  font-size: 0.72rem;
+  max-width: 70ch;
+}
+
+.dato {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+  font-size: 0.95rem;
+}
+
+/* ---------- Botones de accesibilidad (igual que en las demás páginas) ---------- */
+.accesibilidad {
+  /* Fijos en la esquina inferior izquierda de la pantalla, aunque se haga scroll */
+  position: fixed;
+  z-index: 50;
+  left: 1rem;
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  display: flex;
+  gap: 0.5rem;
+}
+
+.accesibilidad__boton {
+  width: 44px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 1.2rem;
+  background-color: var(--azul);
+  color: var(--celeste);
+  border: 2px solid var(--celeste);
+  box-shadow: 0 3px 10px rgb(0 0 0 / 0.3); /* para que se vean sobre cualquier fondo */
+  cursor: pointer;
+  transition: scale var(--transicion), background-color var(--transicion), color var(--transicion);
+}
+
+.accesibilidad__boton:hover,
+.accesibilidad__boton:focus-visible {
+  scale: 1.1;
+  background-color: var(--amarillo);
+  color: var(--cafe);
+}
+
+/* =========================================================
+   Responsive
+   ========================================================= */
+@media (max-width: 900px) {
+  .encabezado-filas { display: none; }
+
+  .fila {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .celda-avatar { grid-column: 1 / -1; }
+
+  .dato {
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+
+  .dato::before {
+    content: attr(data-etiqueta);
+    font-family: var(--fuente-texto);
+    font-size: 0.7rem;
+    font-weight: 400;
+  }
+}
+
+@media (max-width: 520px) {
+  .portada { padding-inline: 0.75rem; }
+  .texto p { font-size: 0.78rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}

@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
   <link rel="stylesheet" href="css/voluntariado.css">
+  <link rel="stylesheet" href="css/MenuUsuario.css">
 </head>
 <body>
 
@@ -34,15 +35,60 @@
         <li><a href="mapa.html" class="navegacion__enlace">Mapas</a></li>
         <li><a href="voluntariado.html" class="navegacion__enlace navegacion__enlace--activo" aria-current="page">Voluntariados</a></li>
         <li><a href="noticias.html" class="navegacion__enlace">Noticias</a></li>
-        <li><a href="#" class="navegacion__enlace">Foro</a></li>
+        <li><a href="foro.html" class="navegacion__enlace">Foro</a></li>
         <li><a href="donaciones.html" class="navegacion__enlace">Donaciones</a></li>
-        <li><a href="#" class="navegacion__enlace">Preguntas frecuentes</a></li>
+        <li><a href="ayuda.html" class="navegacion__enlace">Preguntas frecuentes</a></li>
       </ul>
     </nav>
 
-    <a href="#" class="perfil" id="btn-perfil" aria-label="Mi perfil">
+    <!-- Menú de usuario: se abre al presionar el ícono de perfil (solo CSS, sin JS) -->
+    <input type="checkbox" id="menu-usuario" class="usuario-menu__toggle">
+    <label for="menu-usuario" class="perfil" id="btn-perfil" aria-label="Abrir menú de usuario">
       <i class="bi bi-person-fill" aria-hidden="true"></i>
-    </a>
+    </label>
+
+    <label for="menu-usuario" class="usuario-menu__fondo" aria-hidden="true"></label>
+
+    <div class="usuario-menu" aria-label="Menú de usuario">
+      <label for="menu-usuario" class="usuario-menu__cerrar" aria-label="Cerrar menú de usuario">
+        <i class="bi bi-x-lg" aria-hidden="true"></i>
+      </label>
+
+      <div class="usuario-menu__cabecera">
+        <div class="usuario-menu__avatar">
+          <i class="bi bi-person-fill usuario-menu__avatar-icono" aria-hidden="true"></i>
+        </div>
+        <p class="usuario-menu__nombre">TU NOMBRE</p>
+        <p class="usuario-menu__id">ID:123456789 #LAN</p>
+      </div>
+
+      <ul class="usuario-menu__lista">
+        <li class="usuario-menu__elemento">
+          <a href="perfil.html" class="usuario-menu__enlace">
+            <i class="bi bi-person usuario-menu__icono" aria-hidden="true"></i>
+            <span class="usuario-menu__texto">Mi Perfil</span>
+          </a>
+        </li>
+        <li class="usuario-menu__elemento">
+          <a href="error.html" class="usuario-menu__enlace">
+            <i class="bi bi-gear-fill usuario-menu__icono" aria-hidden="true"></i>
+            <span class="usuario-menu__texto">Configuración</span>
+          </a>
+        </li>
+        <li class="usuario-menu__elemento">
+          <a href="error.html" class="usuario-menu__enlace">
+            <i class="bi bi-bell-fill usuario-menu__icono" aria-hidden="true"></i>
+            <span class="usuario-menu__texto">Notificaciones</span>
+          </a>
+        </li>
+        <li class="usuario-menu__elemento">
+          <a href="inicio.html" class="usuario-menu__enlace">
+            <i class="bi bi-box-arrow-right usuario-menu__icono" aria-hidden="true"></i>
+            <span class="usuario-menu__texto">Cerrar Sesión</span>
+          </a>
+        </li>
+      </ul>
+    </div>
   </header>
 
   <main>
@@ -64,7 +110,7 @@
     <section class="voluntariados">
       <div class="contenedor">
 
-        <!-- INTEGRACIÓN: reemplazar href="#" por la página oficial de cada voluntariado -->
+        <!-- INTEGRACIÓN: reemplazar href="error.html" por la página oficial de cada voluntariado -->
         <div class="voluntariados__grid">
 
           <article class="voluntariado">
@@ -74,7 +120,7 @@
                 Apoya la entrega de alimentos, ropa, agua y productos de primera necesidad a las
                 personas afectadas por desastres naturales.
               </p>
-              <a href="#" class="voluntariado__enlace" target="_blank" rel="noopener noreferrer">Da click aquí para ir a la página</a>
+              <a href="error.html" class="voluntariado__enlace">Da click aquí para ir a la página</a>
             </div>
             <img class="voluntariado__imagen" src="imags/image 10.png" alt="Caja con frutas y alimentos para entregar como ayuda">
           </article>
@@ -86,7 +132,7 @@
                 Ayuda a clasificar, organizar y empacar las donaciones para garantizar que los
                 recursos lleguen a quienes más los necesitan.
               </p>
-              <a href="#" class="voluntariado__enlace" target="_blank" rel="noopener noreferrer">Da click aquí para ir a la página</a>
+              <a href="error.html" class="voluntariado__enlace">Da click aquí para ir a la página</a>
             </div>
             <img class="voluntariado__imagen" src="imags/image 11.png" alt="Voluntarios con camisetas rojas y credenciales en un centro de acopio">
           </article>
@@ -98,7 +144,7 @@
                 Participa en jornadas comunitarias de limpieza y recuperación de espacios afectados,
                 siguiendo las indicaciones de las organizaciones responsables.
               </p>
-              <a href="#" class="voluntariado__enlace" target="_blank" rel="noopener noreferrer">Da click aquí para ir a la página</a>
+              <a href="error.html" class="voluntariado__enlace">Da click aquí para ir a la página</a>
             </div>
             <img class="voluntariado__imagen" src="imags/Rectangle 33.png" alt="Personas retirando escombros en una jornada de reconstrucción">
           </article>
@@ -110,7 +156,7 @@
                 Brinda compañía, escucha y apoyo humano a las personas damnificadas, en coordinación
                 con equipos capacitados.
               </p>
-              <a href="#" class="voluntariado__enlace" target="_blank" rel="noopener noreferrer">Da click aquí para ir a la página</a>
+              <a href="error.html" class="voluntariado__enlace">Da click aquí para ir a la página</a>
             </div>
             <img class="voluntariado__imagen" src="imags/Rectangle 41.png" alt="Voluntario acompañando y saludando a una persona damnificada">
           </article>
@@ -122,7 +168,7 @@
                 Colabora con la organización y el transporte de suministros para facilitar que las
                 ayudas lleguen a las zonas afectadas.
               </p>
-              <a href="#" class="voluntariado__enlace" target="_blank" rel="noopener noreferrer">Da click aquí para ir a la página</a>
+              <a href="error.html" class="voluntariado__enlace">Da click aquí para ir a la página</a>
             </div>
             <img class="voluntariado__imagen" src="imags/Rectangle 35.png" alt="Voluntarios cargando suministros en una camioneta">
           </article>
@@ -134,7 +180,7 @@
                 Utiliza tus habilidades para difundir información verificada, apoyar campañas
                 solidarias y compartir oportunidades de ayuda en medios digitales.
               </p>
-              <a href="#" class="voluntariado__enlace" target="_blank" rel="noopener noreferrer">Da click aquí para ir a la página</a>
+              <a href="error.html" class="voluntariado__enlace">Da click aquí para ir a la página</a>
             </div>
             <img class="voluntariado__imagen" src="imags/Rectangle 42.png" alt="Voluntarios trabajando con un portátil junto a cajas de donaciones">
           </article>

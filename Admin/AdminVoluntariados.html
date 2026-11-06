@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>REFUGIA | Administración de voluntariados</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Myanmar+Khyay&family=Unbounded:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <link rel="stylesheet" href="../cssAdmin/Styles_voluntariados.css">
+</head>
+<body>
+  <div class="admin">
+
+    <!-- ===================== MENÚ LATERAL ===================== -->
+    <aside class="menu">
+      <div class="menu__marca">
+        <span class="menu__logo">REFUGIA</span>
+        <span class="menu__subtitulo">Administración</span>
+      </div>
+
+      <input type="checkbox" id="menu-toggle" class="menu__toggle">
+      <label for="menu-toggle" class="menu__hamburguesa" aria-label="Abrir menú">
+        <i class="bi bi-list" aria-hidden="true"></i>
+      </label>
+
+      <nav class="menu__lista" aria-label="Navegación de administración">
+        <a href="AdminInicio.html" class="menu__enlace">Panel</a>
+        <a href="AdminNoticias.html" class="menu__enlace">Noticias</a>
+        <a href="AdminForo.html" class="menu__enlace">Foro</a>
+        <a href="AdminVoluntariados.html" class="menu__enlace menu__enlace--activo" aria-current="page">Voluntariados</a>
+        <a href="../inicio.html" class="menu__enlace">Cerrar sesion</a>
+      </nav>
+    </aside>
+
+
+    <!-- ===================== CONTENIDO ===================== -->
+    <main class="contenido">
+      <div class="contenido__interior contenido__interior--ancho">
+        <h1 class="contenido__titulo">Voluntariados</h1>
+
+        <div class="voluntariados">
+
+          <!-- ---------- Tareas pendientes ---------- -->
+          <section class="tarjeta tareas" aria-labelledby="titulo-tareas">
+            <h2 class="tareas__titulo" id="titulo-tareas">Tareas Pendientes</h2>
+
+            <div class="tareas__contenedor">
+              <table class="tareas__tabla">
+                <thead>
+                  <tr>
+                    <th scope="col" class="tareas__celda--centro">Actividad</th>
+                    <th scope="col" class="tareas__celda--centro">Organización</th>
+                    <th scope="col" class="tareas__celda--centro">Estado</th>
+                    <th scope="col" class="tareas__celda--centro">Acción</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="tareas__celda--negrita">Distribución de ayudas</td>
+                    <td class="tareas__celda--negrita">Nombre de la organización</td>
+                    <td class="tareas__celda--centro"><span class="tareas__estado">Activo</span></td>
+                    <td class="tareas__celda--centro">
+                      <div class="tareas__boton" role="button" tabindex="0">Revisar</div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="tareas__celda--negrita">Distribución de ayudas</td>
+                    <td class="tareas__celda--negrita">Nombre de la organización</td>
+                    <td class="tareas__celda--centro"><span class="tareas__estado">Activo</span></td>
+                    <td class="tareas__celda--centro">
+                      <div class="tareas__boton" role="button" tabindex="0">Revisar</div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="tareas__celda--negrita">Distribución de ayudas</td>
+                    <td class="tareas__celda--negrita">Nombre de la organización</td>
+                    <td class="tareas__celda--centro"><span class="tareas__estado">Cerrado</span></td>
+                    <td class="tareas__celda--centro">
+                      <div class="tareas__boton" role="button" tabindex="0">Revisar</div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- ---------- Publicar voluntariado ---------- -->
+          <section class="tarjeta formulario" aria-labelledby="titulo-formulario">
+            <h2 class="formulario__titulo" id="titulo-formulario">Publicar voluntariado</h2>
+
+            <form class="formulario__cuerpo" action="#" method="post">
+
+              <div class="formulario__grupo">
+                <label class="formulario__etiqueta" for="actividad">Actividad</label>
+                <input class="formulario__campo" type="text" id="actividad" name="actividad" placeholder="Título de la actividad">
+              </div>
+
+              <div class="formulario__grupo">
+                <label class="formulario__etiqueta" for="organizacion">Organización responsable</label>
+                <input class="formulario__campo" type="text" id="organizacion" name="organizacion" placeholder="Nombre de la entidad">
+              </div>
+
+              <div class="formulario__grupo">
+                <label class="formulario__etiqueta" for="requisitos">Requisitos</label>
+                <textarea class="formulario__campo formulario__campo--grande" id="requisitos" name="requisitos" placeholder="Describe los requisitos para participar"></textarea>
+              </div>
+
+              <div class="formulario__grupo">
+                <label class="formulario__etiqueta" for="enlace">Enlace de inscripción oficial</label>
+                <input class="formulario__campo" type="url" id="enlace" name="enlace" placeholder="https://">
+              </div>
+
+              <div class="formulario__acciones">
+                <div class="formulario__boton formulario__boton--aprobar" role="button" tabindex="0">Aprobar</div>
+                <div class="formulario__boton formulario__boton--cancelar" role="button" tabindex="0">Cancelar</div>
+              </div>
+
+            </form>
+          </section>
+
+        </div>
+      </div>
+    </main>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>REFUGIA | Moderador Foro</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Myanmar+Khyay&family=Unbounded:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../cssAdmin/Styles_foro.css">
+</head>
+<body>
+  <div class="admin">
+
+    <!--  MENÚ  -->
+    <aside class="menu">
+      <div class="menu__marca">
+        <span class="menu__logo">REFUGIA</span>
+        <span class="menu__subtitulo">Administración</span>
+      </div>
+
+      <input type="checkbox" id="menu-toggle" class="menu__toggle">
+      <label for="menu-toggle" class="menu__hamburguesa" aria-label="Abrir menú">
+        <i class="bi bi-list" aria-hidden="true"></i>
+      </label>
+
+      <nav class="menu__lista" aria-label="Navegación de administración">
+        <a href="AdminInicio.html" class="menu__enlace">Panel</a>
+        <a href="AdminNoticias.html" class="menu__enlace">Noticias</a>
+        <a href="AdminForo.html" class="menu__enlace menu__enlace--activo" aria-current="page">Foro</a>
+        <a href="AdminVoluntariados.html" class="menu__enlace">Voluntariados</a>
+        <a href="../inicio.html" class="menu__enlace">Cerrar sesion</a>
+      </nav>
+    </aside>
+
+
+    <!--  CONTENIDO  -->
+    <main class="contenido">
+      <div class="contenido__interior">
+        <h1 class="contenido__titulo">Moderador Foro</h1>
+
+        <section class="moderacion" aria-label="Publicaciones por moderar">
+          <article class="publicacion">
+            <h2 class="publicacion__titulo">DESAPARECIDO EN ...</h2>
+            <span class="etiqueta">Sin confirmar</span>
+            <p class="publicacion__texto">
+              TEXTO DE LA PUBLICACIÓN: Lorem ipsum dolor sit amet consectetur. Id tempor consequat non
+              ullamcorper mattis. Mauris vitae id porta volutpat faucibus nisi quis magna.
+            </p>
+            <p class="publicacion__datos">
+              <span>VALIDACIÓN: 000</span>
+              <span>DENUNCIAS: 000</span>
+              <span>00/00/0000</span>
+            </p>
+            <div class="publicacion__acciones">
+              <button type="button" class="boton boton--aprobar">Aprobar</button>
+              <button type="button" class="boton boton--eliminar">Eliminar</button>
+            </div>
+          </article>
+
+          <article class="publicacion">
+            <h2 class="publicacion__titulo">DESAPARECIDO EN ...</h2>
+            <span class="etiqueta">Sin confirmar</span>
+            <p class="publicacion__texto">
+              TEXTO DE LA PUBLICACIÓN: Lorem ipsum dolor sit amet consectetur. Id tempor consequat non
+              ullamcorper mattis. Mauris vitae id porta volutpat faucibus nisi quis magna.
+            </p>
+            <p class="publicacion__datos">
+              <span>VALIDACIÓN: 000</span>
+              <span>DENUNCIAS: 000</span>
+              <span>00/00/0000</span>
+            </p>
+            <div class="publicacion__acciones">
+              <button type="button" class="boton boton--aprobar">Aprobar</button>
+              <button type="button" class="boton boton--eliminar">Eliminar</button>
+            </div>
+          </article>
+
+        </section>
+      </div>
+    </main>
+
+  </div>
+</body>
+</html>

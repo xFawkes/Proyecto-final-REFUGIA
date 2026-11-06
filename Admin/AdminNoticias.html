@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>REFUGIA | Publicación de noticias</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Myanmar+Khyay&family=Unbounded:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <link rel="stylesheet" href="../cssAdmin/Styles_Noticias.css">
+</head>
+<body class="pagina">
+  <div class="admin">
+
+    <!-- ===================== MENÚ LATERAL ===================== -->
+    <aside class="menu">
+      <div class="menu__marca">
+        <span class="menu__logo">REFUGIA</span>
+        <span class="menu__subtitulo">Administración</span>
+      </div>
+
+      <input type="checkbox" id="menu-toggle" class="menu__toggle">
+      <label for="menu-toggle" class="menu__hamburguesa" aria-label="Abrir menú">
+        <i class="bi bi-list" aria-hidden="true"></i>
+      </label>
+
+      <nav class="menu__lista" aria-label="Navegación de administración">
+        <a href="AdminInicio.html" class="menu__enlace">Panel</a>
+        <a href="AdminNoticias.html" class="menu__enlace menu__enlace--activo" aria-current="page">Noticias</a>
+        <a href="AdminForo.html" class="menu__enlace">Foro</a>
+        <a href="AdminVoluntariados.html" class="menu__enlace">Voluntariados</a>
+        <a href="../inicio.html" class="menu__enlace">Cerrar sesion</a>
+      </nav>
+    </aside>
+
+
+    <!-- ===================== CONTENIDO ===================== -->
+    <main class="contenido">
+      <div class="contenido__interior">
+        <h1 class="contenido__titulo">Publicación de Noticias</h1>
+
+        <section class="tarjeta" aria-label="Formulario de publicación de noticias">
+          <form class="formulario" action="#" method="post">
+
+            <div class="formulario__grupo">
+              <label class="formulario__etiqueta" for="titulo">Titulo</label>
+              <input class="formulario__campo" type="text" id="titulo" name="titulo" placeholder="Título de la noticia">
+            </div>
+
+            <div class="formulario__grupo">
+              <label class="formulario__etiqueta" for="fuente">Fuente</label>
+              <input class="formulario__campo" type="text" id="fuente" name="fuente" placeholder="Nombre de la entidad oficial">
+            </div>
+
+            <div class="formulario__grupo">
+              <label class="formulario__etiqueta" for="enlace">Enlace al canal oficial</label>
+              <input class="formulario__campo" type="url" id="enlace" name="enlace" placeholder="https://">
+            </div>
+
+            <div class="formulario__grupo">
+              <label class="formulario__etiqueta" for="verificacion">Nivel de verificación</label>
+              <select class="formulario__campo" id="verificacion" name="verificacion">
+                <option value="oficial">Oficial</option>
+                <option value="en-verificacion">En verificación</option>
+                <option value="sin-verificar">Sin verificar</option>
+              </select>
+            </div>
+
+            <div class="formulario__grupo">
+              <label class="formulario__etiqueta" for="contenido">Contenido de la noticia</label>
+              <textarea class="formulario__campo formulario__campo--grande" id="contenido" name="contenido" placeholder="Escribe aquí el resumen o el contenido de la noticia"></textarea>
+            </div>
+
+            <div class="formulario__acciones">
+              <div class="formulario__boton formulario__boton--aprobar" role="button" tabindex="0">Aprobar</div>
+              <div class="formulario__boton formulario__boton--eliminar" role="button" tabindex="0">Eliminar</div>
+            </div>
+
+          </form>
+        </section>
+      </div>
+    </main>
+
+  </div>
+</body>
+</html>

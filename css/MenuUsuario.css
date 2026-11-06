@@ -1,0 +1,198 @@
+/* =========================================================
+   REFUGIA — Menú de usuario (se abre con el ícono de perfil)
+   Archivo compartido: se enlaza en todas las páginas DESPUÉS
+   del CSS propio de cada página.
+   Funciona solo con CSS (checkbox #menu-usuario), sin JS.
+   ========================================================= */
+
+.usuario-menu {
+  /* Colores del menú (los mismos de la paleta del sitio) */
+  --menu-fondo: #E8BA63;   /* amarillo */
+  --menu-texto: #694E1C;   /* café */
+  --menu-hover: #E4CEA4;   /* crema */
+  --menu-tam-avatar: 76px;
+}
+
+/* ---------- Checkbox oculto que abre/cierra el menú ---------- */
+.usuario-menu__toggle {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* El ícono de perfil del encabezado ahora es un botón (label) */
+.perfil {
+  cursor: pointer;
+}
+
+.usuario-menu__toggle:focus-visible + .perfil {
+  outline: 3px solid #E8BA63;
+  outline-offset: 3px;
+}
+
+/* Mientras el menú está abierto, el ícono de perfil queda marcado */
+.usuario-menu__toggle:checked + .perfil {
+  background-color: #694E1C;
+  color: #E8BA63;
+}
+
+/* ---------- Fondo invisible: al hacer clic fuera, se cierra ---------- */
+.usuario-menu__fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  display: none;
+  cursor: default;
+}
+
+.usuario-menu__toggle:checked ~ .usuario-menu__fondo {
+  display: block;
+}
+
+/* ---------- Panel del menú ---------- */
+.usuario-menu {
+  position: absolute;
+  z-index: 2;
+  top: 100%;                              /* justo debajo del encabezado */
+  right: clamp(1rem, 3vw, 2rem);          /* alineado con el ícono de perfil */
+  width: min(310px, calc(100vw - 2rem));
+  padding: 1.25rem 1rem 1.5rem;
+  background-color: var(--menu-fondo);
+  color: var(--menu-texto);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.35);
+  font-family: "Manrope", sans-serif;
+
+  /* Oculto por defecto, aparece con una animación suave */
+  visibility: hidden;
+  opacity: 0;
+  translate: 0 -8px;
+  transition: opacity 0.2s ease, translate 0.2s ease, visibility 0.2s;
+}
+
+.usuario-menu__toggle:checked ~ .usuario-menu {
+  visibility: visible;
+  opacity: 1;
+  translate: 0 0;
+}
+
+/* Botón X para cerrar */
+.usuario-menu__cerrar {
+  position: absolute;
+  top: 0.9rem;
+  right: 0.9rem;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  font-size: 1.3rem;
+  line-height: 1;
+  color: var(--menu-texto);
+  cursor: pointer;
+  transition: background-color 0.2s ease, scale 0.2s ease;
+}
+
+.usuario-menu__cerrar:hover {
+  scale: 1.1;
+  background-color: var(--menu-hover);
+}
+
+/* ---------- Cabecera: avatar + nombre + ID ---------- */
+.usuario-menu__cabecera {
+  display: grid;
+  grid-template-columns: var(--menu-tam-avatar) 1fr;
+  grid-template-areas:
+    "avatar nombre"
+    "id     id";
+  align-items: start;
+  column-gap: 0.9rem;
+  row-gap: 0.6rem;
+  padding: 1.6rem 0.5rem 0.9rem;
+  border-bottom: 1px solid var(--menu-texto);
+}
+
+/* Avatar: círculo con borde y la silueta recortada por abajo */
+.usuario-menu__avatar {
+  grid-area: avatar;
+  width: var(--menu-tam-avatar);
+  aspect-ratio: 1;
+  border: 4px solid var(--menu-texto);
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  color: var(--menu-texto);
+}
+
+.usuario-menu__avatar-icono {
+  /* Tamaño relativo al círculo para que no se vea gigante */
+  font-size: calc(var(--menu-tam-avatar) * 0.9);
+  line-height: 1;
+  margin-bottom: -18%;
+}
+
+.usuario-menu__nombre {
+  grid-area: nombre;
+  margin: 0.4rem 2rem 0 0;              /* deja espacio para la X */
+  font-weight: 800;
+  font-size: 0.85rem;
+  line-height: 1.2;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+.usuario-menu__id {
+  grid-area: id;
+  margin: 0;
+  font-weight: 700;
+  font-size: 0.7rem;
+}
+
+/* ---------- Opciones ---------- */
+.usuario-menu__lista {
+  list-style: none;
+  margin: 0;
+  padding: 0.75rem 0 0;
+}
+
+.usuario-menu__enlace {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.95rem 1.4rem;
+  border-radius: 6px;
+  color: var(--menu-texto);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.05rem;
+  transition: background-color 0.2s ease, padding-left 0.2s ease;
+}
+
+.usuario-menu__enlace:hover,
+.usuario-menu__enlace:focus-visible {
+  background-color: var(--menu-hover);
+  padding-left: 1.7rem;
+}
+
+.usuario-menu__icono {
+  flex-shrink: 0;
+  width: 1.4rem;
+  font-size: 1.3rem;
+  text-align: center;
+}
+
+/* ---------- Móvil ---------- */
+@media (max-width: 520px) {
+  .usuario-menu {
+    right: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .usuario-menu,
+  .usuario-menu__enlace,
+  .usuario-menu__cerrar {
+    transition: none;
+  }
+}

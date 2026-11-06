@@ -1,0 +1,483 @@
+/* =========================================================
+   REFUGIA — Mi perfil
+   ========================================================= */
+
+/* ---------- Variables ---------- */
+:root {
+  --amarillo: #E8BA63;
+  --cafe: #694E1C;
+  --azul: #1C5568;
+  --crema: #E4CEA4;
+  --vinotinto: #692300;
+  --celeste: #D2EEF8;
+  --blanco: #ffffff;
+
+  --fuente-logo: "Unbounded", sans-serif;
+  --fuente-titulo: "Manrope", sans-serif;
+  --fuente-texto: "Myanmar Khyay", "Manrope", sans-serif;
+
+  --transicion: 0.25s ease;
+  --escala-hover: 1.07;
+  --radio: 8px;
+}
+
+/* ---------- Reset básico ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  /* Los enlaces a secciones (#ancla) no quedan tapados por el encabezado fijo */
+  scroll-padding-top: 90px;
+}
+
+button { font: inherit; border: none; background: none; cursor: pointer; }
+
+.pagina {
+  font-family: var(--fuente-texto);
+  background-color: var(--azul);
+  color: var(--blanco);
+  line-height: 1.5;
+}
+
+:focus-visible {
+  outline: 3px solid var(--amarillo);
+  outline-offset: 3px;
+}
+
+.contenido {
+  min-height: calc(100vh - 76px);
+  padding: clamp(1.5rem, 5vw, 3.5rem) 0 6rem;
+}
+
+
+/* =========================================================
+   Encabezado con navegación (mobile first)
+   ========================================================= */
+.encabezado {
+  /* El encabezado se queda fijo arriba al hacer scroll (escritorio y móvil) */
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  min-height: 76px;
+  padding: 0.6rem clamp(1rem, 3vw, 2rem);
+  background-color: var(--azul);
+  box-shadow: 0 3px 6px rgb(0 0 0 / 0.3);
+}
+
+.encabezado__logo {
+  width: 52px;
+  aspect-ratio: 1;
+  display: inline-block;
+  transition: scale var(--transicion);
+}
+
+.encabezado__imagen {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.encabezado__logo:hover { scale: 1.1; }
+
+.encabezado__toggle {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.encabezado__hamburguesa {
+  order: 2;
+  margin-left: auto;
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--amarillo);
+  cursor: pointer;
+  display: inline-block;
+  transition: scale var(--transicion), color var(--transicion);
+}
+
+.encabezado__hamburguesa:hover {
+  scale: 1.1;
+  color: var(--crema);
+}
+
+.encabezado__toggle:focus-visible + .encabezado__hamburguesa {
+  outline: 3px solid var(--amarillo);
+  outline-offset: 3px;
+}
+
+.perfil {
+  order: 3;
+  width: 52px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 1.8rem;
+  text-decoration: none;
+  background-color: var(--amarillo);
+  color: var(--cafe);
+  border: 2px solid var(--cafe);
+  transition: scale var(--transicion), background-color var(--transicion), color var(--transicion);
+}
+
+.perfil:hover,
+.perfil:focus-visible {
+  scale: 1.1;
+  background-color: var(--cafe);
+  color: var(--amarillo);
+}
+
+.navegacion {
+  order: 4;
+  flex-basis: 100%;
+  display: none;
+}
+
+.encabezado__toggle:checked ~ .navegacion { display: block; }
+
+/* En móvil, si el menú desplegado es más alto que la pantalla, se desplaza por dentro */
+@media (max-width: 1023.98px) {
+  .encabezado__toggle:checked ~ .navegacion {
+    max-height: calc(100dvh - 76px);
+    overflow-y: auto;
+  }
+}
+
+.navegacion__lista {
+  display: flex;
+  flex-direction: column;
+  padding-block: 0.5rem;
+  list-style: none;
+}
+
+.navegacion__item + .navegacion__item { border-top: 2px solid var(--amarillo); }
+
+.navegacion__enlace {
+  display: inline-block;
+  padding: 0.7rem 0.25rem;
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: 1rem;
+  text-decoration: none;
+  color: var(--amarillo);
+  transition: scale var(--transicion), color var(--transicion);
+}
+
+.navegacion__enlace:hover,
+.navegacion__enlace:focus-visible {
+  scale: 1.08;
+  color: var(--crema);
+}
+
+/* Página activa en vinotinto (si la usas en algún enlace) */
+.navegacion__enlace--activo,
+.navegacion__enlace--activo:hover,
+.navegacion__enlace--activo:focus-visible { color: var(--celeste); }
+
+@media (min-width: 1024px) {
+  .encabezado { flex-wrap: nowrap; }
+  .encabezado__hamburguesa { display: none; }
+
+  .navegacion {
+    order: 1;
+    display: block;
+    flex: 1;
+  }
+
+  .navegacion__lista {
+    flex-direction: row;
+    align-items: center;
+    padding: 0;
+  }
+
+  .navegacion__item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    position: relative;
+    text-align: center;
+  }
+
+  .navegacion__item + .navegacion__item { border-top: none; }
+
+  .navegacion__item::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 50%;
+    translate: 0 -50%;
+    width: 2px;
+    height: 40px;
+    background-color: var(--amarillo);
+    border-radius: 2px;
+  }
+
+  .navegacion__enlace {
+    padding: 0.25rem 0.75rem;
+    font-size: clamp(0.9rem, 1.2vw, 1.05rem);
+    max-width: 12ch;
+    line-height: 1.25;
+  }
+
+  .perfil {
+    order: 2;
+    margin-left: 0.5rem;
+  }
+}
+
+
+/* =========================================================
+   Tarjeta de usuario
+   ========================================================= */
+.usuario {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 3vw, 2rem);
+  width: min(88%, 900px);
+  margin: 0 auto;
+  padding: clamp(1.25rem, 4vw, 3rem) clamp(1.25rem, 4vw, 3rem) clamp(2rem, 5vw, 4rem);
+  border-radius: 4px;
+  background-color: var(--amarillo);
+  color: var(--cafe);
+  box-shadow: 0 4px 16px rgb(0 0 0 / 0.3);
+}
+
+/* ---------- Cabecera: avatar + ID ---------- */
+.usuario__cabecera {
+  display: flex;
+  align-items: center;
+  gap: clamp(1rem, 3vw, 2rem);
+  padding: 0 clamp(0rem, 3vw, 2.5rem) clamp(1rem, 3vw, 2rem);
+  border-bottom: 2px solid var(--cafe);
+}
+
+/* Avatar: círculo de tamaño fijo con la silueta recortada por abajo
+   (el ícono se calcula según el círculo para que no se vea gigante) */
+.usuario__avatar {
+  --tam-avatar: clamp(96px, 14vw, 140px);
+  flex-shrink: 0;
+  width: var(--tam-avatar);
+  aspect-ratio: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+  border: clamp(4px, 0.5vw, 6px) solid var(--cafe);
+  border-radius: 50%;
+  color: var(--cafe);
+}
+
+.usuario__avatar-icono {
+  font-size: calc(var(--tam-avatar) * 0.9);
+  line-height: 1;
+  margin-bottom: -18%;
+}
+
+.usuario__id {
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+  font-size: clamp(1.3rem, 3.6vw, 2.2rem);
+  line-height: 1.1;
+  color: var(--cafe);
+  overflow-wrap: anywhere;
+}
+
+/* ---------- Datos ---------- */
+.usuario__datos {
+  display: grid;
+  gap: clamp(1rem, 2.5vw, 1.6rem);
+  padding: 0 clamp(0rem, 3vw, 2.5rem);
+}
+
+.usuario__dato {
+  display: grid;
+  grid-template-columns: minmax(80px, 11ch) 1fr;
+  align-items: baseline;
+  gap: 0.75rem clamp(1rem, 3vw, 2rem);
+}
+
+.usuario__etiqueta {
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+  font-size: clamp(0.8rem, 1.4vw, 0.95rem);
+  color: var(--vinotinto);
+}
+
+.usuario__valor {
+  font-family: var(--fuente-texto);
+  font-size: clamp(0.85rem, 1.5vw, 1rem);
+  font-weight: 600;
+  color: var(--cafe);
+  overflow-wrap: anywhere;
+}
+
+
+/* ---------- Botones de accesibilidad (igual que en las demás páginas) ---------- */
+.accesibilidad {
+  /* Fijos en la esquina inferior izquierda de la pantalla, aunque se haga scroll */
+  position: fixed;
+  z-index: 50;
+  left: 1rem;
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  display: flex;
+  gap: 0.5rem;
+}
+
+.accesibilidad__boton {
+  width: 44px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 1.2rem;
+  background-color: var(--azul);
+  color: var(--celeste);
+  border: 2px solid var(--celeste);
+  box-shadow: 0 3px 10px rgb(0 0 0 / 0.3); /* para que se vean sobre cualquier fondo */
+  cursor: pointer;
+  transition: scale var(--transicion), background-color var(--transicion), color var(--transicion);
+}
+
+.accesibilidad__boton:hover,
+.accesibilidad__boton:focus-visible {
+  scale: 1.1;
+  background-color: var(--amarillo);
+  color: var(--cafe);
+}
+
+
+/* =========================================================
+   Responsive
+   ========================================================= */
+@media (max-width: 520px) {
+  .usuario { width: 92%; }
+
+  .usuario__cabecera {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .usuario__dato { grid-template-columns: 1fr; gap: 0.15rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
+
+
+/* ---------- Edicion del perfil ---------- */
+
+/* Checkbox oculto */
+.usuario__toggle {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Boton lapiz */
+.usuario__editar {
+    margin-left: auto;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    border-radius: var(--radio);
+    background-color: var(--celeste);
+    color: var(--cafe);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: scale var(--transicion), background-color var(--transicion);
+}
+
+.usuario__editar:hover {
+    scale: 1.1;
+    background-color: var(--crema);
+}
+
+/* Botones guardar y cancelar */
+.usuario__acciones {
+    display: none;
+    gap: 0.5rem;
+    margin-left: auto;
+}
+
+.usuario__guardar,
+.usuario__cancelar {
+    padding: 0.6rem 1rem;
+    border-radius: var(--radio);
+    font-family: var(--fuente-titulo);
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: scale var(--transicion);
+}
+
+.usuario__guardar {
+    background-color: var(--azul);
+    color: var(--blanco);
+}
+
+.usuario__cancelar {
+    background-color: var(--vinotinto);
+    color: var(--blanco);
+}
+
+.usuario__guardar:hover,
+.usuario__cancelar:hover {
+    scale: 1.05;
+}
+
+/* Campos normales */
+.usuario__valor {
+    width: 100%;
+    min-width: 0;
+    padding: 0.25rem 0.4rem;
+    border: 2px solid transparent;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--cafe);
+    font-family: var(--fuente-texto);
+    font-size: clamp(0.85rem, 1.5vw, 1rem);
+    font-weight: 600;
+}
+
+/* Ocultar el borde de los campos normales */
+.usuario__valor:read-only {
+    outline: none;
+}
+
+/* Cuando se activa la edicion */
+.usuario__toggle:checked ~ .usuario__cabecera .usuario__editar {
+    display: none;
+}
+
+.usuario__toggle:checked ~ .usuario__cabecera .usuario__acciones {
+    display: flex;
+}
+
+/* Habilitar visualmente los campos */
+.usuario__toggle:checked ~ .usuario__datos .usuario__valor {
+    border-color: var(--azul);
+    background-color: var(--blanco);
+    outline: none;
+}
+
+/* Accesibilidad */
+.usuario__toggle:focus-visible + .usuario__cabecera .usuario__editar {
+    outline: 3px solid var(--azul);
+    outline-offset: 3px;
+}

@@ -13,7 +13,8 @@
   <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-  <link rel="stylesheet" href="css/Error.css">
+  <link rel="stylesheet" href="css/error.css">
+  <link rel="stylesheet" href="css/MenuUsuario.css">
 </head>
 <body class="pagina-error">
 
@@ -34,15 +35,60 @@
         <li><a href="mapa.html" class="navegacion__enlace">Mapas</a></li>
         <li><a href="voluntariado.html" class="navegacion__enlace">Voluntariados</a></li>
         <li><a href="noticias.html" class="navegacion__enlace">Noticias</a></li>
-        <li><a href="#" class="navegacion__enlace">Foro</a></li>
+        <li><a href="foro.html" class="navegacion__enlace">Foro</a></li>
         <li><a href="donaciones.html" class="navegacion__enlace">Donaciones</a></li>
-        <li><a href="#" class="navegacion__enlace">Preguntas frecuentes</a></li>
+        <li><a href="ayuda.html" class="navegacion__enlace">Preguntas frecuentes</a></li>
       </ul>
     </nav>
 
-    <a href="#" class="perfil" id="btn-perfil" aria-label="Mi perfil">
+    <!-- Menú de usuario: se abre al presionar el ícono de perfil (solo CSS, sin JS) -->
+    <input type="checkbox" id="menu-usuario" class="usuario-menu__toggle">
+    <label for="menu-usuario" class="perfil" id="btn-perfil" aria-label="Abrir menú de usuario">
       <i class="bi bi-person-fill" aria-hidden="true"></i>
-    </a>
+    </label>
+
+    <label for="menu-usuario" class="usuario-menu__fondo" aria-hidden="true"></label>
+
+    <div class="usuario-menu" aria-label="Menú de usuario">
+      <label for="menu-usuario" class="usuario-menu__cerrar" aria-label="Cerrar menú de usuario">
+        <i class="bi bi-x-lg" aria-hidden="true"></i>
+      </label>
+
+      <div class="usuario-menu__cabecera">
+        <div class="usuario-menu__avatar">
+          <i class="bi bi-person-fill usuario-menu__avatar-icono" aria-hidden="true"></i>
+        </div>
+        <p class="usuario-menu__nombre">TU NOMBRE</p>
+        <p class="usuario-menu__id">ID:123456789 #LAN</p>
+      </div>
+
+      <ul class="usuario-menu__lista">
+        <li class="usuario-menu__elemento">
+          <a href="perfil.html" class="usuario-menu__enlace">
+            <i class="bi bi-person usuario-menu__icono" aria-hidden="true"></i>
+            <span class="usuario-menu__texto">Mi Perfil</span>
+          </a>
+        </li>
+        <li class="usuario-menu__elemento">
+          <a href="error.html" class="usuario-menu__enlace">
+            <i class="bi bi-gear-fill usuario-menu__icono" aria-hidden="true"></i>
+            <span class="usuario-menu__texto">Configuración</span>
+          </a>
+        </li>
+        <li class="usuario-menu__elemento">
+          <a href="error.html" class="usuario-menu__enlace">
+            <i class="bi bi-bell-fill usuario-menu__icono" aria-hidden="true"></i>
+            <span class="usuario-menu__texto">Notificaciones</span>
+          </a>
+        </li>
+        <li class="usuario-menu__elemento">
+          <a href="inicio.html" class="usuario-menu__enlace">
+            <i class="bi bi-box-arrow-right usuario-menu__icono" aria-hidden="true"></i>
+            <span class="usuario-menu__texto">Cerrar Sesión</span>
+          </a>
+        </li>
+      </ul>
+    </div>
   </header>
 
   <!-- ===================== MENSAJE DE ERROR ===================== -->

@@ -1,0 +1,321 @@
+/* =========================================================
+   REFUGIA — Módulo de administración
+   — Moderación de foro
+   ========================================================= */
+
+:root {
+  --amarillo: #E8BA63;
+  --cafe: #694E1C;
+  --azul: #1C5568;
+  --crema: #E4CEA4;
+  --vinotinto: #692300;
+  --celeste: #D2EEF8;
+  --blanco: #ffffff;
+  --verde: #1E6B54;
+  --gris-tarjeta: #F1F1F1;
+  --gris-linea: #C9C9C9;
+  --texto: #1d2433;
+
+  --fuente-logo: "Unbounded", sans-serif;
+  --fuente-titulo: "Manrope", sans-serif;
+  --fuente-texto: "Myanmar Khyay", "Manrope", sans-serif;
+
+  --transicion: 0.25s ease;
+  --escala-hover: 1.05;
+  --radio-tarjeta: 28px;
+  --ancho-menu: 250px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--fuente-texto);
+  background-color: var(--celeste);
+  color: var(--texto);
+  line-height: 1.5;
+}
+
+a { color: inherit; text-decoration: none; }
+ul { list-style: none; }
+button, input { font: inherit; }
+button { border: none; cursor: pointer; }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+:focus-visible {
+  outline: 3px solid var(--amarillo);
+  outline-offset: 3px;
+}
+
+/* Layout general (mobile first: menú arriba) */
+.admin {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- Menú lateral ---------- */
+.menu {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  padding: 0.9rem 1.25rem;
+  background-color: var(--azul);
+  color: var(--blanco);
+}
+
+.menu__marca {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.menu__logo {
+  font-family: var(--fuente-logo);
+  font-weight: 700;
+  font-size: 1.4rem;
+  letter-spacing: 0.04em;
+  color: var(--amarillo);
+}
+
+.menu__subtitulo {
+  font-family: var(--fuente-titulo);
+  font-size: 0.85rem;
+  color: var(--celeste);
+}
+
+/* Hamburguesa solo CSS (igual que en el resto del sitio) */
+.menu__toggle {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.menu__hamburguesa {
+  margin-left: auto;
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--amarillo);
+  cursor: pointer;
+  transition: scale var(--transicion), color var(--transicion);
+}
+
+.menu__hamburguesa:hover {
+  scale: 1.1;
+  color: var(--crema);
+}
+
+.menu__toggle:focus-visible + .menu__hamburguesa {
+  outline: 3px solid var(--amarillo);
+  outline-offset: 3px;
+}
+
+.menu__lista {
+  display: none;
+  flex-basis: 100%;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-block: 0.5rem;
+}
+
+.menu__toggle:checked ~ .menu__lista { display: flex; }
+
+.menu__enlace {
+  display: block;
+  padding: 0.65rem 1rem;
+  border-radius: 10px;
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--blanco);
+  transition: scale var(--transicion), background-color var(--transicion), color var(--transicion);
+}
+
+.menu__enlace:hover,
+.menu__enlace:focus-visible {
+  scale: var(--escala-hover);
+  background-color: rgb(255 255 255 / 0.12);
+  color: var(--amarillo);
+}
+
+.menu__enlace--activo,
+.menu__enlace--activo:hover,
+.menu__enlace--activo:focus-visible {
+  background-color: var(--amarillo);
+  color: var(--cafe);
+  box-shadow: 0 3px 8px rgb(0 0 0 / 0.25);
+}
+
+/* ---------- Contenido ---------- */
+.contenido {
+  flex: 1;
+  width: 100%;
+  padding: clamp(1.25rem, 4vw, 2.5rem) clamp(1rem, 4vw, 2.5rem) 3rem;
+}
+
+.contenido__interior {
+  width: min(100%, 780px);
+  margin-inline: auto;
+}
+
+.contenido__titulo {
+  margin-bottom: clamp(1rem, 3vw, 1.75rem);
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  color: var(--texto);
+}
+
+/* Escritorio: menú lateral fijo */
+@media (min-width: 900px) {
+  .admin { flex-direction: row; }
+
+  .menu {
+    position: sticky;
+    top: 0;
+    align-self: flex-start;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 0;
+    width: var(--ancho-menu);
+    height: 100dvh;
+    padding: 2.5rem 1.1rem;
+  }
+
+  .menu__marca { padding-inline: 1.4rem; margin-bottom: 1.25rem; }
+  .menu__logo { font-size: 1.5rem; }
+  .menu__hamburguesa { display: none; }
+
+  .menu__lista {
+    display: flex;
+    gap: 0.6rem;
+    padding-block: 0;
+  }
+
+  .menu__enlace { padding: 0.75rem 1.4rem; }
+
+  .contenido { padding-top: 2.5rem; }
+}
+
+/* =========================================================
+   Moderación de foro
+   ========================================================= */
+.moderacion {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 3vw, 1.75rem);
+}
+
+.publicacion {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: clamp(1.1rem, 3vw, 1.75rem);
+  border-radius: var(--radio-tarjeta);
+  background-color: var(--gris-tarjeta);
+  box-shadow: 0 3px 10px rgb(0 0 0 / 0.12);
+  transition: translate var(--transicion), box-shadow var(--transicion);
+}
+
+.publicacion:hover {
+  translate: 0 -2px;
+  box-shadow: 0 8px 18px rgb(0 0 0 / 0.18);
+}
+
+.publicacion__titulo {
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+  font-size: 1.05rem;
+}
+
+.etiqueta {
+  display: inline-block;
+  padding: 0.2rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  color: var(--blanco);
+  background-color: var(--verde);
+}
+
+.publicacion__texto {
+  font-size: 0.75rem;
+  color: #444;
+  max-width: 70ch;
+}
+
+.publicacion__datos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.25rem;
+  font-size: 0.7rem;
+  color: #555;
+}
+
+.publicacion__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.4rem;
+}
+
+.boton {
+  min-width: 120px;
+  min-height: 42px;
+  padding: 0.5rem 1.4rem;
+  border-radius: 10px;
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: 0.85rem;
+  box-shadow: 0 3px 8px rgb(0 0 0 / 0.2);
+  transition: scale var(--transicion), background-color var(--transicion), color var(--transicion);
+}
+
+.boton:hover,
+.boton:focus-visible { scale: var(--escala-hover); }
+
+.boton--aprobar {
+  background-color: var(--amarillo);
+  color: #000;
+}
+
+.boton--aprobar:hover,
+.boton--aprobar:focus-visible {
+  background-color: var(--cafe);
+  color: var(--crema);
+}
+
+.boton--eliminar {
+  background-color: var(--vinotinto);
+  color: var(--blanco);
+}
+
+.boton--eliminar:hover,
+.boton--eliminar:focus-visible {
+  background-color: #000;
+  color: var(--blanco);
+}
+
+@media (max-width: 520px) {
+  .boton { flex: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}

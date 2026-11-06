@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
   <link rel="stylesheet" href="css/inicio.css">
+  <link rel="stylesheet" href="css/MenuUsuario.css">
 </head>
 <body>
 
@@ -25,9 +26,54 @@
 
     <p class="encabezado__marca">REFUGIA</p>
 
-    <a href="#" class="perfil" id="btn-perfil" aria-label="Mi perfil">
+    <!-- Menú de usuario: se abre al presionar el ícono de perfil (solo CSS, sin JS) -->
+    <input type="checkbox" id="menu-usuario" class="usuario-menu__toggle">
+    <label for="menu-usuario" class="perfil" id="btn-perfil" aria-label="Abrir menú de usuario">
       <i class="bi bi-person-fill" aria-hidden="true"></i>
-    </a>
+    </label>
+
+    <label for="menu-usuario" class="usuario-menu__fondo" aria-hidden="true"></label>
+
+    <div class="usuario-menu" aria-label="Menú de usuario">
+      <label for="menu-usuario" class="usuario-menu__cerrar" aria-label="Cerrar menú de usuario">
+        <i class="bi bi-x-lg" aria-hidden="true"></i>
+      </label>
+
+      <div class="usuario-menu__cabecera">
+        <div class="usuario-menu__avatar">
+          <i class="bi bi-person-fill usuario-menu__avatar-icono" aria-hidden="true"></i>
+        </div>
+        <p class="usuario-menu__nombre">TU NOMBRE</p>
+        <p class="usuario-menu__id">ID:123456789 #LAN</p>
+      </div>
+
+      <ul class="usuario-menu__lista">
+        <li class="usuario-menu__elemento">
+          <a href="perfil.html" class="usuario-menu__enlace">
+            <i class="bi bi-person usuario-menu__icono" aria-hidden="true"></i>
+            <span class="usuario-menu__texto">Mi Perfil</span>
+          </a>
+        </li>
+        <li class="usuario-menu__elemento">
+          <a href="error.html" class="usuario-menu__enlace">
+            <i class="bi bi-gear-fill usuario-menu__icono" aria-hidden="true"></i>
+            <span class="usuario-menu__texto">Configuración</span>
+          </a>
+        </li>
+        <li class="usuario-menu__elemento">
+          <a href="error.html" class="usuario-menu__enlace">
+            <i class="bi bi-bell-fill usuario-menu__icono" aria-hidden="true"></i>
+            <span class="usuario-menu__texto">Notificaciones</span>
+          </a>
+        </li>
+        <li class="usuario-menu__elemento">
+          <a href="inicio.html" class="usuario-menu__enlace">
+            <i class="bi bi-box-arrow-right usuario-menu__icono" aria-hidden="true"></i>
+            <span class="usuario-menu__texto">Cerrar Sesión</span>
+          </a>
+        </li>
+      </ul>
+    </div>
   </header>
 
   <main>
@@ -50,13 +96,13 @@
         <a href="voluntariado.html" class="menu-circular__boton menu-circular__boton--voluntariado" title="Voluntariados" aria-label="Voluntariados">
           <i class="bi bi-person-arms-up" aria-hidden="true"></i>
         </a>
-        <a href="#" class="menu-circular__boton menu-circular__boton--ayuda" title="Preguntas frecuentes" aria-label="Preguntas frecuentes">
+        <a href="ayuda.html" class="menu-circular__boton menu-circular__boton--ayuda" title="Preguntas frecuentes" aria-label="Preguntas frecuentes">
           <i class="bi bi-question-lg" aria-hidden="true"></i>
         </a>
         <a href="noticias.html" class="menu-circular__boton menu-circular__boton--noticias" title="Noticias" aria-label="Noticias">
           <i class="bi bi-newspaper" aria-hidden="true"></i>
         </a>
-        <a href="#" class="menu-circular__boton menu-circular__boton--foro" title="Foro" aria-label="Foro">
+        <a href="foro.html" class="menu-circular__boton menu-circular__boton--foro" title="Foro" aria-label="Foro">
           <i class="bi bi-chat-square-dots" aria-hidden="true"></i>
         </a>
       </nav>
@@ -140,7 +186,7 @@
         <ul class="socios__logos">
           <li><img src="imags/Ellipse 14.png" alt="Logo aliado 1"></li>
           <li><img src="imags/Ellipse 15.png" alt="Logo aliado 2"></li>
-          <li><img src="imags/Ellipse 16.png"Logo aliado 3"></li>
+          <li><img src="imags/Ellipse 16.png" alt="Logo aliado 3"></li>
           <li><img src="imags/Ellipse 17.png" alt="Logo aliado 4"></li>
           <li><img src="imags/Ellipse 18.png" alt="Logo aliado 5"></li>
           <li><img src="imags/Ellipse 19.png" alt="Logo aliado 6"></li>
@@ -161,8 +207,8 @@
       <nav class="pie__enlaces" aria-label="Enlaces del sitio">
         <ul>
           <li><a href="#quienes-somos">Sobre nosotros</a></li>
-          <li><a href="#">Noticias</a></li>
-          <li><a href="#">Foro</a></li>
+          <li><a href="noticias.html">Noticias</a></li>
+          <li><a href="foro.html">Foro</a></li>
           <li><a href="mapa.html">Mapa</a></li>
         </ul>
       </nav>
@@ -170,17 +216,17 @@
       <div class="pie__contacto">
         <p class="pie__contacto-titulo">Contáctanos</p>
         <ul class="pie__redes">
-          <li><a href="#" aria-label="Instagram"><i class="bi bi-instagram" aria-hidden="true"></i></a></li>
-          <li><a href="#" aria-label="Facebook"><i class="bi bi-facebook" aria-hidden="true"></i></a></li>
-          <li><a href="#" aria-label="WhatsApp"><i class="bi bi-whatsapp" aria-hidden="true"></i></a></li>
-          <li><a href="#" aria-label="Telegram"><i class="bi bi-telegram" aria-hidden="true"></i></a></li>
+          <li><a href="error.html" aria-label="Instagram"><i class="bi bi-instagram" aria-hidden="true"></i></a></li>
+          <li><a href="error.html" aria-label="Facebook"><i class="bi bi-facebook" aria-hidden="true"></i></a></li>
+          <li><a href="error.html" aria-label="WhatsApp"><i class="bi bi-whatsapp" aria-hidden="true"></i></a></li>
+          <li><a href="error.html" aria-label="Telegram"><i class="bi bi-telegram" aria-hidden="true"></i></a></li>
         </ul>
       </div>
     </div>
 
     <div class="contenedor pie__legal">
-      <a href="#">Términos de uso</a>
-      <a href="#">Política de privacidad</a>
+      <a href="error.html">Términos de uso</a>
+      <a href="error.html">Política de privacidad</a>
     </div>
   </footer>
 
