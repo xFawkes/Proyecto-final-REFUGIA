@@ -1,0 +1,653 @@
+/* =========================================================
+   REFUGIA — Donaciones
+   ========================================================= */
+
+/* ---------- Variables ---------- */
+:root {
+  /* Paleta */
+  --amarillo: #E8BA63;
+  --cafe: #694E1C;
+  --azul: #1C5568;
+  --crema: #E4CEA4;
+  --vinotinto: #692300;
+  --celeste: #D2EEF8;
+  --blanco: #ffffff;
+
+  /* Tipografía */
+  --fuente-logo: "Unbounded", sans-serif;
+  --fuente-titulo: "Manrope", sans-serif;
+  --fuente-texto: "Myanmar Khyay", "Manrope", sans-serif;
+
+  /* Otros */
+  --transicion: 0.25s ease;
+  --escala-hover: 1.07;
+  --radio: 8px;
+}
+
+/* ---------- Reset básico ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  /* Los enlaces a secciones (#ancla) no quedan tapados por el encabezado fijo */
+  scroll-padding-top: 90px;
+}
+
+body {
+  font-family: var(--fuente-texto);
+  background-color: var(--azul);
+  color: var(--blanco);
+  line-height: 1.5;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+}
+
+ul {
+  list-style: none;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+fieldset {
+  border: none;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+:focus-visible {
+  outline: 3px solid var(--amarillo);
+  outline-offset: 3px;
+}
+
+/* =========================================================
+   Encabezado con navegación (mobile first)
+   ========================================================= */
+.encabezado {
+  /* El encabezado se queda fijo arriba al hacer scroll (escritorio y móvil) */
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  min-height: 76px;
+  padding: 0.6rem clamp(1rem, 3vw, 2rem);
+  background-color: var(--azul);
+}
+
+.encabezado__logo {
+  width: 52px;
+  aspect-ratio: 1;
+  display: inline-block;
+  transition: scale var(--transicion);
+}
+
+.encabezado__logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.encabezado__logo:hover {
+  scale: 1.1;
+}
+
+.encabezado__toggle {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.encabezado__hamburguesa {
+  order: 2;
+  margin-left: auto;
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--amarillo);
+  cursor: pointer;
+  display: inline-block;
+  transition: scale var(--transicion), color var(--transicion);
+}
+
+.encabezado__hamburguesa:hover {
+  scale: 1.1;
+  color: var(--crema);
+}
+
+.encabezado__toggle:focus-visible + .encabezado__hamburguesa {
+  outline: 3px solid var(--amarillo);
+  outline-offset: 3px;
+}
+
+.perfil {
+  order: 3;
+  width: 52px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 1.8rem;
+  background-color: var(--amarillo);
+  color: var(--cafe);
+  border: 2px solid var(--cafe);
+  transition: scale var(--transicion), background-color var(--transicion), color var(--transicion);
+}
+
+.perfil:hover,
+.perfil:focus-visible {
+  scale: 1.1;
+  background-color: var(--cafe);
+  color: var(--amarillo);
+}
+
+.navegacion {
+  order: 4;
+  flex-basis: 100%;
+  display: none;
+}
+
+.encabezado__toggle:checked ~ .navegacion {
+  display: block;
+}
+
+/* En móvil, si el menú desplegado es más alto que la pantalla, se desplaza por dentro */
+@media (max-width: 1023.98px) {
+  .encabezado__toggle:checked ~ .navegacion {
+    max-height: calc(100dvh - 76px);
+    overflow-y: auto;
+  }
+}
+
+.navegacion__lista {
+  display: flex;
+  flex-direction: column;
+  padding-block: 0.5rem;
+}
+
+.navegacion__lista li + li {
+  border-top: 2px solid var(--amarillo);
+}
+
+.navegacion__enlace {
+  display: inline-block;
+  padding: 0.7rem 0.25rem;
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: 1rem;
+  text-decoration: none;
+  color: var(--amarillo);
+  transition: scale var(--transicion), color var(--transicion);
+}
+
+.navegacion__enlace:hover,
+.navegacion__enlace:focus-visible {
+  scale: 1.08;
+  color: var(--crema);
+}
+
+.navegacion__enlace--activo {
+  color: var(--celeste);
+}
+
+@media (min-width: 1024px) {
+  .encabezado {
+    flex-wrap: nowrap;
+  }
+
+  .encabezado__hamburguesa {
+    display: none;
+  }
+
+  .navegacion {
+    order: 1;
+    display: block;
+    flex: 1;
+  }
+
+  .navegacion__lista {
+    flex-direction: row;
+    align-items: center;
+    padding: 0;
+  }
+
+  .navegacion__lista li {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    position: relative;
+    text-align: center;
+  }
+
+  .navegacion__lista li + li {
+    border-top: none;
+  }
+
+  .navegacion__lista li::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 50%;
+    translate: 0 -50%;
+    width: 2px;
+    height: 40px;
+    background-color: var(--amarillo);
+    border-radius: 2px;
+  }
+
+  .navegacion__enlace {
+    padding: 0.25rem 0.75rem;
+    font-size: clamp(0.9rem, 1.2vw, 1.05rem);
+    max-width: 12ch;
+    line-height: 1.25;
+  }
+
+  .perfil {
+    order: 2;
+    margin-left: 0.5rem;
+  }
+}
+
+/* =========================================================
+   Layout de donaciones
+   ========================================================= */
+.donaciones {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  min-height: calc(100dvh - 76px);
+  background:
+    url("../imags/image\ 13.png") center / cover no-repeat,
+    var(--azul);
+  isolation: isolate;
+}
+
+/* Degradado azul sobre la imagen de fondo:
+   más transparente a la izquierda (tarjetas) y más sólido a la derecha (formulario).
+   Ajusta las opacidades con las variables. */
+.donaciones::before {
+  --opacidad-izquierda: 0.25;
+  --opacidad-centro: 0.5;
+  --opacidad-derecha: 0.85;
+
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    to right,
+    rgb(28 85 104 / var(--opacidad-izquierda)) 0%,
+    rgb(28 85 104 / var(--opacidad-centro)) 50%,
+    rgb(28 85 104 / var(--opacidad-derecha)) 100%
+  );
+}
+
+/* ---------- Columna izquierda ---------- */
+.organizaciones {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 2.5vw, 1.75rem);
+  padding: clamp(1.5rem, 3vw, 2.5rem) clamp(1rem, 3vw, 2.5rem) 5rem;
+}
+
+.organizaciones__titulo {
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  line-height: 1.1;
+  text-transform: uppercase;
+  color: var(--celeste);
+  text-shadow: 0 3px 10px rgb(0 0 0 / 0.45);
+  text-align: center;
+}
+
+.tarjeta-ong {
+  display: grid;
+  grid-template-columns: minmax(120px, 40%) 1fr;
+  gap: 1rem;
+  padding: 0.75rem;
+  background-color: var(--azul);
+  box-shadow: 0 4px 16px rgb(0 0 0 / 0.3);
+  border-radius: 10px;
+  transition: translate var(--transicion), box-shadow var(--transicion);
+}
+
+.tarjeta-ong__imagen {
+  width: 100%;
+  height: 100%;
+  min-height: 130px;
+  object-fit: cover;
+  background-color: color-mix(in srgb, var(--azul) 60%, #000);
+  border-radius: 10px;
+}
+
+.tarjeta-ong__cuerpo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  border-radius: 10px;
+}
+
+.tarjeta-ong__nombre {
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--amarillo);
+}
+
+.tarjeta-ong__enlace {
+  align-self: center;
+  display: inline-block;
+  margin-top: auto;
+  padding-top: 0.4rem;
+  color: var(--amarillo);
+  text-underline-offset: 3px;
+  transition: scale var(--transicion), color var(--transicion);
+}
+
+.tarjeta-ong:hover {
+  translate: 0 -4px;
+  box-shadow: 0 8px 20px rgb(0 0 0 / 0.35);
+}
+
+.tarjeta-ong__enlace:hover,
+.tarjeta-ong__enlace:focus-visible {
+  scale: var(--escala-hover);
+  color: var(--celeste);
+}
+
+/* ---------- Columna derecha ---------- */
+.panel-donacion {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: clamp(1.5rem, 3vw, 2.5rem) clamp(1rem, 3vw, 2.5rem);
+  /* Transparencia suave encima del degradado general, deja ver un poco la imagen */
+  background: linear-gradient(
+    to bottom,
+    rgb(28 85 104 / 0.55) 0%,
+    rgb(28 85 104 / 0.75) 100%
+  );
+  text-align: center;
+}
+
+.panel-donacion__titulo {
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+  font-size: clamp(1.4rem, 2.8vw, 2rem);
+  line-height: 1.25;
+  max-width: 18ch;
+}
+
+.panel-donacion__intro {
+  font-size: 0.85rem;
+  max-width: 52ch;
+}
+
+/* Formulario */
+.donar {
+  width: min(100%, 520px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.donar__grupo {
+  width: 100%;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.donar__grupo--frecuencia {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.donar__grupo--montos {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+/* Radios ocultos: el <label> funciona como botón */
+.opcion__input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.opcion {
+  display: grid;
+  place-items: center;
+  min-height: 48px;
+  padding: 0.6rem 0.5rem;
+  border-radius: 4px;
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+  font-size: clamp(0.8rem, 1.3vw, 0.95rem);
+  text-transform: uppercase;
+  background-color: var(--crema);
+  color: var(--azul);
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgb(0 0 0 / 0.25);
+  transition: scale var(--transicion), background-color var(--transicion), color var(--transicion);
+}
+
+.opcion--grande {
+  min-height: 62px;
+  font-size: clamp(0.95rem, 1.6vw, 1.15rem);
+}
+
+.opcion:hover {
+  scale: var(--escala-hover);
+  background-color: var(--cafe);
+  color: var(--crema);
+}
+
+/* Opción seleccionada */
+.opcion__input:checked + .opcion {
+  background-color: var(--amarillo);
+  color: var(--cafe);
+  outline: 2px solid var(--cafe);
+  outline-offset: -2px;
+}
+
+.opcion__input:focus-visible + .opcion {
+  outline: 3px solid var(--amarillo);
+  outline-offset: 3px;
+}
+
+.donar__etiqueta {
+  font-size: 0.85rem;
+}
+
+/* Campo de monto libre */
+.monto-libre {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 1rem;
+  border-radius: 999px;
+  background-color: var(--crema);
+  color: var(--azul);
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+}
+
+.monto-libre:focus-within {
+  outline: 3px solid var(--amarillo);
+  outline-offset: 3px;
+}
+
+.monto-libre__input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--azul);
+  font-weight: 700;
+  padding: 0.3rem 0;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.monto-libre__input::-webkit-outer-spin-button,
+.monto-libre__input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.monto-libre__simbolo,
+.monto-libre__moneda {
+  font-size: 1.05rem;
+}
+
+/* Botón DONAR */
+.donar__boton {
+  min-width: 190px;
+  min-height: 52px;
+  padding: 0.6rem 2rem;
+  border-radius: 4px;
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  background-color: var(--crema);
+  color: var(--azul);
+  box-shadow: 0 3px 8px rgb(0 0 0 / 0.25);
+  transition: scale var(--transicion), background-color var(--transicion), color var(--transicion);
+}
+
+.donar__boton:hover,
+.donar__boton:focus-visible {
+  scale: var(--escala-hover);
+  background-color: var(--cafe);
+  color: var(--crema);
+}
+
+/* Espacio para la pasarela de pagos (vacío hasta integrarla) */
+.pasarela {
+  width: min(100%, 520px);
+}
+
+.pasarela:empty {
+  display: none;
+}
+
+.panel-donacion__imagen {
+  width: min(100%, 360px);
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: var(--radio);
+  margin-top: 0.5rem;
+  background-color: color-mix(in srgb, var(--azul) 60%, #000);
+}
+
+/* ---------- Accesibilidad ---------- */
+.accesibilidad {
+  /* Fijos en la esquina inferior izquierda de la pantalla, aunque se haga scroll */
+  position: fixed;
+  z-index: 50;
+  left: 1rem;
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  display: flex;
+  gap: 0.5rem;
+}
+
+.accesibilidad__boton {
+  width: 44px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 1.2rem;
+  background-color: var(--azul);
+  color: var(--celeste);
+  border: 2px solid var(--celeste);
+  box-shadow: 0 3px 10px rgb(0 0 0 / 0.3); /* para que se vean sobre cualquier fondo */
+  transition: scale var(--transicion), background-color var(--transicion), color var(--transicion);
+}
+
+.accesibilidad__boton:hover,
+.accesibilidad__boton:focus-visible {
+  scale: 1.1;
+  background-color: var(--amarillo);
+  color: var(--cafe);
+}
+
+/* =========================================================
+   Responsive
+   ========================================================= */
+@media (max-width: 900px) {
+  .donaciones {
+    grid-template-columns: 1fr;
+  }
+
+  /* En móvil las columnas se apilan, así que el degradado va de arriba hacia abajo */
+  .donaciones::before {
+    background: linear-gradient(
+      to bottom,
+      rgb(28 85 104 / var(--opacidad-izquierda)) 0%,
+      rgb(28 85 104 / var(--opacidad-centro)) 50%,
+      rgb(28 85 104 / var(--opacidad-derecha)) 100%
+    );
+  }
+
+  .organizaciones {
+    padding-bottom: 1.5rem;
+  }
+
+  .panel-donacion {
+    padding-bottom: 5rem; /* espacio para los botones de accesibilidad */
+  }
+}
+
+@media (max-width: 520px) {
+  .tarjeta-ong {
+    grid-template-columns: 1fr;
+  }
+
+  .tarjeta-ong__imagen {
+    aspect-ratio: 16 / 9;
+    min-height: 0;
+  }
+
+  .donar__grupo--montos {
+    grid-template-columns: 1fr;
+  }
+}

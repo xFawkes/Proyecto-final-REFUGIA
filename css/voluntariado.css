@@ -1,0 +1,460 @@
+/* =========================================================
+   REFUGIA — Voluntariado
+   Menú, colores y tamaños de letra iguales a donaciones y mapa.
+   ========================================================= */
+
+/* ---------- Variables ---------- */
+:root {
+  /* Paleta (igual que en donaciones y mapa) */
+  --amarillo: #E8BA63;
+  --cafe: #694E1C;
+  --azul: #1C5568;
+  --crema: #E4CEA4;
+  --vinotinto: #692300;
+  --celeste: #D2EEF8;
+  --blanco: #ffffff;
+
+  /* Tipografía */
+  --fuente-logo: "Unbounded", sans-serif;
+  --fuente-titulo: "Manrope", sans-serif;
+  --fuente-texto: "Myanmar Khyay", "Manrope", sans-serif;
+
+  /* Tamaños de letra tomados de donaciones.css y mapa.css */
+  --texto-titulo-pagina: clamp(1.8rem, 4vw, 2.8rem);   /* h1: "HAZ TU DONACIÓN" */
+  --texto-titulo-seccion: clamp(1.4rem, 2.8vw, 2rem);  /* h2: "¿Cómo quieres hacer tu donación?" */
+  --texto-titulo-tarjeta: 1.5rem;                     /* nombre de la ONG */
+  --texto-intro: 0.85rem;                              /* párrafo de introducción */
+  --texto-tarjeta: 0.8rem;                             /* texto de las tarjetas */
+
+  /* Medidas del diseño */
+  --ancho-contenido: 83.4%;
+  --margen-lateral: 8.3%;
+
+  /* Otros */
+  --transicion: 0.25s ease;
+  --escala-hover: 1.1;
+  --radio: 8px;
+}
+
+/* ---------- Reset básico ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  /* Los enlaces a secciones (#ancla) no quedan tapados por el encabezado fijo */
+  scroll-padding-top: 90px;
+}
+
+body {
+  font-family: var(--fuente-texto);
+  background-color: var(--azul);
+  color: var(--blanco);
+  line-height: 1.5;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul {
+  list-style: none;
+}
+
+button {
+  font: inherit;
+  border: none;
+  cursor: pointer;
+  background: none;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+:focus-visible {
+  outline: 3px solid var(--amarillo);
+  outline-offset: 3px;
+}
+
+/* =========================================================
+   Encabezado con navegación (mobile first)
+   Idéntico al de donaciones.css y mapa.css
+   ========================================================= */
+.encabezado {
+  /* El encabezado se queda fijo arriba al hacer scroll (escritorio y móvil) */
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  min-height: 76px;
+  padding: 0.6rem clamp(1rem, 3vw, 2rem);
+  background-color: var(--azul);
+}
+
+.encabezado__logo {
+  width: 52px;
+  aspect-ratio: 1;
+  display: inline-block;
+  transition: scale var(--transicion);
+}
+
+.encabezado__logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.encabezado__logo:hover {
+  scale: var(--escala-hover);
+}
+
+/* Checkbox oculto que controla el menú en móvil */
+.encabezado__toggle {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.encabezado__hamburguesa {
+  order: 2;
+  margin-left: auto;
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--amarillo);
+  cursor: pointer;
+  display: inline-block;
+  transition: scale var(--transicion), color var(--transicion);
+}
+
+.encabezado__hamburguesa:hover {
+  scale: var(--escala-hover);
+  color: var(--crema);
+}
+
+.encabezado__toggle:focus-visible + .encabezado__hamburguesa {
+  outline: 3px solid var(--amarillo);
+  outline-offset: 3px;
+}
+
+.perfil {
+  order: 3;
+  width: 52px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 1.8rem;
+  background-color: var(--amarillo);
+  color: var(--cafe);
+  border: 2px solid var(--cafe);
+  transition: scale var(--transicion), background-color var(--transicion), color var(--transicion);
+}
+
+.perfil:hover,
+.perfil:focus-visible {
+  scale: var(--escala-hover);
+  background-color: var(--cafe);
+  color: var(--amarillo);
+}
+
+.navegacion {
+  order: 4;
+  flex-basis: 100%;
+  display: none;
+}
+
+.encabezado__toggle:checked ~ .navegacion {
+  display: block;
+}
+
+/* En móvil, si el menú desplegado es más alto que la pantalla, se desplaza por dentro */
+@media (max-width: 1023.98px) {
+  .encabezado__toggle:checked ~ .navegacion {
+    max-height: calc(100dvh - 76px);
+    overflow-y: auto;
+  }
+}
+
+.navegacion__lista {
+  display: flex;
+  flex-direction: column;
+  padding-block: 0.5rem;
+}
+
+.navegacion__lista li + li {
+  border-top: 2px solid var(--amarillo);
+}
+
+.navegacion__enlace {
+  display: inline-block;
+  padding: 0.7rem 0.25rem;
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: 1rem;
+  text-decoration: none;
+  color: var(--amarillo);
+  transition: scale var(--transicion), color var(--transicion);
+}
+
+.navegacion__enlace:hover,
+.navegacion__enlace:focus-visible {
+  scale: 1.08;
+  color: var(--crema);
+}
+
+.navegacion__enlace--activo {
+  color: var(--celeste);
+}
+
+/* Escritorio: menú horizontal con separadores verticales */
+@media (min-width: 1024px) {
+  .encabezado {
+    flex-wrap: nowrap;
+  }
+
+  .encabezado__hamburguesa {
+    display: none;
+  }
+
+  .navegacion {
+    order: 1;
+    display: block;
+    flex: 1;
+  }
+
+  .navegacion__lista {
+    flex-direction: row;
+    align-items: center;
+    padding: 0;
+  }
+
+  .navegacion__lista li {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    position: relative;
+    text-align: center;
+  }
+
+  .navegacion__lista li + li {
+    border-top: none;
+  }
+
+  /* Línea vertical separadora */
+  .navegacion__lista li::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 50%;
+    translate: 0 -50%;
+    width: 2px;
+    height: 40px;
+    background-color: var(--amarillo);
+    border-radius: 2px;
+  }
+
+  .navegacion__enlace {
+    padding: 0.25rem 0.75rem;
+    font-size: clamp(0.9rem, 1.2vw, 1.05rem);
+    max-width: 12ch;
+    line-height: 1.25;
+  }
+
+  .perfil {
+    order: 2;
+    margin-left: 0.5rem;
+  }
+}
+
+/* ---------- Portada con imagen y recuadro de texto ---------- */
+.portada {
+  position: relative;
+  display: flex;
+  min-height: clamp(260px, 32vw, 620px);
+  overflow: hidden;
+  /* Imagen de fondo de la portada (la ruta es relativa a este archivo CSS) */
+  background:
+    url("../imags/Rectangle 7.png") center / cover no-repeat,
+    color-mix(in srgb, var(--azul) 60%, #000);
+}
+
+/* El recuadro arranca pegado al borde superior; el texto va centrado en vertical */
+.portada__texto {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: max(300px, 41.9%);
+  margin-left: var(--margen-lateral);
+  margin-bottom: clamp(1rem, 4.2vw, 3.5rem);
+  padding: clamp(1.25rem, 2.5vw, 2rem) clamp(1.25rem, 2.5vw, 2.25rem);
+  background-color: rgb(28 85 104 / 0.75);
+}
+
+/* Mismo estilo que el h1 de donaciones ("HAZ TU DONACIÓN") */
+.portada__titulo {
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+  font-size: var(--texto-titulo-pagina);
+  line-height: 1.1;
+  color: var(--celeste);
+  text-shadow: 0 3px 10px rgb(0 0 0 / 0.45);
+  margin-bottom: 0.75rem;
+}
+
+.portada__texto p {
+  font-size: var(--texto-intro);
+}
+
+/* ---------- Voluntariados ---------- */
+.voluntariados {
+  background-color: var(--celeste);
+  /* Abajo deja espacio para que los botones de accesibilidad no tapen la última tarjeta */
+  padding-block: clamp(1.5rem, 3vw, 2.5rem) 5rem;
+}
+
+.voluntariados__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(1rem, 2.5vw, 1.75rem);
+  width: var(--ancho-contenido);
+  margin-inline: auto;
+}
+
+/* ---------- Tarjeta de voluntariado ---------- */
+.voluntariado {
+  display: grid;
+  grid-template-columns: 1fr 43.4%;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 0.75rem 0.75rem 1rem;
+  background-color: var(--azul);
+  border-radius: var(--radio);
+  box-shadow: 0 4px 16px rgb(0 0 0 / 0.3);
+}
+
+.voluntariado__cuerpo {
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+  gap: 0.4rem;
+  font-size: var(--texto-tarjeta);
+}
+
+/* Mismo tamaño que el nombre de las ONG en donaciones */
+.voluntariado__titulo {
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: var(--texto-titulo-tarjeta);
+  line-height: 1.3;
+  color: var(--amarillo);
+}
+
+/* El enlace queda siempre al fondo de la tarjeta */
+.voluntariado__enlace {
+  margin-top: auto;
+  padding-top: 0.4rem;
+  align-self: flex-start;
+  font-size: var(--texto-tarjeta);
+  color: var(--amarillo);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: scale var(--transicion), color var(--transicion);
+  transform-origin: left center;
+}
+
+.voluntariado__enlace:hover,
+.voluntariado__enlace:focus-visible {
+  scale: var(--escala-hover);
+  color: var(--celeste);
+}
+
+.voluntariado__imagen {
+  width: 100%;
+  aspect-ratio: 173 / 127;
+  object-fit: cover;
+  border-radius: var(--radio);
+  background-color: color-mix(in srgb, var(--azul) 60%, #000);
+}
+
+/* ---------- Botones de accesibilidad (igual que en donaciones y mapa) ---------- */
+.accesibilidad {
+  /* Fijos en la esquina inferior izquierda de la pantalla, aunque se haga scroll */
+  position: fixed;
+  z-index: 50;
+  left: 1rem;
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  display: flex;
+  gap: 0.5rem;
+}
+
+.accesibilidad__boton {
+  width: 44px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 1.2rem;
+  background-color: var(--azul);
+  color: var(--celeste);
+  border: 2px solid var(--celeste);
+  box-shadow: 0 3px 10px rgb(0 0 0 / 0.3); /* para que se vean sobre cualquier fondo */
+  transition: scale var(--transicion), background-color var(--transicion), color var(--transicion);
+}
+
+.accesibilidad__boton:hover,
+.accesibilidad__boton:focus-visible {
+  scale: var(--escala-hover);
+  background-color: var(--amarillo);
+  color: var(--cafe);
+}
+
+/* =========================================================
+   Responsive
+   ========================================================= */
+@media (max-width: 800px) {
+  .voluntariados__grid {
+    grid-template-columns: 1fr;
+    width: calc(100% - 2rem);
+  }
+}
+
+@media (max-width: 600px) {
+  .portada__texto {
+    width: 100%;
+    margin: 0;
+  }
+}
+
+@media (max-width: 420px) {
+  .voluntariado {
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+  }
+
+  .voluntariado__imagen {
+    order: -1;
+    aspect-ratio: 16 / 9;
+  }
+}

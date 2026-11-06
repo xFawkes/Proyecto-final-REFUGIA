@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>REFUGIA | Mapa</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Myanmar+Khyay&family=Unbounded:wght@600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <link rel="stylesheet" href="css/mapa.css">
+</head>
+<body>
+
+  <!-- ===================== ENCABEZADO ===================== -->
+  <header class="encabezado">
+    <a href="inicio.html" class="encabezado__logo" aria-label="Ir al inicio">
+      <img src="imags/logo 1.png" alt="Logo de REFUGIA">
+    </a>
+
+    <!-- Menú hamburguesa para móvil (solo CSS, sin JS) -->
+    <input type="checkbox" id="menu-toggle" class="encabezado__toggle">
+    <label for="menu-toggle" class="encabezado__hamburguesa" aria-label="Abrir menú">
+      <i class="bi bi-list" aria-hidden="true"></i>
+    </label>
+
+    <nav class="navegacion" aria-label="Navegación principal">
+      <ul class="navegacion__lista">
+        <li><a href="mapa.html" class="navegacion__enlace navegacion__enlace--activo" aria-current="page">Mapas</a></li>
+        <li><a href="voluntariado.html" class="navegacion__enlace">Voluntariados</a></li>
+        <li><a href="noticias.html" class="navegacion__enlace">Noticias</a></li>
+        <li><a href="#" class="navegacion__enlace">Foro</a></li>
+        <li><a href="donaciones.html" class="navegacion__enlace">Donaciones</a></li>
+        <li><a href="#" class="navegacion__enlace">Preguntas frecuentes</a></li>
+      </ul>
+    </nav>
+
+    <a href="#" class="perfil" id="btn-perfil" aria-label="Mi perfil">
+      <i class="bi bi-person-fill" aria-hidden="true"></i>
+    </a>
+  </header>
+
+  <!-- ===================== CONTENIDO ===================== -->
+  <main class="mapa-layout">
+    <h1 class="sr-only">Mapa de puntos de ayuda humanitaria</h1>
+
+    <!-- ---------- Zona del mapa ---------- -->
+    <section class="mapa" aria-label="Mapa">
+
+      <!-- Barra de búsqueda con filtro
+           INTEGRACIÓN: conectar #form-busqueda / #busqueda / #btn-filtros con JS -->
+      <form class="buscador" id="form-busqueda" role="search" action="#">
+        <label for="busqueda" class="sr-only">Buscar un lugar</label>
+        <i class="bi bi-search buscador__icono" aria-hidden="true"></i>
+        <input type="search" id="busqueda" name="q" class="buscador__input"
+               placeholder="Buscar albergues, centros de acopio, centros de salud..." autocomplete="off">
+        <button type="button" class="buscador__filtro" id="btn-filtros"
+                aria-label="Mostrar filtros" aria-expanded="false" aria-controls="filtros-busqueda">
+          <i class="bi bi-funnel-fill" aria-hidden="true"></i>
+        </button>
+
+        <!-- INTEGRACIÓN: aquí van las opciones de filtro (quitar "hidden" para mostrarlo) -->
+        <div class="buscador__filtros" id="filtros-busqueda" hidden></div>
+
+        <!-- INTEGRACIÓN: aquí van los resultados / sugerencias de búsqueda -->
+        <ul class="buscador__resultados" id="resultados-busqueda" hidden></ul>
+      </form>
+
+      <!-- INTEGRACIÓN: contenedor donde se monta el mapa (Leaflet, Google Maps, Mapbox, etc.) -->
+      <div class="mapa__lienzo" id="mapa">
+        <!-- Eliminar este párrafo al integrar el mapa -->
+        <p class="mapa__placeholder">Aquí va el mapa</p>
+      </div>
+
+      <!-- Botones de accesibilidad (la funcionalidad se programa con JS) -->
+      <div class="accesibilidad" role="group" aria-label="Opciones de accesibilidad">
+        <button type="button" class="accesibilidad__boton" id="btn-lector-voz" aria-label="Leer en voz alta">
+          <i class="bi bi-volume-up-fill" aria-hidden="true"></i>
+        </button>
+        <button type="button" class="accesibilidad__boton" id="btn-contraste" aria-label="Modo de alto contraste">
+          <i class="bi bi-eye-fill" aria-hidden="true"></i>
+        </button>
+        <button type="button" class="accesibilidad__boton" id="btn-zoom" aria-label="Ampliar texto">
+          <i class="bi bi-zoom-in" aria-hidden="true"></i>
+        </button>
+      </div>
+    </section>
+
+    <!-- ---------- Panel de detalle de la ubicación ----------
+         INTEGRACIÓN: rellenar los elementos con id="detalle-..." desde JS/API -->
+    <aside class="detalle" id="detalle-ubicacion" aria-labelledby="detalle-titulo">
+      <img class="detalle__imagen" id="detalle-imagen" src="imags/centros.png" alt="Foto del lugar seleccionado">
+
+      <div class="detalle__contenido">
+        <h2 class="detalle__titulo" id="detalle-titulo">Centro de acopio</h2>
+
+        <div class="detalle__calificacion">
+          <div class="estrellas" id="detalle-estrellas" role="img" aria-label="Calificación: 4.8 de 5">
+            <i class="bi bi-star-fill" aria-hidden="true"></i>
+            <i class="bi bi-star-fill" aria-hidden="true"></i>
+            <i class="bi bi-star-fill" aria-hidden="true"></i>
+            <i class="bi bi-star-fill" aria-hidden="true"></i>
+            <i class="bi bi-star-fill" aria-hidden="true"></i>
+          </div>
+          <p class="detalle__confianza"><span id="detalle-puntaje">4.8</span> en índice de confianza</p>
+        </div>
+
+        <ul class="detalle__lista">
+          <li class="detalle__item">
+            <i class="bi bi-geo-alt" aria-hidden="true"></i>
+            <p><strong>Dirección:</strong> <span class="detalle__valor" id="detalle-direccion">Carrera 7 # 45-23</span></p>
+          </li>
+          <li class="detalle__item">
+            <i class="bi bi-clock" aria-hidden="true"></i>
+            <p><strong>Disponibilidad:</strong> <span class="detalle__valor" id="detalle-horario">Lunes a Viernes, de 8:00 am a 7:00 pm.</span></p>
+          </li>
+          <li class="detalle__item">
+            <i class="bi bi-cash-coin" aria-hidden="true"></i>
+            <p><strong>Abono o costo por ayuda:</strong> <span class="detalle__valor" id="detalle-costo">No</span></p>
+          </li>
+          <li class="detalle__item">
+            <i class="bi bi-telephone" aria-hidden="true"></i>
+            <p><strong>Número de contacto:</strong> <a class="detalle__valor" id="detalle-telefono" href="tel:3132458675">313 2458675</a></p>
+          </li>
+          <li class="detalle__item">
+            <i class="bi bi-globe" aria-hidden="true"></i>
+            <p><strong>Página web:</strong> <a class="detalle__valor" id="detalle-web" href="#" target="_blank" rel="noopener noreferrer">www.acopios.com</a></p>
+          </li>
+        </ul>
+
+        <div class="detalle__acciones">
+          <button type="button" class="accion" id="accion-como-llegar">
+            <span class="accion__icono"><i class="bi bi-sign-turn-right-fill" aria-hidden="true"></i></span>
+            <span class="accion__texto">Cómo llegar</span>
+          </button>
+          <button type="button" class="accion" id="accion-guardar">
+            <span class="accion__icono"><i class="bi bi-bookmark-fill" aria-hidden="true"></i></span>
+            <span class="accion__texto">Guardar</span>
+          </button>
+          <button type="button" class="accion" id="accion-contactar">
+            <span class="accion__icono"><i class="bi bi-envelope-fill" aria-hidden="true"></i></span>
+            <span class="accion__texto">Contactar</span>
+          </button>
+          <button type="button" class="accion" id="accion-compartir">
+            <span class="accion__icono"><i class="bi bi-share-fill" aria-hidden="true"></i></span>
+            <span class="accion__texto">Compartir</span>
+          </button>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+</body>
+</html>

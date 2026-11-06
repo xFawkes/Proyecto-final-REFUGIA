@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>REFUGIA | Voluntariados</title>
+
+  <!-- Tipografías: Unbounded (logotipo), Manrope (títulos), Myanmar Khyay (textos) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Myanmar+Khyay&family=Unbounded:wght@600;700&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <link rel="stylesheet" href="css/voluntariado.css">
+</head>
+<body>
+
+  <!-- ===================== ENCABEZADO ===================== -->
+  <header class="encabezado">
+    <a href="inicio.html" class="encabezado__logo" aria-label="Ir al inicio">
+      <img src="imags/logo 1.png" alt="Logo de REFUGIA">
+    </a>
+
+    <!-- Menú hamburguesa para móvil (solo CSS, sin JS) -->
+    <input type="checkbox" id="menu-toggle" class="encabezado__toggle">
+    <label for="menu-toggle" class="encabezado__hamburguesa" aria-label="Abrir menú">
+      <i class="bi bi-list" aria-hidden="true"></i>
+    </label>
+
+    <nav class="navegacion" aria-label="Navegación principal">
+      <ul class="navegacion__lista">
+        <li><a href="mapa.html" class="navegacion__enlace">Mapas</a></li>
+        <li><a href="voluntariado.html" class="navegacion__enlace navegacion__enlace--activo" aria-current="page">Voluntariados</a></li>
+        <li><a href="noticias.html" class="navegacion__enlace">Noticias</a></li>
+        <li><a href="#" class="navegacion__enlace">Foro</a></li>
+        <li><a href="donaciones.html" class="navegacion__enlace">Donaciones</a></li>
+        <li><a href="#" class="navegacion__enlace">Preguntas frecuentes</a></li>
+      </ul>
+    </nav>
+
+    <a href="#" class="perfil" id="btn-perfil" aria-label="Mi perfil">
+      <i class="bi bi-person-fill" aria-hidden="true"></i>
+    </a>
+  </header>
+
+  <main>
+
+    <!-- ===================== PORTADA ===================== -->
+    <section class="portada" aria-labelledby="titulo-portada">
+      <div class="portada__texto">
+        <h1 class="portada__titulo" id="titulo-portada">Te necesitamos</h1>
+        <p>
+          Cada acción cuenta cuando alguien lo ha perdido todo. Únete a nuestra comunidad de voluntarios
+          y ayuda a quienes más lo necesitan durante una emergencia. Encuentra oportunidades de voluntariado,
+          conoce las organizaciones que requieren apoyo y descubre cómo tus habilidades y tu tiempo pueden
+          convertirse en una oportunidad para reconstruir vidas.
+        </p>
+      </div>
+    </section>
+
+    <!-- ===================== VOLUNTARIADOS ===================== -->
+    <section class="voluntariados">
+      <div class="contenedor">
+
+        <!-- INTEGRACIÓN: reemplazar href="#" por la página oficial de cada voluntariado -->
+        <div class="voluntariados__grid">
+
+          <article class="voluntariado">
+            <div class="voluntariado__cuerpo">
+              <h2 class="voluntariado__titulo">Voluntariado en distribución de ayudas</h2>
+              <p>
+                Apoya la entrega de alimentos, ropa, agua y productos de primera necesidad a las
+                personas afectadas por desastres naturales.
+              </p>
+              <a href="#" class="voluntariado__enlace" target="_blank" rel="noopener noreferrer">Da click aquí para ir a la página</a>
+            </div>
+            <img class="voluntariado__imagen" src="imags/image 10.png" alt="Caja con frutas y alimentos para entregar como ayuda">
+          </article>
+
+          <article class="voluntariado">
+            <div class="voluntariado__cuerpo">
+              <h2 class="voluntariado__titulo">Voluntariado en centros de acopio</h2>
+              <p>
+                Ayuda a clasificar, organizar y empacar las donaciones para garantizar que los
+                recursos lleguen a quienes más los necesitan.
+              </p>
+              <a href="#" class="voluntariado__enlace" target="_blank" rel="noopener noreferrer">Da click aquí para ir a la página</a>
+            </div>
+            <img class="voluntariado__imagen" src="imags/image 11.png" alt="Voluntarios con camisetas rojas y credenciales en un centro de acopio">
+          </article>
+
+          <article class="voluntariado">
+            <div class="voluntariado__cuerpo">
+              <h2 class="voluntariado__titulo">Voluntariado en reconstrucción</h2>
+              <p>
+                Participa en jornadas comunitarias de limpieza y recuperación de espacios afectados,
+                siguiendo las indicaciones de las organizaciones responsables.
+              </p>
+              <a href="#" class="voluntariado__enlace" target="_blank" rel="noopener noreferrer">Da click aquí para ir a la página</a>
+            </div>
+            <img class="voluntariado__imagen" src="imags/Rectangle 33.png" alt="Personas retirando escombros en una jornada de reconstrucción">
+          </article>
+
+          <article class="voluntariado">
+            <div class="voluntariado__cuerpo">
+              <h2 class="voluntariado__titulo">Voluntariado de acompañamiento</h2>
+              <p>
+                Brinda compañía, escucha y apoyo humano a las personas damnificadas, en coordinación
+                con equipos capacitados.
+              </p>
+              <a href="#" class="voluntariado__enlace" target="_blank" rel="noopener noreferrer">Da click aquí para ir a la página</a>
+            </div>
+            <img class="voluntariado__imagen" src="imags/Rectangle 41.png" alt="Voluntario acompañando y saludando a una persona damnificada">
+          </article>
+
+          <article class="voluntariado">
+            <div class="voluntariado__cuerpo">
+              <h2 class="voluntariado__titulo">Voluntariado en logística</h2>
+              <p>
+                Colabora con la organización y el transporte de suministros para facilitar que las
+                ayudas lleguen a las zonas afectadas.
+              </p>
+              <a href="#" class="voluntariado__enlace" target="_blank" rel="noopener noreferrer">Da click aquí para ir a la página</a>
+            </div>
+            <img class="voluntariado__imagen" src="imags/Rectangle 35.png" alt="Voluntarios cargando suministros en una camioneta">
+          </article>
+
+          <article class="voluntariado">
+            <div class="voluntariado__cuerpo">
+              <h2 class="voluntariado__titulo">Voluntariado digital</h2>
+              <p>
+                Utiliza tus habilidades para difundir información verificada, apoyar campañas
+                solidarias y compartir oportunidades de ayuda en medios digitales.
+              </p>
+              <a href="#" class="voluntariado__enlace" target="_blank" rel="noopener noreferrer">Da click aquí para ir a la página</a>
+            </div>
+            <img class="voluntariado__imagen" src="imags/Rectangle 42.png" alt="Voluntarios trabajando con un portátil junto a cajas de donaciones">
+          </article>
+
+        </div>
+
+        <!-- Botones de accesibilidad (la funcionalidad se programa con JS) -->
+        <div class="accesibilidad" role="group" aria-label="Opciones de accesibilidad">
+          <button type="button" class="accesibilidad__boton" id="btn-lector-voz" aria-label="Leer en voz alta">
+            <i class="bi bi-volume-up-fill" aria-hidden="true"></i>
+          </button>
+          <button type="button" class="accesibilidad__boton" id="btn-contraste" aria-label="Modo de alto contraste">
+            <i class="bi bi-eye-fill" aria-hidden="true"></i>
+          </button>
+          <button type="button" class="accesibilidad__boton" id="btn-zoom" aria-label="Ampliar texto">
+            <i class="bi bi-zoom-in" aria-hidden="true"></i>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+</body>
+</html>

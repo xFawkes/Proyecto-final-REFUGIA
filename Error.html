@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>REFUGIA | Página no encontrada</title>
+
+  <!-- Tipografías: Unbounded (logotipo), Manrope (títulos), Myanmar Khyay (textos) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Myanmar+Khyay&family=Unbounded:wght@600;700&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <link rel="stylesheet" href="css/Error.css">
+</head>
+<body class="pagina-error">
+
+  <!-- ===================== ENCABEZADO ===================== -->
+  <header class="encabezado">
+    <a href="inicio.html" class="encabezado__logo" aria-label="Ir al inicio">
+      <img src="imags/logo 1.png" alt="Logo de REFUGIA">
+    </a>
+
+    <!-- Menú hamburguesa para móvil (solo CSS, sin JS) -->
+    <input type="checkbox" id="menu-toggle" class="encabezado__toggle">
+    <label for="menu-toggle" class="encabezado__hamburguesa" aria-label="Abrir menú">
+      <i class="bi bi-list" aria-hidden="true"></i>
+    </label>
+
+    <nav class="navegacion" aria-label="Navegación principal">
+      <ul class="navegacion__lista">
+        <li><a href="mapa.html" class="navegacion__enlace">Mapas</a></li>
+        <li><a href="voluntariado.html" class="navegacion__enlace">Voluntariados</a></li>
+        <li><a href="noticias.html" class="navegacion__enlace">Noticias</a></li>
+        <li><a href="#" class="navegacion__enlace">Foro</a></li>
+        <li><a href="donaciones.html" class="navegacion__enlace">Donaciones</a></li>
+        <li><a href="#" class="navegacion__enlace">Preguntas frecuentes</a></li>
+      </ul>
+    </nav>
+
+    <a href="#" class="perfil" id="btn-perfil" aria-label="Mi perfil">
+      <i class="bi bi-person-fill" aria-hidden="true"></i>
+    </a>
+  </header>
+
+  <!-- ===================== MENSAJE DE ERROR ===================== -->
+  <main class="error">
+    <h1 class="error__codigo">
+      <svg class="error__icono" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="5.5" aria-hidden="true">
+        <!-- Contorno de la cara -->
+        <circle cx="50" cy="50" r="44"/>
+        <!-- Ojos en forma de X -->
+        <path d="M24 28 L40 44 M40 28 L24 44 M60 28 L76 44 M76 28 L60 44"/>
+        <!-- Boca triste -->
+        <path d="M29 69 Q50 43 71 69"/>
+      </svg>
+      <span>404</span>
+    </h1>
+
+    <p class="error__texto">
+      ¡Vaya! Parece que te has desorientado. No te preocupes, en las mejores rutas a veces hay desvíos
+      inesperados. La página que buscas no existe o ha sido movida, pero estamos aquí para guiarte de
+      vuelta a casa.
+    </p>
+  </main>
+
+  <!-- Botones de accesibilidad (la funcionalidad se programa con JS) -->
+  <div class="accesibilidad accesibilidad--pie" role="group" aria-label="Opciones de accesibilidad">
+    <button type="button" class="accesibilidad__boton" id="btn-lector-voz" aria-label="Leer en voz alta">
+      <i class="bi bi-volume-up-fill" aria-hidden="true"></i>
+    </button>
+    <button type="button" class="accesibilidad__boton" id="btn-contraste" aria-label="Modo de alto contraste">
+      <i class="bi bi-eye-fill" aria-hidden="true"></i>
+    </button>
+    <button type="button" class="accesibilidad__boton" id="btn-zoom" aria-label="Ampliar texto">
+      <i class="bi bi-zoom-in" aria-hidden="true"></i>
+    </button>
+  </div>
+
+</body>
+</html>

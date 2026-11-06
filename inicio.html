@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>REFUGIA | Inicio</title>
+
+  <!-- Tipografías: Unbounded (logotipo), Manrope (títulos), Myanmar Khyay (textos) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Myanmar+Khyay&family=Unbounded:wght@600;700&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <link rel="stylesheet" href="css/inicio.css">
+</head>
+<body>
+
+  <!-- ===================== ENCABEZADO ===================== -->
+  <header class="encabezado">
+    <a href="inicio.html" class="encabezado__logo" aria-label="Ir al inicio">
+      <img src="imags/logo 1.png" alt="Logo de REFUGIA">
+    </a>
+
+    <p class="encabezado__marca">REFUGIA</p>
+
+    <a href="#" class="perfil" id="btn-perfil" aria-label="Mi perfil">
+      <i class="bi bi-person-fill" aria-hidden="true"></i>
+    </a>
+  </header>
+
+  <main>
+
+    <!-- ===================== HERO + MENÚ CIRCULAR ===================== -->
+    <section class="hero" aria-label="Menú principal">
+      <h1 class="sr-only">REFUGIA: plataforma de ayuda humanitaria</h1>
+
+      <nav class="menu-circular" aria-label="Secciones de REFUGIA">
+        <div class="menu-circular__centro">
+          <img src="imags/logo 1.png" alt="Logo de REFUGIA">
+        </div>
+
+        <a href="mapa.html" class="menu-circular__boton menu-circular__boton--mapa" title="Mapa" aria-label="Mapa">
+          <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
+        </a>
+        <a href="donaciones.html" class="menu-circular__boton menu-circular__boton--donaciones" title="Donaciones" aria-label="Donaciones">
+          <i class="bi bi-box2-heart" aria-hidden="true"></i>
+        </a>
+        <a href="voluntariado.html" class="menu-circular__boton menu-circular__boton--voluntariado" title="Voluntariados" aria-label="Voluntariados">
+          <i class="bi bi-person-arms-up" aria-hidden="true"></i>
+        </a>
+        <a href="#" class="menu-circular__boton menu-circular__boton--ayuda" title="Preguntas frecuentes" aria-label="Preguntas frecuentes">
+          <i class="bi bi-question-lg" aria-hidden="true"></i>
+        </a>
+        <a href="noticias.html" class="menu-circular__boton menu-circular__boton--noticias" title="Noticias" aria-label="Noticias">
+          <i class="bi bi-newspaper" aria-hidden="true"></i>
+        </a>
+        <a href="#" class="menu-circular__boton menu-circular__boton--foro" title="Foro" aria-label="Foro">
+          <i class="bi bi-chat-square-dots" aria-hidden="true"></i>
+        </a>
+      </nav>
+    </section>
+
+    <!-- ===================== ¿QUIÉNES SOMOS? ===================== -->
+    <section class="seccion quienes" id="quienes-somos">
+      <div class="contenedor">
+        <h2 class="seccion__titulo">¿Quiénes somos?</h2>
+
+        <div class="quienes__grid">
+          <div class="quienes__video">
+            <video controls preload="metadata" poster="imags/portadita.png">
+              <source src="imags/videoInicio.mp4" type="video/mp4">
+              Tu navegador no soporta la reproducción de video.
+            </video>
+          </div>
+
+          <p class="quienes__texto">
+            Somos una plataforma web de ayuda humanitaria creada para las personas afectadas por
+            desastres naturales en Colombia. Reunimos en un solo lugar información verificada sobre
+            albergues, centros de salud, centros de acopio, donaciones y voluntariados. No reemplazamos
+            a las entidades de socorro: somos un puente entre la ciudadanía y las organizaciones que ya
+            ayudan para que la información sea confiable y accesible para todos.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== MISIÓN Y VISIÓN ===================== -->
+    <section class="seccion mv" id="mision-vision">
+      <div class="contenedor">
+        <h2 class="seccion__titulo">Misión y visión</h2>
+
+        <article class="mv__fila">
+          <div class="mv__texto">
+            <h3 class="mv__subtitulo">Misión</h3>
+            <p>
+              Facilitar el acceso rápido, confiable y accesible a información sobre ayuda humanitaria,
+              conectando a las personas damnificadas, los donantes y los voluntarios con las entidades
+              oficiales de socorro, para reducir el tiempo de búsqueda y frenar la propagación de rumores
+              durante emergencias por desastres naturales en Colombia.
+            </p>
+          </div>
+          <img class="mv__imagen" src="imags/derrumbe.png" alt="Personas ayudando entre escombros tras un desastre">
+        </article>
+
+        <article class="mv__fila mv__fila--invertida">
+          <div class="mv__texto">
+            <h3 class="mv__subtitulo">Visión</h3>
+            <p>
+              Ser, para 2030, la plataforma de referencia en Colombia para consultar y coordinar ayuda
+              humanitaria en emergencias, reconocida por la confiabilidad de su información, su
+              accesibilidad y su trabajo conjunto con entidades como la UNGRD, la Cruz Roja, las
+              alcaldías y las ONG locales.
+            </p>
+          </div>
+          <img class="mv__imagen" src="imags/image 12.png" alt="Voluntarios de la Cruz Roja caminando en una comunidad">
+        </article>
+
+        <!-- Botones de accesibilidad (la funcionalidad se programa con JS) -->
+        <div class="accesibilidad" role="group" aria-label="Opciones de accesibilidad">
+          <button type="button" class="accesibilidad__boton" id="btn-lector-voz" aria-label="Leer en voz alta">
+            <i class="bi bi-volume-up-fill" aria-hidden="true"></i>
+          </button>
+          <button type="button" class="accesibilidad__boton" id="btn-contraste" aria-label="Modo de alto contraste">
+            <i class="bi bi-eye-fill" aria-hidden="true"></i>
+          </button>
+          <button type="button" class="accesibilidad__boton" id="btn-zoom" aria-label="Ampliar texto">
+            <i class="bi bi-zoom-in" aria-hidden="true"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== SOCIOS Y ALIADOS ===================== -->
+    <section class="socios" aria-labelledby="titulo-socios">
+      <div class="contenedor socios__grid">
+        <h2 class="socios__titulo" id="titulo-socios">Nuestros socios y aliados</h2>
+
+        <ul class="socios__logos">
+          <li><img src="imags/Ellipse 14.png" alt="Logo aliado 1"></li>
+          <li><img src="imags/Ellipse 15.png" alt="Logo aliado 2"></li>
+          <li><img src="imags/Ellipse 16.png"Logo aliado 3"></li>
+          <li><img src="imags/Ellipse 17.png" alt="Logo aliado 4"></li>
+          <li><img src="imags/Ellipse 18.png" alt="Logo aliado 5"></li>
+          <li><img src="imags/Ellipse 19.png" alt="Logo aliado 6"></li>
+          <li><img src="imags/Ellipse 20.png" alt="Logo aliado 7"></li>
+        </ul>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===================== PIE DE PÁGINA ===================== -->
+  <footer class="pie">
+    <div class="contenedor pie__grid">
+      <div class="pie__logo">
+        <img src="imags/logo 1.png" alt="Logo de REFUGIA">
+      </div>
+
+      <nav class="pie__enlaces" aria-label="Enlaces del sitio">
+        <ul>
+          <li><a href="#quienes-somos">Sobre nosotros</a></li>
+          <li><a href="#">Noticias</a></li>
+          <li><a href="#">Foro</a></li>
+          <li><a href="mapa.html">Mapa</a></li>
+        </ul>
+      </nav>
+
+      <div class="pie__contacto">
+        <p class="pie__contacto-titulo">Contáctanos</p>
+        <ul class="pie__redes">
+          <li><a href="#" aria-label="Instagram"><i class="bi bi-instagram" aria-hidden="true"></i></a></li>
+          <li><a href="#" aria-label="Facebook"><i class="bi bi-facebook" aria-hidden="true"></i></a></li>
+          <li><a href="#" aria-label="WhatsApp"><i class="bi bi-whatsapp" aria-hidden="true"></i></a></li>
+          <li><a href="#" aria-label="Telegram"><i class="bi bi-telegram" aria-hidden="true"></i></a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="contenedor pie__legal">
+      <a href="#">Términos de uso</a>
+      <a href="#">Política de privacidad</a>
+    </div>
+  </footer>
+
+</body>
+</html>

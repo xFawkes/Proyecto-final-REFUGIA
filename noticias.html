@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>REFUGIA | Noticias</title>
+
+  <!-- Tipografías: Unbounded (logotipo), Manrope (títulos), Myanmar Khyay (textos) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Myanmar+Khyay&family=Unbounded:wght@600;700&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <link rel="stylesheet" href="css/noticias.css">
+</head>
+<body>
+
+  <!-- ===================== ENCABEZADO ===================== -->
+  <header class="encabezado">
+    <a href="inicio.html" class="encabezado__logo" aria-label="Ir al inicio">
+      <img src="imags/logo 1.png" alt="Logo de REFUGIA">
+    </a>
+
+    <!-- Menú hamburguesa para móvil (solo CSS, sin JS) -->
+    <input type="checkbox" id="menu-toggle" class="encabezado__toggle">
+    <label for="menu-toggle" class="encabezado__hamburguesa" aria-label="Abrir menú">
+      <i class="bi bi-list" aria-hidden="true"></i>
+    </label>
+
+    <nav class="navegacion" aria-label="Navegación principal">
+      <ul class="navegacion__lista">
+        <li><a href="mapa.html" class="navegacion__enlace">Mapas</a></li>
+        <li><a href="voluntariado.html" class="navegacion__enlace">Voluntariados</a></li>
+        <li><a href="noticias.html" class="navegacion__enlace navegacion__enlace--activo" aria-current="page">Noticias</a></li>
+        <li><a href="#" class="navegacion__enlace">Foro</a></li>
+        <li><a href="donaciones.html" class="navegacion__enlace">Donaciones</a></li>
+        <li><a href="#" class="navegacion__enlace">Preguntas frecuentes</a></li>
+      </ul>
+    </nav>
+
+    <a href="#" class="perfil" id="btn-perfil" aria-label="Mi perfil">
+      <i class="bi bi-person-fill" aria-hidden="true"></i>
+    </a>
+  </header>
+
+  <main>
+
+    <!-- ===================== PORTADA ===================== -->
+    <section class="portada" aria-labelledby="titulo-portada">
+      <div class="portada__texto">
+        <h1 class="portada__titulo" id="titulo-portada">Noticias</h1>
+        <p>
+          Mantente informado sobre los desastres naturales, las emergencias y las iniciativas de ayuda
+          humanitaria en Colombia. Encuentra información de fuentes oficiales, conoce las novedades de
+          las zonas afectadas y descubre cómo puedes contribuir.
+        </p>
+        <p>Información actualizada para ayudar a quienes más lo necesitan.</p>
+      </div>
+    </section>
+
+    <!-- ===================== NOTICIAS ===================== -->
+    <section class="noticias">
+      <div class="contenedor">
+
+        <!-- INTEGRACIÓN: reemplazar href="#" por el enlace oficial de cada noticia -->
+
+        <!-- Noticia destacada -->
+        <article class="noticia noticia--destacada">
+          <div class="noticia__figura">
+            <img src="imags/Group 74.png" alt="Edificios destruidos tras el terremoto en Chocó">
+            <h2 class="noticia__titulo">Colombia continúa la recuperación tras el terremoto de magnitud 7,4 en Chocó</h2>
+          </div>
+          <div class="noticia__cuerpo">
+            <p>
+              El sismo ocurrido el 10 de agosto de 2026, con epicentro en San José del Palmar, Chocó, afectó
+              a comunidades de distintas regiones del país. Según el balance oficial de octubre, más de
+              778.000 personas resultaron afectadas y cientos de miles de viviendas sufrieron daños o
+              quedaron destruidas.
+            </p>
+            <p>
+              Las labores de recuperación incluyen la atención a las familias damnificadas, la
+              rehabilitación de viviendas y la recuperación de infraestructura educativa…
+            </p>
+            <a href="#" class="noticia__enlace" target="_blank" rel="noopener noreferrer">Da click aquí para ir a la página</a>
+          </div>
+        </article>
+
+        <div class="noticias__grid">
+
+          <article class="noticia">
+            <div class="noticia__figura">
+              <img src="imags/Group 76.png" alt="Multitud participando en el simulacro en la Plaza de Bolívar">
+              <h2 class="noticia__titulo">Más de 105.000 personas participan en el Simulacro Nacional de Emergencias</h2>
+            </div>
+            <div class="noticia__cuerpo">
+              <p>
+                La jornada puso a prueba medidas de autoprotección y protocolos de respuesta ante
+                diferentes escenarios, incluidos sismos, inundaciones e incendios…
+              </p>
+              <a href="#" class="noticia__enlace" target="_blank" rel="noopener noreferrer">Da click aquí para ir a la página</a>
+            </div>
+          </article>
+
+          <article class="noticia">
+            <div class="noticia__figura">
+              <img src="imags/Group 75.png" alt="Familias damnificadas recibiendo ayudas en Caldas">
+              <h2 class="noticia__titulo">UNGRD destina recursos para apoyar a familias damnificadas en Caldas</h2>
+            </div>
+            <div class="noticia__cuerpo">
+              <p>
+                La Unidad Nacional para la Gestión del Riesgo de Desastres anunció más de $3.647 millones
+                para apoyar económicamente a familias afectadas por el sismo ocurrido en agosto…
+              </p>
+              <a href="#" class="noticia__enlace" target="_blank" rel="noopener noreferrer">Da click aquí para ir a la página</a>
+            </div>
+          </article>
+
+          <article class="noticia">
+            <div class="noticia__figura">
+              <img src="imags/Group 77.png" alt="Personas conversando frente a una vivienda averiada por el sismo">
+              <h2 class="noticia__titulo">Continúa la recuperación de las comunidades afectadas por el sismo de agosto</h2>
+            </div>
+            <div class="noticia__cuerpo">
+              <p>
+                Dos meses después del terremoto con epicentro en Chocó, los reportes de la UNGRD daban
+                cuenta de cientos de miles de personas damnificadas y numerosas viviendas averiadas…
+              </p>
+              <a href="#" class="noticia__enlace" target="_blank" rel="noopener noreferrer">Da click aquí para ir a la página</a>
+            </div>
+          </article>
+
+          <article class="noticia">
+            <div class="noticia__figura">
+              <img src="imags/Group 78.png" alt="Maquinaria despejando un deslizamiento en una vía de Cundinamarca">
+              <h2 class="noticia__titulo">Lluvias dejan emergencias en varios municipios de Cundinamarca</h2>
+            </div>
+            <div class="noticia__cuerpo">
+              <p>
+                Durante los primeros trece días de octubre se reportaron inundaciones, vendavales,
+                deslizamientos y crecientes súbitas. Las autoridades atendieron afectaciones en viviendas
+                y vías…
+              </p>
+              <a href="#" class="noticia__enlace" target="_blank" rel="noopener noreferrer">Da click aquí para ir a la página</a>
+            </div>
+          </article>
+
+        </div>
+
+        <!-- Botones de accesibilidad (la funcionalidad se programa con JS) -->
+        <div class="accesibilidad" role="group" aria-label="Opciones de accesibilidad">
+          <button type="button" class="accesibilidad__boton" id="btn-lector-voz" aria-label="Leer en voz alta">
+            <i class="bi bi-volume-up-fill" aria-hidden="true"></i>
+          </button>
+          <button type="button" class="accesibilidad__boton" id="btn-contraste" aria-label="Modo de alto contraste">
+            <i class="bi bi-eye-fill" aria-hidden="true"></i>
+          </button>
+          <button type="button" class="accesibilidad__boton" id="btn-zoom" aria-label="Ampliar texto">
+            <i class="bi bi-zoom-in" aria-hidden="true"></i>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+</body>
+</html>
