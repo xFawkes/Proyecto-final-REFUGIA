@@ -49,7 +49,7 @@
         <section class="resumen" aria-label="Resumen general">
           <article class="tarjeta">
             <h2 class="tarjeta__titulo">Reportes</h2>
-            <strong class="tarjeta__numero">000</strong>
+            <strong class="tarjeta__numero" data-api-total="/api/foro/publicaciones?moderacion=true&amp;revision=pendiente">000</strong>
             <p class="tarjeta__nota">Foro de moderación</p>
           </article>
 
@@ -79,37 +79,10 @@
                   <th scope="col">Acción</th>
                 </tr>
               </thead>
-              <!-- INTEGRACIÓN: repetir cada <tr> con las tareas reales -->
-              <tbody>
+              <!-- Las filas las crea js/admin/panel.js con las publicaciones del foro por revisar -->
+              <tbody id="tareas-pendientes">
                 <tr>
-                  <td>Foro</td>
-                  <td>Reporte sin confirmar</td>
-                  <td>00/00/0000</td>
-                  <td><a href="foro.html" class="tareas__accion">Revisar</a></td>
-                </tr>
-                <tr>
-                  <td>Foro</td>
-                  <td>Reporte sin confirmar</td>
-                  <td>00/00/0000</td>
-                  <td><a href="foro.html" class="tareas__accion">Revisar</a></td>
-                </tr>
-                <tr>
-                  <td>Foro</td>
-                  <td>Reporte sin confirmar</td>
-                  <td>00/00/0000</td>
-                  <td><a href="foro.html" class="tareas__accion">Revisar</a></td>
-                </tr>
-                <tr>
-                  <td>Foro</td>
-                  <td>Reporte sin confirmar</td>
-                  <td>00/00/0000</td>
-                  <td><a href="foro.html" class="tareas__accion">Revisar</a></td>
-                </tr>
-                <tr>
-                  <td>Foro</td>
-                  <td>Reporte sin confirmar</td>
-                  <td>00/00/0000</td>
-                  <td><a href="foro.html" class="tareas__accion">Revisar</a></td>
+                  <td colspan="4">Cargando tareas…</td>
                 </tr>
               </tbody>
             </table>

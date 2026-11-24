@@ -19,6 +19,9 @@
         <link rel="stylesheet" href="css/accesibilidad.css">
         <!--API Accesibilidad-->
         <script src="js/accesibilidad.js"></script>
+        <!--API del foro-->
+        <script src="js/api.js" defer></script>
+        <script src="js/foro.js" defer></script>
     </head>
     <body>
           <!-- ===================== ENCABEZADO ===================== -->
@@ -108,124 +111,98 @@
   </section>
     
         <!-- Contenido del foro-->
-        <main class = "tabla">
+        <main class="tabla" id="foro">
 
-            <form class="busqueda" id="form-busqueda" role="search" action="#" method="get">
+            <form class="busqueda" id="form-busqueda" role="search" action="#" method="get" autocomplete="off">
                 <label class="sr-only" for="buscar-foro">Buscar en el foro</label>
                 <i class="bi bi-search busqueda__icono" aria-hidden="true"></i>
-                <input class="busqueda__input" type="search" id="buscar-foro" name="q" placeholder="Buscar en el foro">
+                <input class="busqueda__input" type="search" id="buscar-foro" name="q" maxlength="100" placeholder="Buscar en el foro">
+                <button type="submit" class="busqueda__boton">Buscar</button>
             </form>
 
-            <div class = "fila encabezado-filas">
-                <div class = "celda">Foro</div>
-                <div class = "celda">Temas</div>
-                <div class = "celda">Mensajes</div>
-                <div class = "celda">Fechas</div>
+            <div class="foro__barra">
+                <div class="foro__filtro">
+                    <label for="filtro-categoria">Tema</label>
+                    <select id="filtro-categoria">
+                        <option value="">Todos los temas</option>
+                    </select>
+                </div>
+                <button type="button" class="foro__boton foro__boton--principal" id="btn-nueva" aria-expanded="false" aria-controls="foro-nueva">
+                    <i class="bi bi-plus-circle" aria-hidden="true"></i> Nueva publicación
+                </button>
             </div>
 
-            <article class = "fila">
-                <div class = "celda-avatar">
-                    <div class = "avatar"></div>
-                    <div class = "texto">
-                        <h2><a href="error.html">DESAPARECIDO EN ....</a></h2>
-                        <p>Lorem ipsum dolor sit amet consectetur. Id tempor consequat non ullamcorper mattis. Mauris vitae id porta volutpat faucibus nisi quis magna.</p>
+            <!-- ---------- Nueva publicación (POST /api/foro/publicaciones) ---------- -->
+            <section class="foro__panel" id="foro-nueva" aria-labelledby="titulo-nueva" hidden>
+                <h2 class="foro__subtitulo" id="titulo-nueva">Nueva publicación</h2>
+                <p class="foro__nota">
+                    Las publicaciones aparecen como <strong>sin confirmar</strong> hasta que un moderador las revise.
+                    No publiques números de documento, direcciones exactas ni datos de menores de edad.
+                </p>
+                <form class="foro__formulario" id="form-nueva" novalidate>
+                    <div class="foro__campo foro__campo--ancho">
+                        <label for="nueva-titulo">Título *</label>
+                        <input type="text" id="nueva-titulo" maxlength="150" required aria-describedby="error-nueva-titulo">
+                        <p class="foro__error-campo" id="error-nueva-titulo"></p>
                     </div>
-                </div>
-                <div class = "celda dato" data-etiqueta = "Temas">000</div>
-                <div class = "celda dato" data-etiqueta = "Mensajes">000</div>
-                <div class = "celda dato" data-etiqueta = "Fecha">00/00/0000</div>
-            </article>
+                    <div class="foro__campo">
+                        <label for="nueva-categoria">Tema *</label>
+                        <select id="nueva-categoria" aria-describedby="error-nueva-categoria"></select>
+                        <p class="foro__error-campo" id="error-nueva-categoria"></p>
+                    </div>
+                    <div class="foro__campo">
+                        <label for="nueva-ubicacion">Barrio o municipio</label>
+                        <input type="text" id="nueva-ubicacion" maxlength="150" aria-describedby="error-nueva-ubicacion">
+                        <p class="foro__error-campo" id="error-nueva-ubicacion"></p>
+                    </div>
+                    <div class="foro__campo foro__campo--ancho">
+                        <label for="nueva-contenido">Mensaje *</label>
+                        <textarea id="nueva-contenido" rows="5" maxlength="3000" required aria-describedby="error-nueva-contenido"></textarea>
+                        <p class="foro__error-campo" id="error-nueva-contenido"></p>
+                    </div>
+                    <div class="foro__campo">
+                        <label for="nueva-autor">Tu nombre *</label>
+                        <input type="text" id="nueva-autor" maxlength="80" autocomplete="name" required aria-describedby="error-nueva-autor">
+                        <p class="foro__error-campo" id="error-nueva-autor"></p>
+                    </div>
+                    <div class="foro__acciones">
+                        <button type="submit" class="foro__boton foro__boton--principal">Publicar</button>
+                        <button type="button" class="foro__boton" id="btn-cancelar-nueva">Cancelar</button>
+                    </div>
+                </form>
+            </section>
 
-             <article class = "fila">
-                <div class = "celda-avatar">
-                    <div class = "avatar"></div>
-                    <div class = "texto">
-                        <h2><a href="error.html">DESAPARECIDO EN ....</a></h2>
-                        <p>Lorem ipsum dolor sit amet consectetur. Id tempor consequat non ullamcorper mattis. Mauris vitae id porta volutpat faucibus nisi quis magna.</p>
-                    </div>
+            <!-- ---------- Listado (GET /api/foro/publicaciones) ---------- -->
+            <div id="foro-listado">
+                <div class="fila encabezado-filas" aria-hidden="true">
+                    <div class="celda">Foro</div>
+                    <div class="celda">Temas</div>
+                    <div class="celda">Mensajes</div>
+                    <div class="celda">Fechas</div>
                 </div>
-                <div class = "celda dato" data-etiqueta = "Temas">000</div>
-                <div class = "celda dato" data-etiqueta = "Mensajes">000</div>
-                <div class = "celda dato" data-etiqueta = "Fecha">00/00/0000</div>
-            </article>
+                <p class="foro__estado" id="foro-estado" role="status">Cargando publicaciones…</p>
+                <!-- Las filas las pinta js/foro.js con los datos de la API -->
+                <div class="foro__lista" id="foro-lista" data-a11y-leer></div>
+                <button type="button" class="foro__boton foro__mas" id="foro-mas" hidden>Ver más publicaciones</button>
+                <noscript><p class="foro__estado">Activa JavaScript para ver el foro.</p></noscript>
+            </div>
 
-             <article class = "fila">
-                <div class = "celda-avatar">
-                    <div class = "avatar"></div>
-                    <div class = "texto">
-                        <h2><a href="error.html">DESAPARECIDO EN ....</a></h2>
-                        <p>Lorem ipsum dolor sit amet consectetur. Id tempor consequat non ullamcorper mattis. Mauris vitae id porta volutpat faucibus nisi quis magna.</p>
-                    </div>
-                </div>
-                <div class = "celda dato" data-etiqueta = "Temas">000</div>
-                <div class = "celda dato" data-etiqueta = "Mensajes">000</div>
-                <div class = "celda dato" data-etiqueta = "Fecha">00/00/0000</div>
-            </article>
+            <!-- ---------- Detalle de una publicación (foro.html?publicacion=ID) ---------- -->
+            <section class="foro__detalle" id="foro-detalle" aria-labelledby="detalle-titulo" hidden></section>
 
-             <article class = "fila">
-                <div class = "celda-avatar">
-                    <div class = "avatar"></div>
-                    <div class = "texto">
-                        <h2><a href="error.html">DESAPARECIDO EN ....</a></h2>
-                        <p>Lorem ipsum dolor sit amet consectetur. Id tempor consequat non ullamcorper mattis. Mauris vitae id porta volutpat faucibus nisi quis magna.</p>
-                    </div>
-                </div>
-                <div class = "celda dato" data-etiqueta = "Temas">000</div>
-                <div class = "celda dato" data-etiqueta = "Mensajes">000</div>
-                <div class = "celda dato" data-etiqueta = "Fecha">00/00/0000</div>
-            </article>
-
-             <article class = "fila">
-                <div class = "celda-avatar">
-                    <div class = "avatar"></div>
-                    <div class = "texto">
-                        <h2><a href="error.html">DESAPARECIDO EN ....</a></h2>
-                        <p>Lorem ipsum dolor sit amet consectetur. Id tempor consequat non ullamcorper mattis. Mauris vitae id porta volutpat faucibus nisi quis magna.</p>
-                    </div>
-                </div>
-                <div class = "celda dato" data-etiqueta = "Temas">000</div>
-                <div class = "celda dato" data-etiqueta = "Mensajes">000</div>
-                <div class = "celda dato" data-etiqueta = "Fecha">00/00/0000</div>
-            </article>
-
-             <article class = "fila">
-                <div class = "celda-avatar">
-                    <div class = "avatar"></div>
-                    <div class = "texto">
-                        <h2><a href="error.html">DESAPARECIDO EN ....</a></h2>
-                        <p>Lorem ipsum dolor sit amet consectetur. Id tempor consequat non ullamcorper mattis. Mauris vitae id porta volutpat faucibus nisi quis magna.</p>
-                    </div>
-                </div>
-                <div class = "celda dato" data-etiqueta = "Temas">000</div>
-                <div class = "celda dato" data-etiqueta = "Mensajes">000</div>
-                <div class = "celda dato" data-etiqueta = "Fecha">00/00/0000</div>
-            </article>
-
-             <article class = "fila">
-                <div class = "celda-avatar">
-                    <div class = "avatar"></div>
-                    <div class = "texto">
-                        <h2><a href="error.html">DESAPARECIDO EN ....</a></h2>
-                        <p>Lorem ipsum dolor sit amet consectetur. Id tempor consequat non ullamcorper mattis. Mauris vitae id porta volutpat faucibus nisi quis magna.</p>
-                    </div>
-                </div>
-                <div class = "celda dato" data-etiqueta = "Temas">000</div>
-                <div class = "celda dato" data-etiqueta = "Mensajes">000</div>
-                <div class = "celda dato" data-etiqueta = "Fecha">00/00/0000</div>
-            </article>
+            <!-- Botones de accesibilidad (js/accesibilidad.js) -->
+            <div class="accesibilidad" role="group" aria-label="Opciones de accesibilidad">
+                <button type="button" class="accesibilidad__boton" id="btn-lector-voz" aria-label="Leer en voz alta">
+                    <i class="bi bi-volume-up-fill" aria-hidden="true"></i>
+                </button>
+                <button type="button" class="accesibilidad__boton" id="btn-contraste" aria-label="Modo de alto contraste">
+                    <i class="bi bi-eye-fill" aria-hidden="true"></i>
+                </button>
+                <button type="button" class="accesibilidad__boton" id="btn-zoom" aria-label="Ampliar texto">
+                    <i class="bi bi-zoom-in" aria-hidden="true"></i>
+                </button>
+            </div>
         </main>
 
-  <!-- Botones de accesibilidad (js/accesibilidad.js) -->
-  <div class="accesibilidad" role="group" aria-label="Opciones de accesibilidad">
-    <button type="button" class="accesibilidad__boton" id="btn-lector-voz" aria-label="Leer en voz alta">
-      <i class="bi bi-volume-up-fill" aria-hidden="true"></i>
-    </button>
-    <button type="button" class="accesibilidad__boton" id="btn-contraste" aria-label="Modo de alto contraste">
-      <i class="bi bi-eye-fill" aria-hidden="true"></i>
-    </button>
-    <button type="button" class="accesibilidad__boton" id="btn-zoom" aria-label="Ampliar texto">
-      <i class="bi bi-zoom-in" aria-hidden="true"></i>
-    </button>
-  </div>
     </body>
 </html>
