@@ -17,6 +17,9 @@
   <link rel="stylesheet" href="css/accesibilidad.css">
   <!--API Accesibilidad-->
   <script src="js/accesibilidad.js"></script>
+  <!--API de donaciones (pasarela de pagos simulada)-->
+  <script src="js/api.js" defer></script>
+  <script src="js/donaciones.js" defer></script>
 </head>
 <body>
 
@@ -100,45 +103,11 @@
     <section class="organizaciones" aria-labelledby="titulo-donacion">
       <h1 class="organizaciones__titulo" id="titulo-donacion">Haz tu donación</h1>
 
-      <!-- INTEGRACIÓN: reemplazar href="error.html" por el enlace oficial de cada ONG -->
-      <article class="tarjeta-ong">
-        <img class="tarjeta-ong__imagen" src="img/donaciones/cruz-roja.png" alt="Voluntario de la Cruz Roja Colombiana entregando ayuda">
-        <div class="tarjeta-ong__cuerpo">
-          <h2 class="tarjeta-ong__nombre">Cruz Roja Colombia</h2>
-          <p>
-            Organización humanitaria con presencia en gran parte del país. Atiende emergencias y desastres
-            con primeros auxilios, atención en salud, ayuda en albergues y entrega de kits de emergencia.
-          </p>
-          <p>Tu donación ayuda a: llevar atención de primera respuesta y suministros básicos a las familias afectadas.</p>
-          <a href="error.html" class="tarjeta-ong__enlace" id="enlace-cruz-roja">Da click aquí para ir a la página</a>
-        </div>
-      </article>
-
-      <article class="tarjeta-ong">
-        <img class="tarjeta-ong__imagen" src="img/donaciones/unicef.png" alt="Personal de UNICEF atendiendo a un niño">
-        <div class="tarjeta-ong__cuerpo">
-          <h2 class="tarjeta-ong__nombre">UNICEF Colombia</h2>
-          <p>
-            Agencia de las Naciones Unidas dedicada a proteger los derechos de niños, niñas y adolescentes.
-            En emergencias trabaja para garantizar agua potable, salud, nutrición, educación y protección infantil.
-          </p>
-          <p>Tu donación ayuda a: proteger a la infancia durante y después de un desastre.</p>
-          <a href="error.html" class="tarjeta-ong__enlace" id="enlace-unicef">Da click aquí para ir a la página</a>
-        </div>
-      </article>
-
-      <article class="tarjeta-ong">
-        <img class="tarjeta-ong__imagen" src="img/donaciones/techo.png" alt="Voluntarios de TECHO con la bandera de Colombia">
-        <div class="tarjeta-ong__cuerpo">
-          <h2 class="tarjeta-ong__nombre">TECHO Colombia</h2>
-          <p>
-            Organización que trabaja junto a comunidades en situación de vulnerabilidad para mejorar su hábitat
-            y acceso a vivienda digna. Moviliza voluntarios y apoya a las familias que perdieron sus hogares.
-          </p>
-          <p>Tu donación ayuda a: construir soluciones de vivienda y fortalecer a las comunidades afectadas.</p>
-          <a href="error.html" class="tarjeta-ong__enlace" id="enlace-techo">Da click aquí para ir a la página</a>
-        </div>
-      </article>
+      <!-- Las organizaciones las pinta js/donaciones.js con GET /api/organizaciones
+           (se administran en admin/donaciones.html) -->
+      <p class="organizaciones__estado" id="organizaciones-estado" role="status">Cargando organizaciones…</p>
+      <div class="organizaciones__lista" id="organizaciones-lista" data-a11y-leer></div>
+      <noscript><p class="organizaciones__estado">Activa JavaScript para ver las organizaciones.</p></noscript>
     </section>
 
     <!-- ---------- Columna derecha: formulario de donación ---------- -->
@@ -148,8 +117,8 @@
         Con tu donación puedes ayudar a salvar vidas, esas vidas te lo agradecerán con todo el corazón.
       </p>
 
-      <!-- INTEGRACIÓN: capturar #form-donacion con JS y enviarlo a la pasarela de pagos -->
-      <form class="donar" id="form-donacion" action="#" method="post">
+      <!-- js/donaciones.js valida este formulario y lo envía a la API (POST /api/donaciones) -->
+      <form class="donar" id="form-donacion" action="#" method="post" novalidate>
 
         <!-- Frecuencia -->
         <fieldset class="donar__grupo donar__grupo--frecuencia">
@@ -185,11 +154,36 @@
           <span class="monto-libre__moneda" aria-hidden="true">COP</span>
         </div>
 
+        <!-- Destino y datos del donante (para el comprobante) -->
+        <div class="donar__campos">
+          <div class="donar__campo donar__campo--ancho">
+            <label class="donar__etiqueta" for="donacion-destino">¿A quién quieres apoyar?</label>
+            <select id="donacion-destino" name="id_organizacion">
+              <option value="">Donde más se necesite</option>
+            </select>
+          </div>
+          <div class="donar__campo">
+            <label class="donar__etiqueta" for="donacion-nombre">Tu nombre</label>
+            <input type="text" id="donacion-nombre" name="nombre_donante" maxlength="120" autocomplete="name" required>
+          </div>
+          <div class="donar__campo">
+            <label class="donar__etiqueta" for="donacion-correo">Tu correo (para el comprobante)</label>
+            <input type="email" id="donacion-correo" name="correo" maxlength="150" autocomplete="email" required>
+          </div>
+        </div>
+
+        <p class="donar__error" id="donacion-error" role="alert"></p>
+
         <button type="submit" class="donar__boton" id="btn-donar">Donar</button>
+        <p class="donar__nota">
+          <i class="bi bi-info-circle" aria-hidden="true"></i>
+          Pagos simulados con fines académicos: no se realiza ningún cobro.
+        </p>
       </form>
 
-      <!-- INTEGRACIÓN: aquí se monta la pasarela de pagos (widget / iframe / botón del proveedor) -->
-      <div class="pasarela" id="pasarela-pagos"></div>
+      <!-- Pasarela de pagos SIMULADA: js/donaciones.js la muestra aquí al pulsar "Donar"
+           (POST /api/donaciones → POST /api/donaciones/<referencia>/pago) -->
+      <div class="pasarela" id="pasarela-pagos" aria-live="polite"></div>
 
       <img class="panel-donacion__imagen" src="img/donaciones/ninos.png" alt="Niños sonriendo y levantando el pulgar">
     </section>
@@ -206,6 +200,106 @@
         <i class="bi bi-zoom-in" aria-hidden="true"></i>
       </button>
     </div>
+
+    <!-- ===================== PLANTILLAS (las usa js/donaciones.js) ===================== -->
+    <template id="plantilla-pasarela">
+      <section class="pasarela__tarjeta" aria-labelledby="pasarela-titulo">
+        <p class="pasarela__aviso">
+          <i class="bi bi-cone-striped" aria-hidden="true"></i>
+          <span><strong>Modo de prueba:</strong> no se realizan cobros reales. No escribas los datos de una tarjeta real; usa los datos de prueba.</span>
+        </p>
+        <h3 class="pasarela__titulo" id="pasarela-titulo" tabindex="-1">Pago de tu donación</h3>
+        <dl class="pasarela__resumen">
+          <div><dt>Referencia</dt><dd data-campo="referencia"></dd></div>
+          <div><dt>Destino</dt><dd data-campo="destino"></dd></div>
+          <div><dt>Frecuencia</dt><dd data-campo="frecuencia_nombre"></dd></div>
+          <div><dt>Monto</dt><dd data-campo="monto" class="pasarela__monto"></dd></div>
+        </dl>
+
+        <form class="pasarela__formulario" id="form-pago" novalidate autocomplete="off">
+          <fieldset class="pasarela__metodos">
+            <legend>Medio de pago</legend>
+            <input class="pasarela__radio" type="radio" name="metodo" id="metodo-tarjeta" value="tarjeta" checked>
+            <label class="pasarela__metodo" for="metodo-tarjeta"><i class="bi bi-credit-card" aria-hidden="true"></i> Tarjeta</label>
+            <input class="pasarela__radio" type="radio" name="metodo" id="metodo-transferencia" value="transferencia">
+            <label class="pasarela__metodo" for="metodo-transferencia"><i class="bi bi-bank" aria-hidden="true"></i> Transferencia</label>
+            <input class="pasarela__radio" type="radio" name="metodo" id="metodo-billetera" value="billetera">
+            <label class="pasarela__metodo" for="metodo-billetera"><i class="bi bi-phone" aria-hidden="true"></i> Billetera</label>
+          </fieldset>
+
+          <div class="pasarela__campos" data-metodo="tarjeta">
+            <div class="pasarela__campo pasarela__campo--ancho">
+              <label for="tarjeta-titular">Nombre en la tarjeta</label>
+              <input type="text" id="tarjeta-titular" maxlength="80" autocomplete="off" aria-describedby="error-tarjeta-titular">
+              <p class="pasarela__error-campo" id="error-tarjeta-titular"></p>
+            </div>
+            <div class="pasarela__campo pasarela__campo--ancho">
+              <label for="tarjeta-numero">Número de la tarjeta</label>
+              <input type="text" id="tarjeta-numero" inputmode="numeric" maxlength="23" placeholder="4242 4242 4242 4242" autocomplete="off" aria-describedby="error-tarjeta-numero">
+              <p class="pasarela__error-campo" id="error-tarjeta-numero"></p>
+            </div>
+            <div class="pasarela__campo">
+              <label for="tarjeta-vencimiento">Vencimiento (MM/AA)</label>
+              <input type="text" id="tarjeta-vencimiento" inputmode="numeric" maxlength="5" placeholder="12/30" autocomplete="off" aria-describedby="error-tarjeta-vencimiento">
+              <p class="pasarela__error-campo" id="error-tarjeta-vencimiento"></p>
+            </div>
+            <div class="pasarela__campo">
+              <label for="tarjeta-cvv">CVV</label>
+              <input type="password" id="tarjeta-cvv" inputmode="numeric" maxlength="4" placeholder="123" autocomplete="off" aria-describedby="error-tarjeta-cvv">
+              <p class="pasarela__error-campo" id="error-tarjeta-cvv"></p>
+            </div>
+          </div>
+
+          <div class="pasarela__campos" data-metodo="transferencia" hidden>
+            <div class="pasarela__campo pasarela__campo--ancho">
+              <label for="pago-banco">Banco</label>
+              <select id="pago-banco" aria-describedby="error-banco"></select>
+              <p class="pasarela__error-campo" id="error-banco"></p>
+            </div>
+          </div>
+
+          <div class="pasarela__campos" data-metodo="billetera" hidden>
+            <div class="pasarela__campo pasarela__campo--ancho">
+              <label for="pago-celular">Celular de la billetera</label>
+              <input type="tel" id="pago-celular" inputmode="numeric" maxlength="10" placeholder="3001234567" autocomplete="off" aria-describedby="error-celular">
+              <p class="pasarela__error-campo" id="error-celular"></p>
+            </div>
+          </div>
+
+          <details class="pasarela__pruebas">
+            <summary>Ver datos de prueba</summary>
+            <ul class="pasarela__lista-pruebas" data-lista="pruebas"></ul>
+          </details>
+
+          <p class="pasarela__error" role="alert" data-campo="error"></p>
+
+          <div class="pasarela__acciones">
+            <button type="submit" class="pasarela__boton pasarela__boton--pagar">Pagar</button>
+            <button type="button" class="pasarela__boton pasarela__boton--secundario" data-accion="cancelar">Cancelar</button>
+          </div>
+        </form>
+      </section>
+    </template>
+
+    <template id="plantilla-comprobante">
+      <section class="pasarela__tarjeta pasarela__comprobante" aria-labelledby="comprobante-titulo">
+        <i class="bi pasarela__icono" aria-hidden="true"></i>
+        <h3 class="pasarela__titulo" id="comprobante-titulo" tabindex="-1"></h3>
+        <p class="pasarela__mensaje" data-campo="mensaje_pasarela"></p>
+        <dl class="pasarela__resumen">
+          <div><dt>Referencia</dt><dd data-campo="referencia"></dd></div>
+          <div><dt>Destino</dt><dd data-campo="destino"></dd></div>
+          <div><dt>Monto</dt><dd data-campo="monto"></dd></div>
+          <div><dt>Frecuencia</dt><dd data-campo="frecuencia_nombre"></dd></div>
+          <div><dt>Medio de pago</dt><dd data-campo="detalle_pago"></dd></div>
+          <div data-si="codigo_autorizacion"><dt>Código de autorización</dt><dd data-campo="codigo_autorizacion"></dd></div>
+          <div data-si="pagado_en"><dt>Fecha</dt><dd data-campo="pagado_en"></dd></div>
+          <div><dt>Comprobante para</dt><dd data-campo="correo"></dd></div>
+        </dl>
+        <p class="pasarela__aviso pasarela__aviso--pequeno">Simulación con fines académicos: no se realizó ningún cobro ni se envió ningún correo.</p>
+        <div class="pasarela__acciones" data-acciones></div>
+      </section>
+    </template>
   </main>
 
 </body>

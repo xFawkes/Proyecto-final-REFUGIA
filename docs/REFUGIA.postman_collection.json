@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "REFUGIA — API",
-    "description": "Peticiones de la API de REFUGIA (Flask + MySQL). Antes de usarla, inicia el servidor con `python main.py`.\n\nOrden sugerido para probar el CRUD: 1) POST crea un punto y guarda su id, 2) GET por id, 3) PUT, 4) DELETE.\n\nNoticias y voluntariado: mismo orden (el POST guarda {{id_noticia}} o {{id_voluntariado}}). La subida de imágenes (POST /api/<sección>/imagen) se prueba desde los paneles de admin/.",
+    "description": "Peticiones de la API de REFUGIA (Flask + MySQL). Antes de usarla, inicia el servidor con `python main.py`.\n\nOrden sugerido para probar el CRUD: 1) POST crea un punto y guarda su id, 2) GET por id, 3) PUT, 4) DELETE.\n\nNoticias y voluntariado: mismo orden (el POST guarda {{id_noticia}} o {{id_voluntariado}}). La subida de imágenes (POST /api/<sección>/imagen) se prueba desde los paneles de admin/.\n\nDonaciones: la pasarela de pagos es SIMULADA (no cobra dinero). Sigue el orden 0 → 1 → 2 → 3 de su carpeta.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -20,6 +20,14 @@
     {
       "key": "id_voluntariado",
       "value": "1"
+    },
+    {
+      "key": "id_organizacion",
+      "value": "1"
+    },
+    {
+      "key": "referencia",
+      "value": "RFG-00000000"
     }
   ],
   "item": [
@@ -932,6 +940,545 @@
               ]
             },
             "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "Donaciones — organizaciones (CRUD)",
+      "description": "ONG que aparecen en donaciones.html. Lo mismo que hace admin/donaciones.html.",
+      "item": [
+        {
+          "name": "1. POST — crear organización",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/organizaciones",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "organizaciones"
+              ]
+            },
+            "description": "Responde 201 y guarda su id en {{id_organizacion}}.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Fundación de prueba\",\n  \"descripcion\": \"Organización creada desde Postman para probar el CRUD.\",\n  \"impacto\": \"probar que el CRUD funciona.\",\n  \"enlace\": \"https://example.org\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 201', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('id_organizacion', pm.response.json().id_organizacion);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "2. GET — una organización por id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/organizaciones/{{id_organizacion}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "organizaciones",
+                "{{id_organizacion}}"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "3. PUT — desactivar",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/organizaciones/{{id_organizacion}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "organizaciones",
+                "{{id_organizacion}}"
+              ]
+            },
+            "description": "Inactiva = no aparece en la página ni recibe donaciones.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"activa\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "4. DELETE — eliminar",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/organizaciones/{{id_organizacion}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "organizaciones",
+                "{{id_organizacion}}"
+              ]
+            },
+            "description": "Sus donaciones se conservan con el nombre guardado en 'destino'."
+          }
+        },
+        {
+          "name": "Organizaciones activas (lo que ve donaciones.html)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/organizaciones",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "organizaciones"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Todas, también las inactivas (panel)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/organizaciones?incluir_inactivas=true",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "organizaciones"
+              ],
+              "query": [
+                {
+                  "key": "incluir_inactivas",
+                  "value": "true"
+                }
+              ]
+            },
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "Donaciones — pasarela simulada",
+      "description": "Flujo de una donación: 1) crearla (queda pendiente), 2) pagarla con datos de prueba, 3) ver el comprobante. NO se cobra dinero real.",
+      "item": [
+        {
+          "name": "0. GET — medios de pago y datos de prueba",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/donaciones/pasarela",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donaciones",
+                "pasarela"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "1. POST — crear donación (pendiente)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/donaciones",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donaciones"
+              ]
+            },
+            "description": "id_organizacion null = 'Donde más se necesite'. Guarda la referencia en {{referencia}}.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"monto\": 50000,\n  \"frecuencia\": \"unica\",\n  \"id_organizacion\": 1,\n  \"nombre_donante\": \"Ana Pérez\",\n  \"correo\": \"ana@correo.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 201', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('referencia', pm.response.json().referencia);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "1b. POST — ejemplo de error 400 (tarjeta que no es de prueba)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/donaciones/{{referencia}}/pago",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donaciones",
+                "{{referencia}}",
+                "pago"
+              ]
+            },
+            "description": "La pasarela solo acepta los datos de prueba: así nadie escribe una tarjeta real.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"metodo\": \"tarjeta\",\n  \"tarjeta\": {\n    \"titular\": \"Ana Pérez\",\n    \"numero\": \"4111 1111 1111 1111\",\n    \"vencimiento\": \"12/30\",\n    \"cvv\": \"123\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "2a. POST — pagar con tarjeta de prueba (rechazada)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/donaciones/{{referencia}}/pago",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donaciones",
+                "{{referencia}}",
+                "pago"
+              ]
+            },
+            "description": "Tarjeta de prueba que siempre se rechaza (fondos insuficientes). Después se puede volver a intentar.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"metodo\": \"tarjeta\",\n  \"tarjeta\": {\n    \"titular\": \"Ana Pérez\",\n    \"numero\": \"4000 0000 0000 0002\",\n    \"vencimiento\": \"12/30\",\n    \"cvv\": \"123\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "2b. POST — pagar con tarjeta de prueba (aprobada)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/donaciones/{{referencia}}/pago",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donaciones",
+                "{{referencia}}",
+                "pago"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"metodo\": \"tarjeta\",\n  \"tarjeta\": {\n    \"titular\": \"Ana Pérez\",\n    \"numero\": \"4242 4242 4242 4242\",\n    \"vencimiento\": \"12/30\",\n    \"cvv\": \"123\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "3. GET — comprobante",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/donaciones/{{referencia}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donaciones",
+                "{{referencia}}"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Pagar con transferencia (simulación de PSE)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/donaciones/{{referencia}}/pago",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donaciones",
+                "{{referencia}}",
+                "pago"
+              ]
+            },
+            "description": "Bancos de prueba: banco_aprueba o banco_rechaza. Antes, vuelve a ejecutar el paso 1 para tener una donación pendiente.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"metodo\": \"transferencia\",\n  \"banco\": \"banco_aprueba\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Pagar con billetera digital",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/donaciones/{{referencia}}/pago",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donaciones",
+                "{{referencia}}",
+                "pago"
+              ]
+            },
+            "description": "Celulares de prueba: 3001234567 (aprueba) o 3009999999 (rechaza). Antes, vuelve a ejecutar el paso 1 para tener una donación pendiente.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"metodo\": \"billetera\",\n  \"celular\": \"3001234567\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Donaciones — panel de administración",
+      "item": [
+        {
+          "name": "Listar donaciones",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/donaciones",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donaciones"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Solo aprobadas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/donaciones?estado=aprobada",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donaciones"
+              ],
+              "query": [
+                {
+                  "key": "estado",
+                  "value": "aprobada"
+                }
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Resumen (total recaudado)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/donaciones/resumen",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donaciones",
+                "resumen"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "PUT — anular una donación aprobada",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/donaciones/{{referencia}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donaciones",
+                "{{referencia}}"
+              ]
+            },
+            "description": "Simula un reembolso. Solo se pueden anular las aprobadas (si no, 409).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"anulada\",\n  \"nota\": \"Reembolso de prueba\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "DELETE — eliminar donación",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/donaciones/{{referencia}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donaciones",
+                "{{referencia}}"
+              ]
+            },
+            "description": "Solo si no está aprobada (una aprobada primero se anula)."
           }
         }
       ]
