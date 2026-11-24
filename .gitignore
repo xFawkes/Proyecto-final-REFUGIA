@@ -18,3 +18,6 @@ api/refugia.db
 Thumbs.db
 desktop.ini
 .DS_Store
+
+# Imágenes subidas desde el panel de administración (cada integrante tiene las suyas, como su base de datos)
+img/subidas/

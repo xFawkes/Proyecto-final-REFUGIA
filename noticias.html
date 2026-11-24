@@ -19,6 +19,9 @@
   <link rel="stylesheet" href="css/accesibilidad.css">
   <!--API Accesibilidad-->
   <script src="js/accesibilidad.js"></script>
+  <!--API de noticias-->
+  <script src="js/api.js" defer></script>
+  <script src="js/noticias.js" defer></script>
 </head>
 <body>
 
@@ -111,92 +114,37 @@
     </section>
 
     <!-- ===================== NOTICIAS ===================== -->
-    <section class="noticias">
+    <section class="noticias" aria-label="Listado de noticias">
       <div class="contenedor">
 
-        <!-- INTEGRACIÓN: reemplazar href="error.html" por el enlace oficial de cada noticia -->
-
-        <!-- Noticia destacada -->
-        <article class="noticia noticia--destacada">
-          <div class="noticia__figura">
-            <img src="img/noticias/terremoto-choco.png" alt="Edificios destruidos tras el terremoto en Chocó">
-            <h2 class="noticia__titulo">Colombia continúa la recuperación tras el terremoto de magnitud 7,4 en Chocó</h2>
+        <!-- Búsqueda: consulta GET /api/noticias?q=…&verificacion=… -->
+        <form class="noticias__busqueda" id="noticias-busqueda" role="search" aria-label="Buscar noticias" autocomplete="off">
+          <div class="noticias__campo noticias__campo--texto">
+            <label for="noticias-q">Buscar</label>
+            <input type="search" id="noticias-q" name="q" maxlength="100" placeholder="Ej.: sismo, lluvias, Caldas">
           </div>
-          <div class="noticia__cuerpo">
-            <p>
-              El sismo ocurrido el 10 de agosto de 2026, con epicentro en San José del Palmar, Chocó, afectó
-              a comunidades de distintas regiones del país. Según el balance oficial de octubre, más de
-              778.000 personas resultaron afectadas y cientos de miles de viviendas sufrieron daños o
-              quedaron destruidas.
-            </p>
-            <p>
-              Las labores de recuperación incluyen la atención a las familias damnificadas, la
-              rehabilitación de viviendas y la recuperación de infraestructura educativa…
-            </p>
-            <a href="error.html" class="noticia__enlace">Da click aquí para ir a la página</a>
+          <div class="noticias__campo">
+            <label for="noticias-verificacion">Verificación</label>
+            <select id="noticias-verificacion" name="verificacion">
+              <option value="">Todas</option>
+              <option value="oficial">Fuente oficial</option>
+              <option value="en_verificacion">En verificación</option>
+              <option value="sin_verificar">Sin verificar</option>
+            </select>
           </div>
-        </article>
+          <button type="submit" class="noticias__boton">
+            <i class="bi bi-search" aria-hidden="true"></i> Buscar
+          </button>
+        </form>
 
-        <div class="noticias__grid">
-
-          <article class="noticia">
-            <div class="noticia__figura">
-              <img src="img/noticias/simulacro-plaza-bolivar.png" alt="Multitud participando en el simulacro en la Plaza de Bolívar">
-              <h2 class="noticia__titulo">Más de 105.000 personas participan en el Simulacro Nacional de Emergencias</h2>
-            </div>
-            <div class="noticia__cuerpo">
-              <p>
-                La jornada puso a prueba medidas de autoprotección y protocolos de respuesta ante
-                diferentes escenarios, incluidos sismos, inundaciones e incendios…
-              </p>
-              <a href="error.html" class="noticia__enlace">Da click aquí para ir a la página</a>
-            </div>
-          </article>
-
-          <article class="noticia">
-            <div class="noticia__figura">
-              <img src="img/noticias/ayudas-caldas.png" alt="Familias damnificadas recibiendo ayudas en Caldas">
-              <h2 class="noticia__titulo">UNGRD destina recursos para apoyar a familias damnificadas en Caldas</h2>
-            </div>
-            <div class="noticia__cuerpo">
-              <p>
-                La Unidad Nacional para la Gestión del Riesgo de Desastres anunció más de $3.647 millones
-                para apoyar económicamente a familias afectadas por el sismo ocurrido en agosto…
-              </p>
-              <a href="error.html" class="noticia__enlace">Da click aquí para ir a la página</a>
-            </div>
-          </article>
-
-          <article class="noticia">
-            <div class="noticia__figura">
-              <img src="img/noticias/vivienda-averiada.png" alt="Personas conversando frente a una vivienda averiada por el sismo">
-              <h2 class="noticia__titulo">Continúa la recuperación de las comunidades afectadas por el sismo de agosto</h2>
-            </div>
-            <div class="noticia__cuerpo">
-              <p>
-                Dos meses después del terremoto con epicentro en Chocó, los reportes de la UNGRD daban
-                cuenta de cientos de miles de personas damnificadas y numerosas viviendas averiadas…
-              </p>
-              <a href="error.html" class="noticia__enlace">Da click aquí para ir a la página</a>
-            </div>
-          </article>
-
-          <article class="noticia">
-            <div class="noticia__figura">
-              <img src="img/noticias/deslizamiento-cundinamarca.png" alt="Maquinaria despejando un deslizamiento en una vía de Cundinamarca">
-              <h2 class="noticia__titulo">Lluvias dejan emergencias en varios municipios de Cundinamarca</h2>
-            </div>
-            <div class="noticia__cuerpo">
-              <p>
-                Durante los primeros trece días de octubre se reportaron inundaciones, vendavales,
-                deslizamientos y crecientes súbitas. Las autoridades atendieron afectaciones en viviendas
-                y vías…
-              </p>
-              <a href="error.html" class="noticia__enlace">Da click aquí para ir a la página</a>
-            </div>
-          </article>
-
+        <!-- Las noticias las pinta js/noticias.js con los datos de la API (se administran en admin/noticias.html) -->
+        <p class="noticias__estado" id="noticias-estado" role="status">Cargando noticias…</p>
+        <div data-a11y-leer>
+          <div id="noticias-destacada"></div>
+          <div class="noticias__grid" id="noticias-grid"></div>
         </div>
+        <button type="button" class="noticias__boton noticias__mas" id="noticias-mas" hidden>Ver más noticias</button>
+        <noscript><p class="noticias__estado">Activa JavaScript para ver las noticias.</p></noscript>
 
         <!-- Botones de accesibilidad (js/accesibilidad.js) -->
         <div class="accesibilidad" role="group" aria-label="Opciones de accesibilidad">

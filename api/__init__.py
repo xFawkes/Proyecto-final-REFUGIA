@@ -13,17 +13,17 @@ from flask import Flask
 from flask_cors import CORS
 from sqlalchemy.engine import make_url
 
-from . import mapa, paginas
+from . import mapa, noticias, paginas
 from .config import configuracion
 from .errores import registrar_errores
 from .extensiones import db, ma
 
 # ---------------------------------------------------------------------------
 # Secciones de la API. Para agregar una (ver api/_plantilla):
-#     from . import mapa, noticias, paginas
-#     SECCIONES = [mapa, noticias]
+#     from . import mapa, noticias, voluntariado, paginas
+#     SECCIONES = [mapa, noticias, voluntariado]
 # ---------------------------------------------------------------------------
-SECCIONES = [mapa]
+SECCIONES = [mapa, noticias]
 
 
 def crear_app(config_extra: dict | None = None) -> Flask:
