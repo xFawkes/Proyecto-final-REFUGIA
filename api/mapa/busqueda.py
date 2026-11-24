@@ -1,34 +1,14 @@
-"""Mapa: búsqueda y filtrado de puntos de ayuda."""
+"""Mapa: búsqueda y filtrado de puntos de ayuda con SQLAlchemy."""
 
 from __future__ import annotations
 
-import json
-import sqlite3
-from dataclasses import dataclass, field
-
-from ..utilidades import distancia_km, esta_abierto, horario_legible, normalizar
-from .catalogos import SERVICIOS, TIPOS, VERIFICACION
+from ..extensiones import db
+from ..utilidades import distancia_km, normalizar
+from .catalogos import TIPOS
+from .esquemas import punto_schema
+from .modelos import Punto, PuntoServicio
 
 PALABRAS_VACIAS = {"de", "del", "la", "las", "el", "los", "y", "en", "para", "un", "una", "con", "a", "al"}
-
-
-@dataclass
-class Filtros:
-    q: str | None = None
-    tipos: list[str] = field(default_factory=list)
-    servicios: list[str] = field(default_factory=list)
-    verificacion: list[str] = field(default_factory=list)
-    abierto_ahora: bool = False
-    gratuito: bool = False
-    con_cupos: bool = False
-    confianza_min: float | None = None
-    ids: list[int] | None = None
-    lat: float | None = None
-    lng: float | None = None
-    radio_km: float | None = None
-    orden: str | None = None
-    limite: int = 100
-    offset: int = 0
 
 
 def terminos_busqueda(q: str | None) -> list[str]:
@@ -47,141 +27,96 @@ def terminos_busqueda(q: str | None) -> list[str]:
     return terminos
 
 
-def _escapar_like(texto: str) -> str:
-    return texto.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
-
-
-def fila_a_punto(fila: sqlite3.Row, servicios: list[str], lat=None, lng=None) -> dict:
-    franjas = json.loads(fila["horario"])
-    punto = {k: fila[k] for k in fila.keys() if k not in ("texto_busqueda", "horario")}
-    punto.update(
-        gratuito=bool(fila["gratuito"]),
-        tipo_nombre=TIPOS[fila["tipo"]]["nombre"],
-        verificacion_nombre=VERIFICACION[fila["verificacion"]],
-        horario=franjas,
-        horario_texto=horario_legible(franjas),
-        abierto_ahora=esta_abierto(franjas),
-        servicios=[{"clave": s, "nombre": SERVICIOS[s]} for s in servicios if s in SERVICIOS],
-        distancia_km=None,
-    )
-    if lat is not None and lng is not None:
-        punto["distancia_km"] = round(distancia_km(lat, lng, fila["lat"], fila["lng"]), 2)
-    return punto
-
-
-def _servicios_por_punto(conexion: sqlite3.Connection, ids: list[int]) -> dict[int, list[str]]:
-    resultado: dict[int, list[str]] = {i: [] for i in ids}
-    if not ids:
-        return resultado
-    marcadores = ",".join("?" for _ in ids)
-    filas = conexion.execute(
-        f"SELECT punto_id, servicio FROM punto_servicio WHERE punto_id IN ({marcadores})", ids
-    )
-    for fila in filas:
-        resultado[fila["punto_id"]].append(fila["servicio"])
-    orden = list(SERVICIOS)  # mismo orden del catálogo
-    return {k: sorted(v, key=orden.index) for k, v in resultado.items()}
-
-
-def _puntaje(punto: dict, nombre_norm: str, terminos: list[str]) -> float:
+def _puntaje(nombre_norm: str, terminos: list[str], confianza: float) -> float:
     """Relevancia: coincidir en el nombre pesa más que en la descripción o la dirección."""
     puntaje = 0.0
-    palabras_nombre = nombre_norm.split()
+    palabras = nombre_norm.split()
     for t in terminos:
-        if any(p.startswith(t) for p in palabras_nombre):
+        if any(p.startswith(t) for p in palabras):
             puntaje += 3
         elif t in nombre_norm:
             puntaje += 2
         else:
             puntaje += 1
-    return puntaje + punto["confianza"] / 10  # desempate por confianza
+    return puntaje + confianza / 10  # desempate por confianza
 
 
-def buscar_puntos(conexion: sqlite3.Connection, f: Filtros) -> tuple[int, list[dict]]:
-    condiciones: list[str] = []
-    parametros: list = []
+def a_diccionario(punto: Punto, lat=None, lng=None) -> dict:
+    datos = punto_schema.dump(punto)
+    datos["distancia_km"] = (
+        round(distancia_km(lat, lng, punto.lat, punto.lng), 2) if lat is not None and lng is not None else None
+    )
+    return datos
 
-    # --- Filtros que resuelve SQL ---
-    terminos = terminos_busqueda(f.q)
+
+def buscar_puntos(f: dict) -> tuple[int, list[dict]]:
+    """f es el diccionario validado por FiltrosSchema."""
+    consulta = db.select(Punto)
+
+    # --- Filtros que resuelve la base de datos ---
+    terminos = terminos_busqueda(f.get("q"))
     for t in terminos:
-        condiciones.append("texto_busqueda LIKE ? ESCAPE '\\'")
-        parametros.append(f"%{_escapar_like(t)}%")
-
-    if f.tipos:
-        condiciones.append(f"tipo IN ({','.join('?' for _ in f.tipos)})")
-        parametros += f.tipos
-
-    if f.verificacion:
-        condiciones.append(f"verificacion IN ({','.join('?' for _ in f.verificacion)})")
-        parametros += f.verificacion
-
-    if f.gratuito:
-        condiciones.append("gratuito = 1")
-
-    if f.con_cupos:
-        condiciones.append("cupos_disponibles > 0")
-
-    if f.confianza_min is not None:
-        condiciones.append("confianza >= ?")
-        parametros.append(f.confianza_min)
-
-    if f.ids is not None:
-        if not f.ids:
+        consulta = consulta.where(Punto.texto_busqueda.contains(t, autoescape=True))
+    if f["tipo"]:
+        consulta = consulta.where(Punto.tipo.in_(f["tipo"]))
+    if f["verificacion"]:
+        consulta = consulta.where(Punto.verificacion.in_(f["verificacion"]))
+    if f["gratuito"]:
+        consulta = consulta.where(Punto.gratuito.is_(True))
+    if f["con_cupos"]:
+        consulta = consulta.where(Punto.cupos_disponibles > 0)
+    if f.get("confianza_min") is not None:
+        consulta = consulta.where(Punto.confianza >= f["confianza_min"])
+    if f.get("ids") is not None:
+        ids = [int(i) for i in f["ids"].split(",") if i.strip()]
+        if not ids:
             return 0, []
-        condiciones.append(f"id IN ({','.join('?' for _ in f.ids)})")
-        parametros += f.ids
-
-    if f.servicios:
+        consulta = consulta.where(Punto.id.in_(ids))
+    if f["servicio"]:
         # El punto debe ofrecer TODOS los servicios pedidos
-        condiciones.append(
-            f"""id IN (SELECT punto_id FROM punto_servicio
-                       WHERE servicio IN ({','.join('?' for _ in f.servicios)})
-                       GROUP BY punto_id HAVING COUNT(DISTINCT servicio) = ?)"""
+        pedidos = set(f["servicio"])
+        con_todos = (
+            db.select(PuntoServicio.punto_id)
+            .where(PuntoServicio.servicio.in_(pedidos))
+            .group_by(PuntoServicio.punto_id)
+            .having(db.func.count(db.distinct(PuntoServicio.servicio)) == len(pedidos))
         )
-        parametros += f.servicios + [len(set(f.servicios))]
+        consulta = consulta.where(Punto.id.in_(con_todos))
 
-    where = f"WHERE {' AND '.join(condiciones)}" if condiciones else ""
-    filas = conexion.execute(f"SELECT * FROM puntos {where}", parametros).fetchall()
-    servicios = _servicios_por_punto(conexion, [fila["id"] for fila in filas])
+    puntos = db.session.scalars(consulta).all()
 
     # --- Filtros que dependen de la hora actual o de la ubicación del usuario ---
-    puntos = []
-    for fila in filas:
-        punto = fila_a_punto(fila, servicios[fila["id"]], f.lat, f.lng)
-        if f.abierto_ahora and not punto["abierto_ahora"]:
+    lat, lng = f.get("lat"), f.get("lng")
+    resultados = []
+    for punto in puntos:
+        datos = a_diccionario(punto, lat, lng)
+        if f["abierto_ahora"] and not datos["abierto_ahora"]:
             continue
-        if f.radio_km is not None and punto["distancia_km"] > f.radio_km:
+        if f.get("radio_km") is not None and datos["distancia_km"] > f["radio_km"]:
             continue
-        punto["_puntaje"] = _puntaje(punto, normalizar(punto["nombre"]), terminos)
-        puntos.append(punto)
+        datos["_puntaje"] = _puntaje(normalizar(punto.nombre), terminos, punto.confianza)
+        resultados.append(datos)
 
     # --- Orden ---
-    orden = f.orden or ("relevancia" if terminos else "distancia" if f.lat is not None else "confianza")
+    orden = f.get("orden") or ("relevancia" if terminos else "distancia" if lat is not None else "confianza")
     if orden == "relevancia":
-        puntos.sort(key=lambda p: (-p["_puntaje"], p["distancia_km"] or 0, p["nombre"]))
+        resultados.sort(key=lambda p: (-p["_puntaje"], p["distancia_km"] or 0, p["nombre"]))
     elif orden == "distancia":
-        puntos.sort(key=lambda p: (p["distancia_km"], p["nombre"]))
+        resultados.sort(key=lambda p: (p["distancia_km"], p["nombre"]))
     elif orden == "confianza":
-        puntos.sort(key=lambda p: (-p["confianza"], p["nombre"]))
+        resultados.sort(key=lambda p: (-p["confianza"], p["nombre"]))
     else:
-        puntos.sort(key=lambda p: normalizar(p["nombre"]))
-
-    for p in puntos:
+        resultados.sort(key=lambda p: normalizar(p["nombre"]))
+    for p in resultados:
         del p["_puntaje"]
 
-    total = len(puntos)
-    return total, puntos[f.offset : f.offset + f.limite]
+    total = len(resultados)
+    return total, resultados[f["offset"] : f["offset"] + f["limite"]]
 
 
-def obtener_punto(conexion: sqlite3.Connection, punto_id: int, lat=None, lng=None) -> dict | None:
-    fila = conexion.execute("SELECT * FROM puntos WHERE id = ?", (punto_id,)).fetchone()
-    if fila is None:
-        return None
-    return fila_a_punto(fila, _servicios_por_punto(conexion, [punto_id])[punto_id], lat, lng)
-
-
-def contar_por_tipo(conexion: sqlite3.Connection) -> dict[str, int]:
+def contar_por_tipo() -> dict[str, int]:
     conteo = {clave: 0 for clave in TIPOS}
-    for fila in conexion.execute("SELECT tipo, COUNT(*) AS n FROM puntos GROUP BY tipo"):
-        conteo[fila["tipo"]] = fila["n"]
+    filas = db.session.execute(db.select(Punto.tipo, db.func.count()).group_by(Punto.tipo))
+    for tipo, n in filas:
+        conteo[tipo] = n
     return conteo

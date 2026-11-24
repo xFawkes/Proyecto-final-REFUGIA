@@ -19,7 +19,7 @@ def test_pagina_y_sus_recursos_locales_cargan(cliente, pagina):
     r = cliente.get(f"/{pagina}")
     assert r.status_code == 200, pagina
     base = "/" + pagina.rsplit("/", 1)[0] + "/" if "/" in pagina else "/"
-    for ref in re.findall(r'(?:href|src|poster)="([^"#?]+)', r.text):
+    for ref in re.findall(r'(?:href|src|poster)="([^"#?]+)', r.get_data(as_text=True)):
         if ref.startswith(("http", "mailto:", "tel:", "data:", "javascript:")):
             continue
         ruta = ref if ref.startswith("/") else base + ref
@@ -39,12 +39,14 @@ def test_imagenes_de_los_css(cliente):
 
 def test_pagina_inexistente_muestra_error_html(cliente):
     r = cliente.get("/no-existe.html")
-    assert r.status_code == 404 and "Página no encontrada" in r.text
+    assert r.status_code == 404 and "Página no encontrada" in r.get_data(as_text=True)
 
 
 @pytest.mark.parametrize(
     "ruta", ["/.env", "/.env.example", "/requirements.txt", "/api/main.py", "/api/refugia.db",
-             "/..%2F.env", "/.git/config", "/tests/conftest.py", "/README.md"],
+             "/..%2F.env", "/.git/config", "/tests/conftest.py", "/README.md",
+             "/main.py", "/api/config.py", "/api/__init__.py", "/css/../.env", "/img/../api/config.py",
+             "/css/..%2F.env", "/js/%2e%2e/.env", "/admin/../main.py", "/css/..\\.env"],
 )
 def test_no_expone_archivos_privados(cliente, ruta):
     assert cliente.get(ruta).status_code == 404, ruta

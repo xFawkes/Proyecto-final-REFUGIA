@@ -1,0 +1,401 @@
+{
+  "info": {
+    "name": "REFUGIA — API",
+    "description": "Peticiones de la API de REFUGIA (Flask + MySQL). Antes de usarla, inicia el servidor con `python main.py`.\n\nOrden sugerido para probar el CRUD: 1) POST crea un punto y guarda su id, 2) GET por id, 3) PUT, 4) DELETE.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:5000"
+    },
+    {
+      "key": "id",
+      "value": "1"
+    }
+  ],
+  "item": [
+    {
+      "name": "Mapa — CRUD (como en el tutorial)",
+      "item": [
+        {
+          "name": "1. POST — crear punto",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/puntos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "puntos"
+              ]
+            },
+            "description": "Crea un punto. Responde 201 con el punto creado y guarda su id en la variable {{id}}.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Albergue Comunal San Mateo\",\n  \"tipo\": \"albergue\",\n  \"direccion\": \"Calle 30 Sur # 12-40\",\n  \"barrio\": \"San Mateo\",\n  \"localidad\": \"Rafael Uribe Uribe\",\n  \"lat\": 4.5772,\n  \"lng\": -74.1189,\n  \"telefono\": \"601 000 0150\",\n  \"confianza\": 4.0,\n  \"verificacion\": \"comunitaria\",\n  \"capacidad\": 60,\n  \"cupos_disponibles\": 25,\n  \"horario\": [\n    {\n      \"dias\": [\n        0,\n        1,\n        2,\n        3,\n        4,\n        5,\n        6\n      ],\n      \"abre\": \"00:00\",\n      \"cierra\": \"24:00\"\n    }\n  ],\n  \"servicios\": [\n    \"refugio\",\n    \"alimentos\",\n    \"agua\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 201', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('id', pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "2. GET — un punto por id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/puntos/{{id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "puntos",
+                "{{id}}"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "3. PUT — actualizar (solo algunos campos)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/puntos/{{id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "puntos",
+                "{{id}}"
+              ]
+            },
+            "description": "Solo se envían los campos que cambian.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cupos_disponibles\": 10,\n  \"servicios\": [\n    \"refugio\",\n    \"alimentos\",\n    \"agua\",\n    \"kits_aseo\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "4. DELETE — eliminar",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/puntos/{{id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "puntos",
+                "{{id}}"
+              ]
+            },
+            "description": "Elimina el punto y responde con lo que se eliminó."
+          }
+        },
+        {
+          "name": "Ejemplo de error 400 — datos inválidos",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/puntos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "puntos"
+              ]
+            },
+            "description": "Muestra cómo responde la API cuando los datos no son válidos.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"A\",\n  \"tipo\": \"cine\",\n  \"lat\": 40.4,\n  \"lng\": -3.7\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Mapa — consultas (GET)",
+      "item": [
+        {
+          "name": "Todos los puntos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/puntos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "puntos"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Buscar por texto",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/puntos?q=centros de salud",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "puntos"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "centros de salud"
+                }
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Albergues con cupos y que admitan mascotas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/puntos?tipo=albergue&con_cupos=true&servicio=mascotas",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "puntos"
+              ],
+              "query": [
+                {
+                  "key": "tipo",
+                  "value": "albergue"
+                },
+                {
+                  "key": "con_cupos",
+                  "value": "true"
+                },
+                {
+                  "key": "servicio",
+                  "value": "mascotas"
+                }
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Hospitales o centros de salud abiertos ahora",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/puntos?tipo=hospital&tipo=centro_salud&abierto_ahora=true",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "puntos"
+              ],
+              "query": [
+                {
+                  "key": "tipo",
+                  "value": "hospital"
+                },
+                {
+                  "key": "tipo",
+                  "value": "centro_salud"
+                },
+                {
+                  "key": "abierto_ahora",
+                  "value": "true"
+                }
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Cerca de una ubicación (3 km)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/puntos?lat=4.7392&lng=-74.0987&radio_km=3",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "puntos"
+              ],
+              "query": [
+                {
+                  "key": "lat",
+                  "value": "4.7392"
+                },
+                {
+                  "key": "lng",
+                  "value": "-74.0987"
+                },
+                {
+                  "key": "radio_km",
+                  "value": "3"
+                }
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Solo información oficial con confianza ≥ 4.5",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/puntos?verificacion=oficial&confianza_min=4.5",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "puntos"
+              ],
+              "query": [
+                {
+                  "key": "verificacion",
+                  "value": "oficial"
+                },
+                {
+                  "key": "confianza_min",
+                  "value": "4.5"
+                }
+              ]
+            },
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "Catálogos",
+      "item": [
+        {
+          "name": "Tipos de lugar",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/tipos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "tipos"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Servicios",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/servicios",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "servicios"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Niveles de verificación",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/verificacion",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "verificacion"
+              ]
+            },
+            "description": ""
+          }
+        }
+      ]
+    }
+  ]
+}

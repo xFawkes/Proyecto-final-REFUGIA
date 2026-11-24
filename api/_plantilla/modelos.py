@@ -1,15 +1,15 @@
-"""Modelos: definen la forma del JSON que devuelve la API (y su documentación en /docs)."""
+"""Modelo: la tabla de la sección (como la clase Categoria del tutorial)."""
 
-from pydantic import BaseModel
-
-
-class Elemento(BaseModel):
-    id: int
-    titulo: str
-    descripcion: str | None
-    creado_en: str
+from ..extensiones import db
 
 
-class ListaElementos(BaseModel):
-    total: int
-    resultados: list[Elemento]
+class Elemento(db.Model):  # se crea la clase que genera la tabla
+    __tablename__ = "elementos"  # nombre de la tabla en MySQL (usa uno propio de tu sección)
+
+    id_elemento = db.Column(db.Integer, primary_key=True)  # llave primaria
+    titulo = db.Column(db.String(255), nullable=False)
+    descripcion = db.Column(db.String(255))
+
+    def __init__(self, titulo, descripcion):  # constructor: permite crear Elemento("título", "descripción")
+        self.titulo = titulo
+        self.descripcion = descripcion

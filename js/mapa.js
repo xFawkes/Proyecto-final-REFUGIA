@@ -1,18 +1,18 @@
 /* =========================================================
-   REFUGIA — Mapa de puntos de ayuda (Leaflet + OpenStreetMap + API FastAPI)
+   REFUGIA — Mapa de puntos de ayuda (Leaflet + OpenStreetMap + API Flask)
    ---------------------------------------------------------
-   Requiere que la API esté corriendo:  uvicorn api.main:app --reload
+   Requiere que la API esté corriendo:  python main.py
    Leaflet se carga desde el CDN en mapa.html. No necesita API key.
    ========================================================= */
 (() => {
   "use strict";
 
   // ---------------- Configuración ----------------
-  // Si la página se abre con Live Server (puerto 5500) la API está en el 8000.
-  // Si se abre desde la misma API (http://localhost:8000/mapa.html) se usa la misma dirección.
+  // Si la página se abre con Live Server (puerto 5500) la API está en el 5000.
+  // Si se abre desde la misma API (http://127.0.0.1:5000/mapa.html) se usa la misma dirección.
   const API_BASE =
     window.REFUGIA_API_BASE ??
-    (["5500", "5501"].includes(location.port) ? "http://localhost:8000" : "");
+    (["5500", "5501"].includes(location.port) ? "http://127.0.0.1:5000" : "");
 
   const BOGOTA = { lat: 4.65, lng: -74.1 };
   const IMAGEN_POR_DEFECTO = "img/mapa/centro-acopio.png";

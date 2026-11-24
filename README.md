@@ -6,16 +6,19 @@ noticias verificadas y un foro comunitario.
 
 Proyecto de Tecnologías del Internet — Universidad Militar Nueva Granada, 2026.
 
+**Tecnologías:** HTML, CSS y JavaScript en el frontend; API REST en Python con **Flask**,
+**Flask-SQLAlchemy**, **Marshmallow** y **MySQL** (PyMySQL), siguiendo el tutorial de la materia.
+
 ---
 
 ## Estructura del proyecto
 
 ```
 REFUGIA/
+├── main.py                   ← inicia el servidor:  python main.py
 ├── inicio.html, mapa.html, noticias.html, voluntariado.html,
 │   donaciones.html, foro.html, ayuda.html, perfil.html, error.html   ← páginas del sitio
 ├── admin/                    páginas del panel de administración
-│   ├── inicio.html, noticias.html, foro.html, voluntariados.html
 ├── css/                      un archivo por página (mismo nombre que el .html)
 │   ├── admin/                estilos del panel de administración
 │   ├── menu-usuario.css      menú del perfil (compartido)
@@ -24,18 +27,21 @@ REFUGIA/
 │   ├── accesibilidad.js      voz, contraste y tamaño de texto (todas las páginas)
 │   └── mapa.js               mapa, buscador y filtros
 ├── img/                      imágenes compartidas (logo…) y una carpeta por sección
-│   ├── inicio/  mapa/  noticias/  voluntariado/  donaciones/
-├── api/                      servidor y API en Python (FastAPI + SQLite)
-│   ├── main.py               arranca el servidor y registra las secciones
-│   ├── database.py           conexión a la base de datos (compartida)
+├── api/                      API en Flask
+│   ├── __init__.py           arma la app: conexión a MySQL, secciones y páginas
+│   ├── config.py             lee los datos de conexión del archivo .env
+│   ├── extensiones.py        db (SQLAlchemy) y ma (Marshmallow), como en el tutorial
+│   ├── errores.py            errores en JSON y en español
+│   ├── paginas.py            sirve el HTML, CSS, JS e imágenes
 │   ├── utilidades.py         funciones comunes (tildes, distancias, horarios)
-│   ├── mapa/                 sección Mapa: rutas, tablas, búsqueda, datos de ejemplo
+│   ├── mapa/                 sección Mapa: modelos, esquemas, rutas (GET/POST/PUT/DELETE)
 │   └── _plantilla/           punto de partida para crear una sección nueva
 ├── tests/                    pruebas automáticas (python -m pytest)
 ├── docs/
-│   └── api-mapa.md           detalle de la API del mapa y del módulo de accesibilidad
-├── requirements.txt          dependencias de Python
-└── .env.example              configuración opcional
+│   ├── api-mapa.md           detalle de la API del mapa y del módulo de accesibilidad
+│   └── REFUGIA.postman_collection.json   peticiones listas para importar en Postman
+├── requirements.txt          librerías de Python
+└── .env.example              plantilla de la configuración de MySQL
 ```
 
 ### Convenciones
@@ -54,10 +60,13 @@ REFUGIA/
 
 ## Cómo ejecutarlo
 
-No se necesita XAMPP ni otro servidor: Uvicorn sirve las páginas y la API, y la base de datos es
-el archivo `api/refugia.db`, que se crea solo.
+### 1. Requisitos (una sola vez)
 
-### La primera vez (en Windows, desde la carpeta del proyecto)
+- **Python 3.10 o superior.**
+- **MySQL Server** y **MySQL Workbench** (los mismos del tutorial). Anota la contraseña del
+  usuario `root` que pongas al instalarlo.
+
+### 2. Entorno e instalación (una sola vez, en Windows, desde la carpeta del proyecto)
 
 ```powershell
 python -m venv entorno_API
@@ -68,49 +77,92 @@ python -m pip install -r requirements.txt
 Si PowerShell bloquea el script de activación, ejecuta antes:
 `Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned`
 
-### Cada vez que vayas a trabajar
+### 3. Configurar la conexión a MySQL (una sola vez)
+
+Copia `.env.example` como `.env` y escribe tu contraseña de MySQL:
+
+```
+USUARIO_BD=root
+PASSWORD_BD=tu_contraseña
+SERVIDOR_BD=localhost
+PUERTO_BD=3306
+NOMBRE_BD=refugia
+```
+
+El archivo `.env` **no se sube a GitHub** (cada integrante tiene el suyo).
+No hace falta crear la base de datos: si `refugia` no existe, el servidor la crea, crea las
+tablas (`db.create_all()`, como en el tutorial) y carga los datos de ejemplo. En MySQL Workbench,
+en *SCHEMAS*, haz clic en actualizar para verla.
+
+### 4. Cada vez que vayas a trabajar
 
 ```powershell
 .\entorno_API\Scripts\Activate.ps1
-uvicorn api.main:app --reload
+python main.py
 ```
 
 | Qué | Dirección |
 |---|---|
-| Sitio | http://127.0.0.1:8000/ |
-| Panel de administración | http://127.0.0.1:8000/admin/inicio.html |
-| Documentación de la API | http://127.0.0.1:8000/docs |
+| Sitio | http://127.0.0.1:5000/ |
+| Panel de administración | http://127.0.0.1:5000/admin/inicio.html |
+| API (ejemplo) | http://127.0.0.1:5000/api/puntos |
 
-El sitio solo funciona mientras la terminal con `uvicorn` esté abierta. Si mueves o renombras la
-carpeta del proyecto, borra `entorno_API` y créalo de nuevo (los entornos virtuales guardan su ruta).
+Abre siempre el sitio desde `http://127.0.0.1:5000/`, no con doble clic sobre el `.html`: así el mapa
+encuentra la API y OpenStreetMap no bloquea las imágenes. El sitio solo funciona mientras la
+terminal con `python main.py` esté abierta (`Ctrl+C` lo detiene).
+
+---
+
+## La API
+
+Cada sección tiene las operaciones del tutorial: **GET** (consultar), **POST** (crear),
+**PUT** (actualizar) y **DELETE** (eliminar). Para probarlas en **Postman**, importa
+`docs/REFUGIA.postman_collection.json` (*Import* → arrastra el archivo): trae todas las
+peticiones listas, con ejemplos de JSON.
+
+| Método | Ruta | Qué hace |
+|---|---|---|
+| GET | `/api/puntos` | Lista y filtra los puntos del mapa (`?q=albergue&tipo=hospital…`) |
+| GET | `/api/puntos/<id>` | Un punto |
+| POST | `/api/puntos` | Crea un punto (JSON en el *Body* → *raw* → *JSON*) |
+| PUT | `/api/puntos/<id>` | Actualiza un punto; se pueden enviar solo los campos que cambian |
+| DELETE | `/api/puntos/<id>` | Elimina un punto |
+| GET | `/api/tipos`, `/api/servicios`, `/api/verificacion` | Catálogos para los filtros |
+
+Si los datos no son válidos, la API responde **400** con el detalle de cada campo en español.
+Si el id no existe, responde **404**. El detalle de los campos y filtros está en
+[`docs/api-mapa.md`](docs/api-mapa.md).
+
+> Las rutas POST, PUT y DELETE todavía no piden inicio de sesión. Cuando exista el login
+> (requisito RF 7), hay que restringirlas a los administradores.
 
 ---
 
 ## Agregar una sección a la API (noticias, donaciones, voluntariado, foro…)
 
-Cada sección es una carpeta dentro de `api/` con cuatro archivos:
+Cada sección es una carpeta dentro de `api/`, con las mismas piezas del tutorial:
 
-| Archivo | Para qué |
-|---|---|
-| `rutas.py` | Los endpoints (`/api/noticias`, `/api/noticias/{id}`…) |
-| `tablas.py` | Las tablas de la base de datos y la carga de datos de ejemplo |
-| `modelos.py` | La forma del JSON que devuelve cada endpoint |
-| `__init__.py` | Expone `router` e `inicializar` para que `main.py` los registre |
+| Archivo | Para qué | En el tutorial |
+|---|---|---|
+| `modelos.py` | La tabla, como clase de Python | `class Categoria(db.Model)` |
+| `esquemas.py` | Convierte a JSON y valida | `CategoriaSchema`, `categoria_schema`, `categorias_schema` |
+| `rutas.py` | GET, GET por id, POST, PUT, DELETE | las funciones `@app.route(...)` |
+| `__init__.py` | Expone `bp` y `cargar_datos_ejemplo` | los `INSERT` de prueba en Workbench |
 
 Pasos, con "noticias" como ejemplo:
 
 1. Copia `api/_plantilla` y renómbrala `api/noticias`.
-2. En sus archivos cambia `elemento`/`elementos` por `noticia`/`noticias` y ajusta las columnas.
-3. En `api/main.py`:
+2. En sus archivos cambia `Elemento`/`elementos` por `Noticia`/`noticias` y ajusta las columnas.
+3. En `api/__init__.py`:
    ```python
-   from . import database, mapa, noticias
+   from . import mapa, noticias, paginas
    SECCIONES = [mapa, noticias]
    ```
-4. Borra `api/refugia.db` si cambiaste tablas existentes y reinicia `uvicorn`.
-   Los endpoints nuevos aparecen en http://127.0.0.1:8000/docs.
+4. Reinicia el servidor (`python main.py`). La tabla se crea sola en MySQL.
 
-La sección **Mapa** (`api/mapa/`) es un ejemplo completo con búsqueda, filtros y paginación.
-Su documentación está en [`docs/api-mapa.md`](docs/api-mapa.md).
+`db.create_all()` crea las tablas que faltan, pero **no modifica las que ya existen**. Si cambias
+las columnas de una tabla que ya se creó, bórrala en MySQL Workbench (clic derecho → *Drop Table*)
+y reinicia el servidor para que se cree de nuevo.
 
 ---
 
@@ -120,14 +172,23 @@ Su documentación está en [`docs/api-mapa.md`](docs/api-mapa.md).
 python -m pytest
 ```
 
-Además de la API del mapa, las pruebas recorren todas las páginas y verifican que carguen sus CSS,
-scripts e imágenes. Si renombras o mueves un archivo y olvidas actualizar una ruta, fallan.
+Las pruebas usan una base SQLite temporal en memoria, así que no tocan tu base de MySQL ni necesitan
+MySQL encendido. Para correrlas contra MySQL, usa una base **de pruebas**, que se borra y se crea de nuevo:
+
+```powershell
+$env:REFUGIA_TEST_DB = "mysql+pymysql://root:tu_contraseña@localhost:3306/refugia_pruebas"
+python -m pytest
+```
+
+Prueban la búsqueda y los filtros, el CRUD completo (incluidos datos inválidos) y que todas las páginas
+carguen sus CSS, scripts e imágenes.
 
 ---
 
 ## Trabajo en equipo con Git
 
-- Trabaja cada funcionalidad en una rama (`feature/api-noticias`) y únela a `main` con un pull request.
-- No se suben: `entorno_API/`, `api/refugia.db`, `.env` ni `__pycache__/` (ya están en `.gitignore`).
-  Cada integrante crea su entorno y su base de datos al ejecutar el proyecto.
+- Trabaja cada funcionalidad en una rama (`feature/api-noticias`) y únela con un pull request.
+- No se suben: `entorno_API/`, `.env` ni `__pycache__/` (ya están en `.gitignore`).
 - Antes de subir cambios, corre `python -m pytest`.
+- Si cambian las librerías, actualiza `requirements.txt`; los demás corren
+  `python -m pip install -r requirements.txt` después de traer los cambios.
