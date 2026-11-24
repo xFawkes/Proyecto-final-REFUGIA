@@ -11,27 +11,15 @@
 
 from __future__ import annotations
 
-import uuid
-from pathlib import Path
-
-from flask import Blueprint, abort, current_app, jsonify, request
+from flask import Blueprint, abort, jsonify, request
 from marshmallow import ValidationError
 
 from ..extensiones import db
+from ..imagenes import borrar_imagen_subida, guardar_imagen_subida
 from .esquemas import leer_filtros, noticia_entrada_schema, noticia_schema, noticias_schema
 from .modelos import VERIFICACION, Noticia
 
 bp = Blueprint("noticias", __name__, url_prefix="/api/noticias")
-
-RAIZ_PROYECTO = Path(__file__).resolve().parents[2]
-CARPETA_IMAGENES = "img/subidas/noticias"   # aquí quedan las imágenes subidas desde el panel
-TAMANO_MAXIMO = 5 * 1024 * 1024              # 5 MB
-FIRMAS_IMAGEN = {                            # primeros bytes de cada formato
-    b"\x89PNG\r\n\x1a\n": ".png",
-    b"\xff\xd8\xff": ".jpg",
-    b"GIF87a": ".gif",
-    b"GIF89a": ".gif",
-}
 
 
 def leer_json() -> dict:
@@ -150,52 +138,16 @@ def delete_noticia(id):
     imagen = eliminar_noticia.imagen
     db.session.delete(eliminar_noticia)  # DELETE
     db.session.commit()
-    borrar_imagen_subida(imagen)
+    # Si la imagen se subió desde el panel y ninguna otra noticia la usa, se borra el archivo
+    en_uso = db.session.scalar(db.select(db.func.count()).select_from(Noticia).where(Noticia.imagen == imagen))
+    borrar_imagen_subida("noticias", imagen, sigue_en_uso=bool(en_uso))
     return jsonify(respuesta)
 
 
 # ---------------------------------------------------------------------------
 # Subir imagen (desde el panel de administración)
 # ---------------------------------------------------------------------------
-def carpeta_subidas() -> Path:
-    return Path(current_app.config.get("CARPETA_SUBIDAS_NOTICIAS", RAIZ_PROYECTO / CARPETA_IMAGENES))
-
-
-def extension_por_contenido(contenido: bytes) -> str | None:
-    """Revisa los primeros bytes: así no basta con cambiarle la extensión a un archivo para subirlo."""
-    if contenido[:4] == b"RIFF" and contenido[8:12] == b"WEBP":
-        return ".webp"
-    for firma, extension in FIRMAS_IMAGEN.items():
-        if contenido.startswith(firma):
-            return extension
-    return None
-
-
 @bp.route("/imagen", methods=["POST"])
 def subir_imagen():
-    archivo = request.files.get("imagen")
-    if archivo is None or not archivo.filename:
-        abort(400, description='Envía la imagen en un formulario multipart con el campo "imagen".')
-
-    contenido = archivo.stream.read(TAMANO_MAXIMO + 1)
-    if len(contenido) > TAMANO_MAXIMO:
-        abort(400, description="La imagen pesa más de 5 MB.")
-    extension = extension_por_contenido(contenido)
-    if extension is None:
-        abort(400, description="Formato no permitido. Usa PNG, JPG, WEBP o GIF.")
-
-    carpeta = carpeta_subidas()
-    carpeta.mkdir(parents=True, exist_ok=True)
-    nombre = f"{uuid.uuid4().hex}{extension}"  # nombre nuevo: evita choques y nombres peligrosos
-    (carpeta / nombre).write_bytes(contenido)
-    return jsonify({"imagen": f"{CARPETA_IMAGENES}/{nombre}"}), 201
-
-
-def borrar_imagen_subida(ruta: str | None) -> None:
-    """Si la imagen se subió desde el panel y ninguna otra noticia la usa, se borra el archivo."""
-    if not ruta or not ruta.startswith(CARPETA_IMAGENES + "/"):
-        return
-    if db.session.scalar(db.select(db.func.count()).select_from(Noticia).where(Noticia.imagen == ruta)):
-        return
-    archivo = carpeta_subidas() / Path(ruta).name
-    archivo.unlink(missing_ok=True)
+    """Guarda la imagen en img/subidas/noticias/ y responde su ruta, para enviarla luego en POST o PUT."""
+    return jsonify({"imagen": guardar_imagen_subida("noticias")}), 201

@@ -81,7 +81,7 @@ Error de validación (400):
 ## Imágenes subidas
 
 - Se aceptan PNG, JPG, WEBP y GIF de hasta 5 MB. Se revisa el contenido del archivo, no solo la extensión.
-- Se guardan en `img/subidas/noticias/` con un nombre aleatorio. Esa carpeta **no se sube a GitHub**
+- Se guardan en `img/subidas/noticias/` con un nombre aleatorio (lo hace `api/imagenes.py`, común a todas las secciones). Esa carpeta **no se sube a GitHub**
   (está en `.gitignore`), igual que la base de datos: cada integrante tiene las suyas.
 
 ## Pendiente

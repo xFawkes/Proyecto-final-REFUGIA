@@ -129,19 +129,19 @@ def test_errores_en_json_y_en_espanol(cliente):
 
 
 def test_subir_imagen_y_borrarla_con_la_noticia(app, cliente, tmp_path):
-    app.config["CARPETA_SUBIDAS_NOTICIAS"] = tmp_path
+    app.config["CARPETA_SUBIDAS"] = tmp_path
     try:
         r = cliente.post("/api/noticias/imagen", data={"imagen": (io.BytesIO(PNG_1X1), "foto.png")})
         assert r.status_code == 201
         ruta = r.json["imagen"]
         assert ruta.startswith("img/subidas/noticias/") and ruta.endswith(".png")
-        assert len(list(tmp_path.iterdir())) == 1
+        assert len(list((tmp_path / "noticias").iterdir())) == 1
 
         id_ = cliente.post("/api/noticias", json={**NUEVA, "imagen": ruta, "imagen_alt": "Foto de prueba"}).json["id_noticia"]
         cliente.delete(f"/api/noticias/{id_}")
-        assert list(tmp_path.iterdir()) == []  # el archivo se borra con la noticia
+        assert list((tmp_path / "noticias").iterdir()) == []  # el archivo se borra con la noticia
     finally:
-        app.config.pop("CARPETA_SUBIDAS_NOTICIAS")
+        app.config.pop("CARPETA_SUBIDAS")
 
 
 @pytest.mark.parametrize("contenido, nombre", [
@@ -149,13 +149,13 @@ def test_subir_imagen_y_borrarla_con_la_noticia(app, cliente, tmp_path):
     (b"MZ\x90\x00", "programa.jpg"),
 ])
 def test_subir_imagen_rechaza_archivos_que_no_son_imagen(app, cliente, tmp_path, contenido, nombre):
-    app.config["CARPETA_SUBIDAS_NOTICIAS"] = tmp_path
+    app.config["CARPETA_SUBIDAS"] = tmp_path
     try:
         r = cliente.post("/api/noticias/imagen", data={"imagen": (io.BytesIO(contenido), nombre)})
         assert r.status_code == 400
-        assert list(tmp_path.iterdir()) == []
+        assert not (tmp_path / "noticias").exists() or list((tmp_path / "noticias").iterdir()) == []
     finally:
-        app.config.pop("CARPETA_SUBIDAS_NOTICIAS")
+        app.config.pop("CARPETA_SUBIDAS")
 
 
 def test_subir_imagen_sin_archivo(cliente):
