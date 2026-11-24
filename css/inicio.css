@@ -169,7 +169,7 @@ button {
       rgb(28 85 104 / var(--hero-opacidad-medio)) 65%,
       rgb(28 85 104 / 1) 100%
     ),
-    url("../imags/fondo menu.png") center / cover no-repeat,
+    url("../img/inicio/fondo-portada.png") center / cover no-repeat,
     color-mix(in srgb, var(--azul) 70%, #000);
 
   /* Ajusta aquí la intensidad del degradado (0 = transparente, 1 = sólido) */
@@ -205,7 +205,7 @@ button {
   /* Ruta relativa a este archivo CSS (misma imagen del fondo del hero) */
   background:
     linear-gradient(rgb(45 115 145 / 0.72), rgb(45 115 145 / 0.72)),
-    url("../imags/fondo menu.png") center / cover no-repeat,
+    url("../img/inicio/fondo-portada.png") center / cover no-repeat,
     var(--azul);
 }
 

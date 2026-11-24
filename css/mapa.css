@@ -59,7 +59,8 @@ ul {
 }
 
 button,
-input {
+input,
+select {
   font: inherit;
 }
 
@@ -307,10 +308,13 @@ button {
 }
 
 .mapa__placeholder {
+  max-width: 32rem;
+  padding: 6rem 1.5rem 1.5rem;
+  text-align: center;
   font-family: var(--fuente-titulo);
   font-weight: 700;
   color: var(--azul);
-  opacity: 0.5;
+  opacity: 0.7;
 }
 
 /* ---------- Buscador ---------- */
@@ -351,6 +355,7 @@ button {
 }
 
 .buscador__filtro {
+  position: relative;
   width: 40px;
   aspect-ratio: 1;
   border-radius: 50%;
@@ -377,6 +382,10 @@ button {
   padding: 0.75rem 1rem;
   border-radius: 14px;
   background-color: var(--blanco);
+  /* deja libre la esquina de los botones de accesibilidad */
+  max-height: calc(100dvh - var(--alto-encabezado) - 11rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 /* ---------- Accesibilidad ---------- */
@@ -545,6 +554,544 @@ a.detalle__valor:hover {
 }
 
 /* =========================================================
+   Buscador: contador de filtros, panel de filtros y resultados
+   ========================================================= */
+/* Cuando se despliega un panel, la barra deja de ser una píldora */
+.buscador--abierto {
+  border-radius: 24px;
+}
+
+.buscador__contador {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  border: 2px solid var(--celeste);
+  background-color: var(--amarillo);
+  color: var(--cafe);
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+  font-size: 0.7rem;
+  line-height: 1;
+}
+
+/* ---------- Filtros ---------- */
+.filtro {
+  border: none;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--azul) 20%, transparent);
+}
+
+.filtro__titulo {
+  padding: 0;
+  margin-bottom: 0.45rem;
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+  font-size: 0.8rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--azul);
+}
+
+.filtro__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.75rem;
+  border: 2px solid var(--color, var(--azul));
+  border-radius: 999px;
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: var(--azul);
+  cursor: pointer;
+  transition: background-color var(--transicion), color var(--transicion), scale var(--transicion);
+}
+
+.chip:hover {
+  scale: 1.04;
+}
+
+.chip i {
+  color: var(--color, var(--azul));
+}
+
+/* El checkbox sigue existiendo (teclado y lector de pantalla), pero invisible */
+.chip input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.chip:has(input:checked) {
+  background-color: var(--color, var(--azul));
+  color: var(--texto, #fff);
+}
+
+.chip:has(input:checked) i {
+  color: var(--texto, #fff);
+}
+
+.chip:has(input:focus-visible) {
+  outline: 3px solid var(--amarillo);
+  outline-offset: 2px;
+}
+
+.chip__total {
+  font-weight: 400;
+}
+
+.filtro__opcion {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.filtro__opcion input {
+  width: 1.1rem;
+  height: 1.1rem;
+  accent-color: var(--azul);
+  cursor: pointer;
+}
+
+.filtro__fila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.25rem 0.75rem;
+  font-size: 0.9rem;
+}
+
+.filtro__select {
+  padding: 0.3rem 0.5rem;
+  border: 1px solid var(--azul);
+  border-radius: 8px;
+  background-color: var(--blanco);
+  color: var(--azul);
+  font-size: 0.85rem;
+}
+
+.filtro__pie {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding-top: 0.75rem;
+}
+
+.filtro__resumen {
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.filtro__limpiar {
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
+  background-color: var(--azul);
+  color: var(--celeste);
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: 0.8rem;
+  transition: scale var(--transicion), background-color var(--transicion), color var(--transicion);
+}
+
+.filtro__limpiar:hover,
+.filtro__limpiar:focus-visible {
+  scale: 1.05;
+  background-color: var(--amarillo);
+  color: var(--cafe);
+}
+
+/* ---------- Resultados de búsqueda ---------- */
+.buscador__resultados {
+  padding: 0.35rem;
+}
+
+.resultado {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.55rem 0.65rem;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.resultado:hover,
+.resultado[aria-selected="true"] {
+  background-color: var(--celeste);
+}
+
+.resultado[aria-selected="true"] {
+  outline: 2px solid var(--azul);
+  outline-offset: -2px;
+}
+
+.resultado__icono {
+  flex-shrink: 0;
+  width: 34px;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background-color: var(--color);
+  color: var(--icono, #fff);
+}
+
+.resultado__texto {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.resultado__nombre {
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #111;
+}
+
+.resultado__detalle {
+  font-size: 0.78rem;
+}
+
+.resultado--vacio,
+.resultado--nota {
+  cursor: default;
+  font-size: 0.85rem;
+}
+
+.resultado--vacio:hover,
+.resultado--nota:hover {
+  background: none;
+}
+
+.resultado--nota {
+  justify-content: center;
+  font-weight: 700;
+}
+
+/* =========================================================
+   Marcadores del mapa y control "Cerca de mí"
+   ========================================================= */
+.mapa__lienzo.leaflet-container {
+  font-family: var(--fuente-texto);
+  background-color: #dfe6e9;
+}
+
+/* Contenedor de Leaflet de tamaño 0 justo sobre el punto: el pin se dibuja encima */
+.marcador-contenedor {
+  background: none;
+  border: none;
+}
+
+.marcador-contenedor:focus-visible {
+  outline: none;
+}
+
+.marcador-contenedor:focus-visible .marcador {
+  outline: 3px solid var(--amarillo);
+  outline-offset: 3px;
+}
+
+.marcador {
+  position: absolute;
+  bottom: 0;
+  left: calc(var(--tam) / -2);
+  --tam: 34px;
+  width: var(--tam);
+  height: var(--tam);
+  display: grid;
+  place-items: center;
+  border: 2px solid #fff;
+  border-radius: 50% 50% 50% 0;
+  background-color: var(--color);
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.35);
+  /* Gira la gota y la sube para que la punta quede exactamente sobre el lugar */
+  transform: translateY(calc(var(--tam) * -0.2071)) rotate(-45deg);
+  cursor: pointer;
+}
+
+.marcador i {
+  rotate: 45deg;
+  font-size: calc(var(--tam) * 0.45);
+  line-height: 1;
+  color: var(--icono, #fff);
+}
+
+.marcador:hover {
+  filter: brightness(1.12);
+}
+
+.marcador--seleccionado {
+  --tam: 48px;
+  border-width: 3px;
+  box-shadow: 0 0 0 4px rgb(232 186 99 / 0.75), 0 4px 10px rgb(0 0 0 / 0.4);
+}
+
+html.a11y-contraste .marcador {
+  border: 3px solid #000;
+  box-shadow: 0 0 0 2px #fff;
+}
+
+.marcador-usuario {
+  width: 18px;
+  height: 18px;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background-color: #1a73e8;
+  box-shadow: 0 0 0 6px rgb(26 115 232 / 0.25);
+  position: absolute;
+  translate: -50% -50%; /* centrado sobre la posición */
+}
+
+.mapa__control {
+  width: 44px;
+  aspect-ratio: 1;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--celeste);
+  border-radius: 50%;
+  background-color: var(--azul);
+  color: var(--celeste);
+  font-size: 1.25rem;
+  box-shadow: 0 3px 10px rgb(0 0 0 / 0.3);
+  transition: scale var(--transicion), background-color var(--transicion), color var(--transicion);
+}
+
+.mapa__control:hover,
+.mapa__control:focus-visible {
+  scale: var(--escala-hover);
+  background-color: var(--amarillo);
+  color: var(--cafe);
+}
+
+/* =========================================================
+   Panel de detalle: estado vacío y campos adicionales
+   ========================================================= */
+.detalle__ficha {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.detalle__vacio {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 2rem 1.5rem 4rem;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+.detalle__vacio-icono {
+  font-size: 3rem;
+  color: var(--azul);
+}
+
+.detalle__vacio-titulo {
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+  font-size: 1.3rem;
+  text-transform: uppercase;
+  color: #111;
+}
+
+.leyenda {
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 1rem;
+  text-align: left;
+  font-size: 0.85rem;
+}
+
+.leyenda__item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.leyenda__icono {
+  width: 28px;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background-color: var(--color);
+  color: var(--icono, #fff);
+  font-size: 0.85rem;
+}
+
+.detalle__titulo:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.detalle__etiquetas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: -0.4rem;
+}
+
+.etiqueta {
+  padding: 0.2rem 0.65rem;
+  border: 2px solid var(--color, var(--azul));
+  border-radius: 999px;
+  background-color: var(--color, var(--azul));
+  color: #fff;
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: 0.72rem;
+}
+
+.etiqueta--oscura {
+  color: #694e1c;
+}
+
+.etiqueta--verificacion {
+  --color: var(--azul);
+  background-color: transparent;
+  color: var(--azul);
+}
+
+.etiqueta--verificacion[data-nivel="oficial"] {
+  --color: #1e6b3a;
+  background-color: #1e6b3a;
+  color: #fff;
+}
+
+.etiqueta--verificacion[data-nivel="sin_confirmar"] {
+  --color: #8a1c12;
+  background-color: #fbe3df;
+  color: #8a1c12;
+}
+
+.detalle__descripcion {
+  font-size: 0.88rem;
+}
+
+.detalle__distancia {
+  font-size: 0.8rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.estado-apertura {
+  display: inline-block;
+  margin-left: 0.25rem;
+  padding: 0.05rem 0.5rem;
+  border-radius: 999px;
+  background-color: #fbe3df;
+  color: #8a1c12;
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.estado-apertura--abierto {
+  background-color: #d4edda;
+  color: #1e6b3a;
+}
+
+.detalle__valor--alerta {
+  color: #8a1c12;
+  font-weight: 700;
+}
+
+.detalle__servicios {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.4rem;
+}
+
+.detalle__servicios li {
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  background-color: color-mix(in srgb, var(--azul) 12%, transparent);
+  font-size: 0.75rem;
+}
+
+.detalle__fuente {
+  font-size: 0.75rem;
+}
+
+/* ---------- Acciones: estados y menú de contacto ---------- */
+.accion[aria-pressed="true"] .accion__icono {
+  background-color: var(--amarillo);
+  color: var(--cafe);
+}
+
+.accion--deshabilitada {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.accion--deshabilitada:hover {
+  scale: 1;
+}
+
+.accion-contenedor {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.menu-contacto {
+  position: absolute;
+  z-index: 10;
+  bottom: calc(100% + 0.5rem);
+  right: 0;
+  width: max-content;
+  padding: 0.4rem;
+  border-radius: 12px;
+  background-color: var(--blanco);
+  box-shadow: 0 6px 20px rgb(0 0 0 / 0.25);
+}
+
+.menu-contacto__opcion {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 8px;
+  color: #111;
+  text-decoration: none;
+  font-family: var(--fuente-titulo);
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.menu-contacto__opcion:hover,
+.menu-contacto__opcion:focus-visible {
+  background-color: var(--celeste);
+}
+
+/* =========================================================
    Responsive
    ========================================================= */
 @media (max-width: 900px) {
@@ -571,7 +1118,18 @@ a.detalle__valor:hover {
   .detalle__imagen {
     aspect-ratio: 21 / 9;
   }
+
+  .buscador__filtros,
+  .buscador__resultados {
+    max-height: calc(max(65vh, 380px) - 6.5rem);
+  }
+
+  .detalle__vacio {
+    padding-bottom: 6rem;
+  }
 }
+
+
 
 @media (max-width: 420px) {
   .buscador {

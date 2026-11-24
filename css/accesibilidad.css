@@ -1,0 +1,114 @@
+/* =========================================================
+   REFUGIA — Accesibilidad (compartido por todas las páginas)
+   Va junto con js/accesibilidad.js
+   ========================================================= */
+
+/* ---------- Tamaño del texto ----------
+   Todo lo que esté en rem/em crece con estos valores. */
+html[data-a11y-texto="115"] { font-size: 115%; }
+html[data-a11y-texto="130"] { font-size: 130%; }
+html[data-a11y-texto="150"] { font-size: 150%; }
+
+/* ---------- Alto contraste ----------
+   Se redefine la paleta de REFUGIA: los tonos oscuros pasan a negro, los
+   claros a blanco y el amarillo a un amarillo más intenso. Así funciona en
+   cualquier página que use las variables de color del proyecto. */
+html.a11y-contraste {
+  --azul: #000000;
+  --cafe: #000000;
+  --vinotinto: #000000;
+  --celeste: #ffffff;
+  --crema: #ffffff;
+  --blanco: #ffffff;
+  --amarillo: #ffd60a;
+}
+
+html.a11y-contraste :focus-visible {
+  outline: 4px solid #ffd60a !important;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 7px #000 !important;
+}
+
+/* Enlaces siempre subrayados (no depender solo del color) */
+html.a11y-contraste main a,
+html.a11y-contraste .navegacion__enlace--activo {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Botones redondos con borde visible sobre cualquier fondo */
+html.a11y-contraste .accesibilidad__boton,
+html.a11y-contraste .accion__icono,
+html.a11y-contraste .buscador__filtro {
+  border: 2px solid #ffd60a;
+}
+
+/* Amarillo sobre blanco no tiene contraste suficiente: estrellas en negro */
+html.a11y-contraste .estrellas {
+  color: #000;
+}
+
+html.a11y-contraste .buscador {
+  border: 2px solid #000;
+}
+
+/* Estado "activado" de los botones de accesibilidad */
+.accesibilidad__boton[aria-pressed="true"] {
+  background-color: var(--amarillo);
+  color: var(--cafe);
+}
+
+.accesibilidad__boton[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---------- Aviso visual (toast) ---------- */
+.a11y-aviso {
+  position: fixed;
+  z-index: 1000;
+  left: 50%;
+  bottom: max(5rem, calc(env(safe-area-inset-bottom) + 4rem));
+  translate: -50% 1rem;
+  max-width: min(90vw, 32rem);
+  padding: 0.7rem 1.1rem;
+  border-radius: 12px;
+  background-color: #111;
+  color: #fff;
+  font-family: "Manrope", sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  line-height: 1.35;
+  text-align: center;
+  box-shadow: 0 6px 20px rgb(0 0 0 / 0.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, translate 0.2s ease;
+  overflow-wrap: anywhere;
+}
+
+.a11y-aviso--visible {
+  opacity: 1;
+  translate: -50% 0;
+}
+
+html.a11y-contraste .a11y-aviso {
+  background-color: #000;
+  border: 3px solid #ffd60a;
+}
+
+/* Solo para lectores de pantalla */
+.a11y-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .a11y-aviso {
+    transition: none;
+  }
+}
