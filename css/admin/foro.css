@@ -312,6 +312,213 @@ button { border: none; cursor: pointer; }
   color: var(--blanco);
 }
 
+/* =========================================================
+   Moderación conectada a la API (js/admin/foro.js)
+   ========================================================= */
+.boton {
+  border: none;
+  cursor: pointer;
+}
+
+.boton:focus-visible {
+  outline: 3px solid var(--azul);
+  outline-offset: 2px;
+}
+
+.boton--secundario {
+  background-color: var(--blanco);
+  box-shadow: inset 0 0 0 2px var(--azul);
+  color: var(--azul);
+}
+
+.boton--secundario:hover,
+.boton--secundario:focus-visible {
+  background-color: var(--celeste);
+}
+
+.boton--pequeno {
+  min-width: 0;
+  min-height: 34px;
+  padding: 0.35rem 0.9rem;
+  font-size: 0.78rem;
+}
+
+.boton:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.filtros__grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 10rem;
+  font-family: var(--fuente-titulo);
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #333;
+}
+
+.filtros__grupo--ancho {
+  flex: 1 1 14rem;
+}
+
+.filtros__grupo input,
+.filtros__grupo select {
+  min-height: 42px;
+  padding: 0.5rem 0.9rem;
+  border: 2px solid var(--azul);
+  border-radius: 12px;
+  background-color: var(--blanco);
+  font: 500 0.85rem var(--fuente-titulo);
+  color: var(--texto);
+}
+
+.filtros__grupo :is(input, select):focus-visible {
+  outline: 3px solid var(--vinotinto);
+  outline-offset: 2px;
+}
+
+.moderacion__estado {
+  margin-bottom: 0.75rem;
+  font-family: var(--fuente-titulo);
+  font-size: 0.85rem;
+  color: #444;
+}
+
+.moderacion__estado--error {
+  font-weight: 700;
+  color: #8a1c1c;
+}
+
+.moderacion__mas {
+  display: flex;
+  margin: 1.25rem auto 0;
+}
+
+.moderacion__mas[hidden] {
+  display: none;
+}
+
+.publicacion__cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.etiqueta--sin_confirmar { background-color: var(--crema); color: var(--vinotinto); }
+.etiqueta--confirmada { background-color: var(--verde); color: var(--blanco); }
+.etiqueta--oculta { background-color: #4d4d4d; color: var(--blanco); }
+.etiqueta--denuncia { background-color: #8a1c1c; color: var(--blanco); }
+
+.publicacion__texto {
+  white-space: pre-line;
+}
+
+.publicacion__extra {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.9rem;
+  border-radius: 16px;
+  background-color: var(--blanco);
+}
+
+.publicacion__extra[hidden] {
+  display: none;
+}
+
+.publicacion__subtitulo {
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+  font-size: 0.9rem;
+}
+
+.publicacion__lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding-left: 1.1rem;
+  font-size: 0.8rem;
+}
+
+.publicacion__lista--respuestas {
+  padding-left: 0;
+  list-style: none;
+}
+
+.publicacion__respuesta {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-left: 4px solid var(--azul);
+  background-color: var(--gris-tarjeta);
+}
+
+.publicacion__respuesta p {
+  font-size: 0.78rem;
+}
+
+.aviso {
+  margin-bottom: 1rem;
+  padding: 0.85rem 1.1rem;
+  border-left: 6px solid var(--azul);
+  border-radius: 12px;
+  background-color: var(--blanco);
+  font-family: var(--fuente-titulo);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--azul);
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
+}
+
+.aviso[hidden] {
+  display: none;
+}
+
+.aviso--exito { border-color: #2E7D32; color: #1f5a22; }
+.aviso--error { border-color: #8a1c1c; color: #8a1c1c; }
+
+.dialogo {
+  width: min(92vw, 420px);
+  margin: auto;
+  padding: 1.5rem;
+  border: none;
+  border-radius: var(--radio-tarjeta);
+  background-color: var(--blanco);
+  color: var(--texto);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.3);
+}
+
+.dialogo::backdrop {
+  background-color: rgb(28 85 104 / 0.55);
+}
+
+.dialogo__titulo {
+  margin-bottom: 0.5rem;
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+  font-size: 1.2rem;
+  color: var(--vinotinto);
+}
+
+.dialogo__texto {
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+}
+
 @media (max-width: 520px) {
   .boton { flex: 1; }
 }

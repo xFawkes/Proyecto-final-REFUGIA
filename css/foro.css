@@ -421,6 +421,396 @@ button { border: none; background: none; cursor: pointer; }
   font-size: 0.95rem;
 }
 
+/* =========================================================
+   Foro conectado a la API (js/foro.js)
+   ========================================================= */
+.busqueda__boton {
+  min-height: 36px;
+  padding: 0.35rem 1rem;
+  border: none;
+  border-radius: 999px;
+  background-color: var(--azul);
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--blanco);
+  cursor: pointer;
+}
+
+.busqueda__boton:hover,
+.busqueda__boton:focus-visible {
+  background-color: var(--cafe);
+}
+
+.foro__barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.foro__filtro {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 13rem;
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #1d2433;
+}
+
+.foro__filtro select,
+.foro__campo input,
+.foro__campo select,
+.foro__campo textarea {
+  width: 100%;
+  min-height: 42px;
+  padding: 0.5rem 0.8rem;
+  border: 2px solid var(--azul);
+  border-radius: var(--radio);
+  background-color: var(--blanco);
+  font: 500 0.9rem var(--fuente-titulo);
+  color: #1d2433;
+}
+
+.foro__campo textarea {
+  resize: vertical;
+}
+
+.foro__filtro select:focus-visible,
+.foro__campo :is(input, select, textarea):focus-visible {
+  outline: 3px solid var(--cafe);
+  outline-offset: 2px;
+}
+
+.foro__campo [aria-invalid="true"] {
+  border-color: #8a1c1c;
+  background-color: #fff4f2;
+}
+
+.foro__boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 42px;
+  padding: 0.5rem 1.1rem;
+  border: 2px solid var(--azul);
+  border-radius: var(--radio);
+  background-color: var(--blanco);
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: var(--azul);
+  cursor: pointer;
+  transition: background-color var(--transicion), color var(--transicion);
+}
+
+.foro__boton:hover,
+.foro__boton:focus-visible {
+  background-color: var(--celeste);
+}
+
+.foro__boton--principal {
+  background-color: var(--azul);
+  color: var(--blanco);
+}
+
+.foro__boton--principal:hover,
+.foro__boton--principal:focus-visible {
+  background-color: #123d4b;
+  color: var(--blanco);
+}
+
+.foro__boton--peligro {
+  border-color: #8a1c1c;
+  background-color: #8a1c1c;
+  color: var(--blanco);
+}
+
+.foro__boton--peligro:hover,
+.foro__boton--peligro:focus-visible {
+  background-color: var(--vinotinto);
+}
+
+.foro__boton:focus-visible,
+.foro__volver:focus-visible {
+  outline: 3px solid var(--cafe);
+  outline-offset: 2px;
+}
+
+.foro__boton:disabled {
+  opacity: 0.65;
+  cursor: default;
+}
+
+.foro__mas {
+  align-self: center;
+  margin-top: 0.4rem;
+}
+
+.foro__mas[hidden],
+.foro__estado[hidden] {
+  display: none;
+}
+
+.foro__lista {
+  display: flex;
+  flex-direction: column;
+  gap: inherit;
+}
+
+#foro-listado {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.5rem, 1.2vw, 0.9rem);
+}
+
+.foro__estado {
+  padding: 0.9rem 1.1rem;
+  background-color: var(--celeste);
+  font-family: var(--fuente-titulo);
+  font-weight: 600;
+  color: var(--azul);
+}
+
+.foro__estado--error {
+  border-left: 6px solid #8a1c1c;
+  color: #8a1c1c;
+}
+
+.dato--tema {
+  font-size: 0.8rem;
+}
+
+/* Fila: iniciales en el avatar, autor y verificación */
+.avatar {
+  display: grid;
+  place-items: center;
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: var(--azul);
+}
+
+.texto .foro__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.3rem;
+}
+
+.foro__meta {
+  font-family: var(--fuente-titulo);
+  font-weight: 600;
+  font-size: 0.72rem;
+  color: #3d4a52;
+}
+
+.foro__sello {
+  display: inline-block;
+  padding: 0.05rem 0.55rem;
+  border-radius: 999px;
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: 0.68rem;
+}
+
+.foro__sello--confirmada { background-color: #dff0e0; color: #1f5a22; }
+.foro__sello--sin_confirmar { background-color: var(--crema); color: var(--vinotinto); }
+.foro__sello--categoria { background-color: var(--azul); color: var(--blanco); }
+
+/* Paneles: nueva publicación y detalle */
+.foro__panel,
+.foro__detalle {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  padding: clamp(0.9rem, 2.5vw, 1.5rem);
+  background-color: var(--celeste);
+  color: #1d2433;
+}
+
+.foro__panel[hidden],
+.foro__detalle[hidden],
+#foro-listado[hidden] {
+  display: none;
+}
+
+.foro__subtitulo {
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: var(--azul);
+}
+
+.foro__nota {
+  font-size: 0.8rem;
+}
+
+.foro__formulario {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.foro__formulario[hidden] {
+  display: none;
+}
+
+.foro__campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: 0.82rem;
+}
+
+.foro__campo--ancho,
+.foro__formulario .foro__acciones,
+.foro__formulario .foro__error {
+  grid-column: 1 / -1;
+}
+
+.foro__error-campo,
+.foro__error {
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: 0.78rem;
+  color: #8a1c1c;
+}
+
+.foro__error-campo:empty,
+.foro__error:empty {
+  display: none;
+}
+
+.foro__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.foro__volver {
+  align-self: flex-start;
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+  font-size: 0.9rem;
+  color: var(--azul);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.foro__articulo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: clamp(0.9rem, 2vw, 1.25rem);
+  background-color: var(--blanco);
+}
+
+.foro__etiquetas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.foro__titulo-detalle {
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+  font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+  line-height: 1.25;
+  color: var(--azul);
+}
+
+.foro__titulo-detalle:focus {
+  outline: none;
+}
+
+.foro__contenido {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.foro__aviso {
+  padding: 0.6rem 0.8rem;
+  border-left: 5px solid var(--amarillo);
+  background-color: #fff6e2;
+  font-size: 0.82rem;
+  color: #5a4012;
+}
+
+.foro__interaccion {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.3rem;
+}
+
+.foro__formulario--denuncia {
+  padding: 0.8rem;
+  border: 2px dashed #8a1c1c;
+  border-radius: var(--radio);
+}
+
+.foro__confirmacion {
+  padding: 0.6rem 0.8rem;
+  border-left: 5px solid #2E7D32;
+  background-color: #eef8ef;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #1f5a22;
+}
+
+.foro__respuestas {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.foro__lista-respuestas {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  list-style: none;
+}
+
+.foro__respuesta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.75rem 0.9rem;
+  border-left: 5px solid var(--azul);
+  background-color: var(--blanco);
+  font-size: 0.88rem;
+}
+
+.foro__sin-respuestas {
+  font-size: 0.85rem;
+}
+
+.foro__formulario--respuesta {
+  padding: 0.9rem;
+  background-color: var(--blanco);
+}
+
+@media (max-width: 600px) {
+  .foro__formulario {
+    grid-template-columns: 1fr;
+  }
+
+  .foro__barra > * {
+    flex: 1 1 100%;
+  }
+}
+
 /* ---------- Botones de accesibilidad (igual que en las demás páginas) ---------- */
 .accesibilidad {
   /* Fijos en la esquina inferior izquierda de la pantalla, aunque se haga scroll */
