@@ -290,7 +290,7 @@ fieldset {
   grid-template-columns: repeat(2, 1fr);
   min-height: calc(100dvh - 76px);
   background:
-    url("../imags/image\ 13.png") center / cover no-repeat,
+    url("../img/donaciones/portada.png") center / cover no-repeat,
     var(--azul);
   isolation: isolate;
 }

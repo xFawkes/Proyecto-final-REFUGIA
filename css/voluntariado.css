@@ -295,7 +295,7 @@ button {
   overflow: hidden;
   /* Imagen de fondo de la portada (la ruta es relativa a este archivo CSS) */
   background:
-    url("../imags/Rectangle 7.png") center / cover no-repeat,
+    url("../img/personas-conectadas.png") center / cover no-repeat,
     color-mix(in srgb, var(--azul) 60%, #000);
 }
 

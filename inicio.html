@@ -13,15 +13,19 @@
   <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
+  <!--CSS-->
   <link rel="stylesheet" href="css/inicio.css">
-  <link rel="stylesheet" href="css/MenuUsuario.css">
+  <link rel="stylesheet" href="css/menu-usuario.css">
+  <link rel="stylesheet" href="css/accesibilidad.css">
+  <!--API Accesibilidad-->
+  <script src="js/accesibilidad.js"></script>
 </head>
 <body>
 
   <!-- ===================== ENCABEZADO ===================== -->
   <header class="encabezado">
     <a href="inicio.html" class="encabezado__logo" aria-label="Ir al inicio">
-      <img src="imags/logo 1.png" alt="Logo de REFUGIA">
+      <img src="img/logo-refugia.png" alt="Logo de REFUGIA">
     </a>
 
     <p class="encabezado__marca">REFUGIA</p>
@@ -84,7 +88,7 @@
 
       <nav class="menu-circular" aria-label="Secciones de REFUGIA">
         <div class="menu-circular__centro">
-          <img src="imags/logo 1.png" alt="Logo de REFUGIA">
+          <img src="img/logo-refugia.png" alt="Logo de REFUGIA">
         </div>
 
         <a href="mapa.html" class="menu-circular__boton menu-circular__boton--mapa" title="Mapa" aria-label="Mapa">
@@ -115,8 +119,8 @@
 
         <div class="quienes__grid">
           <div class="quienes__video">
-            <video controls preload="metadata" poster="imags/portadita.png">
-              <source src="imags/videoInicio.mp4" type="video/mp4">
+            <video controls preload="metadata" poster="img/inicio/video-presentacion-portada.png">
+              <source src="img/inicio/video-presentacion.mp4" type="video/mp4">
               Tu navegador no soporta la reproducción de video.
             </video>
           </div>
@@ -147,7 +151,7 @@
               durante emergencias por desastres naturales en Colombia.
             </p>
           </div>
-          <img class="mv__imagen" src="imags/derrumbe.png" alt="Personas ayudando entre escombros tras un desastre">
+          <img class="mv__imagen" src="img/inicio/ayuda-entre-escombros.png" alt="Personas ayudando entre escombros tras un desastre">
         </article>
 
         <article class="mv__fila mv__fila--invertida">
@@ -160,10 +164,10 @@
               alcaldías y las ONG locales.
             </p>
           </div>
-          <img class="mv__imagen" src="imags/image 12.png" alt="Voluntarios de la Cruz Roja caminando en una comunidad">
+          <img class="mv__imagen" src="img/inicio/voluntarios-comunidad.png" alt="Voluntarios de la Cruz Roja caminando en una comunidad">
         </article>
 
-        <!-- Botones de accesibilidad (la funcionalidad se programa con JS) -->
+        <!-- Botones de accesibilidad (js/accesibilidad.js) -->
         <div class="accesibilidad" role="group" aria-label="Opciones de accesibilidad">
           <button type="button" class="accesibilidad__boton" id="btn-lector-voz" aria-label="Leer en voz alta">
             <i class="bi bi-volume-up-fill" aria-hidden="true"></i>
@@ -184,13 +188,13 @@
         <h2 class="socios__titulo" id="titulo-socios">Nuestros socios y aliados</h2>
 
         <ul class="socios__logos">
-          <li><img src="imags/Ellipse 14.png" alt="Logo aliado 1"></li>
-          <li><img src="imags/Ellipse 15.png" alt="Logo aliado 2"></li>
-          <li><img src="imags/Ellipse 16.png" alt="Logo aliado 3"></li>
-          <li><img src="imags/Ellipse 17.png" alt="Logo aliado 4"></li>
-          <li><img src="imags/Ellipse 18.png" alt="Logo aliado 5"></li>
-          <li><img src="imags/Ellipse 19.png" alt="Logo aliado 6"></li>
-          <li><img src="imags/Ellipse 20.png" alt="Logo aliado 7"></li>
+          <li><img src="img/inicio/aliado-1.png" alt="Logo aliado 1"></li>
+          <li><img src="img/inicio/aliado-2.png" alt="Logo aliado 2"></li>
+          <li><img src="img/inicio/aliado-3.png" alt="Logo aliado 3"></li>
+          <li><img src="img/inicio/aliado-4.png" alt="Logo aliado 4"></li>
+          <li><img src="img/inicio/aliado-5.png" alt="Logo aliado 5"></li>
+          <li><img src="img/inicio/aliado-6.png" alt="Logo aliado 6"></li>
+          <li><img src="img/inicio/aliado-7.png" alt="Logo aliado 7"></li>
         </ul>
       </div>
     </section>
@@ -201,7 +205,7 @@
   <footer class="pie">
     <div class="contenedor pie__grid">
       <div class="pie__logo">
-        <img src="imags/logo 1.png" alt="Logo de REFUGIA">
+        <img src="img/logo-refugia.png" alt="Logo de REFUGIA">
       </div>
 
       <nav class="pie__enlaces" aria-label="Enlaces del sitio">

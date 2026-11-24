@@ -1,4 +1,20 @@
+# Entornos virtuales de Python (cada integrante crea el suyo)
 entorno_API/
+.venv/
+venv/
+
+# Archivos generados por Python y las pruebas
 __pycache__/
 *.pyc
+.pytest_cache/
+
+# Base de datos local: se crea sola al iniciar el servidor
+api/refugia.db
+
+# Configuración local con datos privados
 .env
+
+# Archivos del sistema operativo
+Thumbs.db
+desktop.ini
+.DS_Store

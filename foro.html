@@ -15,13 +15,16 @@
 
         <!--CSS-->
         <link rel="stylesheet" href="css/foro.css">
-        <link rel="stylesheet" href="css/MenuUsuario.css">
+        <link rel="stylesheet" href="css/menu-usuario.css">
+        <link rel="stylesheet" href="css/accesibilidad.css">
+        <!--API Accesibilidad-->
+        <script src="js/accesibilidad.js"></script>
     </head>
     <body>
           <!-- ===================== ENCABEZADO ===================== -->
   <header class="encabezado">
     <a href="inicio.html" class="encabezado__logo" aria-label="Ir al inicio">
-      <img src="imags/logo 1.png" alt="Logo de REFUGIA">
+      <img src="img/logo-refugia.png" alt="Logo de REFUGIA">
     </a>
  
     <!-- Menú hamburguesa para móvil (solo CSS, sin JS) -->
@@ -93,7 +96,7 @@
  
   <!-- portada -->
   <section class="portada" aria-labelledby="titulo-foro">
-    <img class="portada__imagen" src="imags/Rectangle 7.png" alt="Grupo de personas conectadas con sus celulares, tabletas y portátil">
+    <img class="portada__imagen" src="img/personas-conectadas.png" alt="Grupo de personas conectadas con sus celulares, tabletas y portátil">
     <div class="portada__caja">
       <h1 class="portada__titulo" id="titulo-foro">Foro</h1>
       <p>
@@ -212,7 +215,7 @@
             </article>
         </main>
 
-  <!-- Botones de accesibilidad (la funcionalidad se programa con JS) -->
+  <!-- Botones de accesibilidad (js/accesibilidad.js) -->
   <div class="accesibilidad" role="group" aria-label="Opciones de accesibilidad">
     <button type="button" class="accesibilidad__boton" id="btn-lector-voz" aria-label="Leer en voz alta">
       <i class="bi bi-volume-up-fill" aria-hidden="true"></i>

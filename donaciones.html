@@ -11,15 +11,19 @@
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
+  <!--CSS-->
   <link rel="stylesheet" href="css/donaciones.css">
-  <link rel="stylesheet" href="css/MenuUsuario.css">
+  <link rel="stylesheet" href="css/menu-usuario.css">
+  <link rel="stylesheet" href="css/accesibilidad.css">
+  <!--API Accesibilidad-->
+  <script src="js/accesibilidad.js"></script>
 </head>
 <body>
 
   <!-- ===================== ENCABEZADO ===================== -->
   <header class="encabezado">
     <a href="inicio.html" class="encabezado__logo" aria-label="Ir al inicio">
-      <img src="imags/logo 1.png" alt="Logo de REFUGIA">
+      <img src="img/logo-refugia.png" alt="Logo de REFUGIA">
     </a>
 
     <!-- Menú hamburguesa para móvil (solo CSS, sin JS) -->
@@ -98,7 +102,7 @@
 
       <!-- INTEGRACIÓN: reemplazar href="error.html" por el enlace oficial de cada ONG -->
       <article class="tarjeta-ong">
-        <img class="tarjeta-ong__imagen" src="imags/Rectangle 10.png" alt="Voluntario de la Cruz Roja Colombiana entregando ayuda">
+        <img class="tarjeta-ong__imagen" src="img/donaciones/cruz-roja.png" alt="Voluntario de la Cruz Roja Colombiana entregando ayuda">
         <div class="tarjeta-ong__cuerpo">
           <h2 class="tarjeta-ong__nombre">Cruz Roja Colombia</h2>
           <p>
@@ -111,7 +115,7 @@
       </article>
 
       <article class="tarjeta-ong">
-        <img class="tarjeta-ong__imagen" src="imags/Rectangle 14.png" alt="Personal de UNICEF atendiendo a un niño">
+        <img class="tarjeta-ong__imagen" src="img/donaciones/unicef.png" alt="Personal de UNICEF atendiendo a un niño">
         <div class="tarjeta-ong__cuerpo">
           <h2 class="tarjeta-ong__nombre">UNICEF Colombia</h2>
           <p>
@@ -124,7 +128,7 @@
       </article>
 
       <article class="tarjeta-ong">
-        <img class="tarjeta-ong__imagen" src="imags/Rectangle 15.png" alt="Voluntarios de TECHO con la bandera de Colombia">
+        <img class="tarjeta-ong__imagen" src="img/donaciones/techo.png" alt="Voluntarios de TECHO con la bandera de Colombia">
         <div class="tarjeta-ong__cuerpo">
           <h2 class="tarjeta-ong__nombre">TECHO Colombia</h2>
           <p>
@@ -187,10 +191,10 @@
       <!-- INTEGRACIÓN: aquí se monta la pasarela de pagos (widget / iframe / botón del proveedor) -->
       <div class="pasarela" id="pasarela-pagos"></div>
 
-      <img class="panel-donacion__imagen" src="imags/ninos.png" alt="Niños sonriendo y levantando el pulgar">
+      <img class="panel-donacion__imagen" src="img/donaciones/ninos.png" alt="Niños sonriendo y levantando el pulgar">
     </section>
 
-    <!-- Botones de accesibilidad (la funcionalidad se programa con JS) -->
+    <!-- Botones de accesibilidad (js/accesibilidad.js) -->
     <div class="accesibilidad" role="group" aria-label="Opciones de accesibilidad">
       <button type="button" class="accesibilidad__boton" id="btn-lector-voz" aria-label="Leer en voz alta">
         <i class="bi bi-volume-up-fill" aria-hidden="true"></i>

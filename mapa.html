@@ -11,15 +11,26 @@
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
+  <!-- Leaflet (mapa con OpenStreetMap, sin API key) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+
   <link rel="stylesheet" href="css/mapa.css">
-  <link rel="stylesheet" href="css/MenuUsuario.css">
+  <link rel="stylesheet" href="css/menu-usuario.css">
+  <link rel="stylesheet" href="css/accesibilidad.css">
+
+  <!-- Accesibilidad: va en el <head> y sin defer para aplicar contraste/tamaño antes de pintar -->
+  <script src="js/accesibilidad.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="" defer></script>
+  <script src="js/mapa.js" defer></script>
 </head>
 <body>
 
   <!-- ===================== ENCABEZADO ===================== -->
   <header class="encabezado">
     <a href="inicio.html" class="encabezado__logo" aria-label="Ir al inicio">
-      <img src="imags/logo 1.png" alt="Logo de REFUGIA">
+      <img src="img/logo-refugia.png" alt="Logo de REFUGIA">
     </a>
 
     <!-- Menú hamburguesa para móvil (solo CSS, sin JS) -->
@@ -96,32 +107,89 @@
     <!-- ---------- Zona del mapa ---------- -->
     <section class="mapa" aria-label="Mapa">
 
-      <!-- Barra de búsqueda con filtro
-           INTEGRACIÓN: conectar #form-busqueda / #busqueda / #btn-filtros con JS -->
-      <form class="buscador" id="form-busqueda" role="search" action="#">
+      <!-- Barra de búsqueda con filtros (js/mapa.js) -->
+      <form class="buscador" id="form-busqueda" role="search" action="#" autocomplete="off">
         <label for="busqueda" class="sr-only">Buscar un lugar</label>
         <i class="bi bi-search buscador__icono" aria-hidden="true"></i>
         <input type="search" id="busqueda" name="q" class="buscador__input"
-               placeholder="Buscar albergues, centros de acopio, centros de salud..." autocomplete="off">
+               placeholder="Buscar albergues, centros de acopio, centros de salud..." autocomplete="off"
+               role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="resultados-busqueda">
         <button type="button" class="buscador__filtro" id="btn-filtros"
                 aria-label="Mostrar filtros" aria-expanded="false" aria-controls="filtros-busqueda">
           <i class="bi bi-funnel-fill" aria-hidden="true"></i>
+          <span class="buscador__contador" id="filtros-contador" hidden></span>
         </button>
 
-        <!-- INTEGRACIÓN: aquí van las opciones de filtro (quitar "hidden" para mostrarlo) -->
-        <div class="buscador__filtros" id="filtros-busqueda" hidden></div>
+        <!-- Panel de filtros -->
+        <div class="buscador__filtros" id="filtros-busqueda" hidden>
+          <fieldset class="filtro">
+            <legend class="filtro__titulo">Tipo de lugar</legend>
+            <!-- Las opciones se cargan desde /api/tipos -->
+            <div class="filtro__chips" id="filtro-tipos"></div>
+          </fieldset>
 
-        <!-- INTEGRACIÓN: aquí van los resultados / sugerencias de búsqueda -->
-        <ul class="buscador__resultados" id="resultados-busqueda" hidden></ul>
+          <fieldset class="filtro">
+            <legend class="filtro__titulo">Disponibilidad</legend>
+            <label class="filtro__opcion"><input type="checkbox" id="filtro-abierto"> Abierto ahora</label>
+            <label class="filtro__opcion"><input type="checkbox" id="filtro-cupos"> Albergues con cupos disponibles</label>
+            <label class="filtro__opcion"><input type="checkbox" id="filtro-gratuito"> Sin costo</label>
+            <label class="filtro__opcion"><input type="checkbox" id="filtro-guardados"> Solo mis lugares guardados</label>
+          </fieldset>
+
+          <fieldset class="filtro">
+            <legend class="filtro__titulo">Ubicación</legend>
+            <div class="filtro__fila">
+              <label class="filtro__opcion"><input type="checkbox" id="filtro-cerca"> Cerca de mí</label>
+              <label class="sr-only" for="filtro-radio">Distancia máxima</label>
+              <select id="filtro-radio" class="filtro__select">
+                <option value="1">a 1 km</option>
+                <option value="3">a 3 km</option>
+                <option value="5" selected>a 5 km</option>
+                <option value="10">a 10 km</option>
+                <option value="25">a 25 km</option>
+              </select>
+            </div>
+          </fieldset>
+
+          <fieldset class="filtro">
+            <legend class="filtro__titulo">Confiabilidad</legend>
+            <div class="filtro__fila">
+              <label for="filtro-confianza">Índice de confianza mínimo</label>
+              <select id="filtro-confianza" class="filtro__select">
+                <option value="">Cualquiera</option>
+                <option value="3">3 o más</option>
+                <option value="4">4 o más</option>
+                <option value="4.5">4.5 o más</option>
+              </select>
+            </div>
+            <label class="filtro__opcion"><input type="checkbox" name="verificacion" value="oficial"> Información oficial</label>
+            <label class="filtro__opcion"><input type="checkbox" name="verificacion" value="comunitaria"> Información comunitaria</label>
+            <label class="filtro__opcion"><input type="checkbox" name="verificacion" value="sin_confirmar"> Sin confirmar</label>
+          </fieldset>
+
+          <fieldset class="filtro">
+            <legend class="filtro__titulo">Servicios que necesitas</legend>
+            <!-- Las opciones se cargan desde /api/servicios -->
+            <div class="filtro__chips" id="filtro-servicios"></div>
+          </fieldset>
+
+          <div class="filtro__pie">
+            <p class="filtro__resumen" id="filtros-resumen"></p>
+            <button type="button" class="filtro__limpiar" id="btn-limpiar-filtros">Limpiar filtros</button>
+          </div>
+        </div>
+
+        <!-- Resultados de la búsqueda -->
+        <ul class="buscador__resultados" id="resultados-busqueda" role="listbox" aria-label="Resultados de búsqueda" hidden></ul>
+        <p class="sr-only" id="estado-busqueda" role="status" aria-live="polite"></p>
       </form>
 
-      <!-- INTEGRACIÓN: contenedor donde se monta el mapa (Leaflet, Google Maps, Mapbox, etc.) -->
+      <!-- Contenedor del mapa (Leaflet + OpenStreetMap) -->
       <div class="mapa__lienzo" id="mapa">
-        <!-- Eliminar este párrafo al integrar el mapa -->
-        <p class="mapa__placeholder">Aquí va el mapa</p>
+        <p class="mapa__placeholder" id="mapa-mensaje">Cargando mapa…</p>
       </div>
 
-      <!-- Botones de accesibilidad (la funcionalidad se programa con JS) -->
+      <!-- Botones de accesibilidad (js/accesibilidad.js) -->
       <div class="accesibilidad" role="group" aria-label="Opciones de accesibilidad">
         <button type="button" class="accesibilidad__boton" id="btn-lector-voz" aria-label="Leer en voz alta">
           <i class="bi bi-volume-up-fill" aria-hidden="true"></i>
@@ -136,64 +204,94 @@
     </section>
 
     <!-- ---------- Panel de detalle de la ubicación ----------
-         INTEGRACIÓN: rellenar los elementos con id="detalle-..." desde JS/API -->
-    <aside class="detalle" id="detalle-ubicacion" aria-labelledby="detalle-titulo">
-      <img class="detalle__imagen" id="detalle-imagen" src="imags/centros.png" alt="Foto del lugar seleccionado">
+         js/mapa.js rellena los elementos con id="detalle-..." desde la API -->
+    <aside class="detalle" id="detalle-ubicacion" aria-label="Información del lugar seleccionado" data-a11y-leer>
 
-      <div class="detalle__contenido">
-        <h2 class="detalle__titulo" id="detalle-titulo">Centro de acopio</h2>
+      <!-- Estado inicial: ningún lugar seleccionado -->
+      <div class="detalle__vacio" id="detalle-vacio">
+        <i class="bi bi-geo-alt-fill detalle__vacio-icono" aria-hidden="true"></i>
+        <p class="detalle__vacio-titulo">Selecciona un lugar</p>
+        <p>Toca un punto en el mapa o usa el buscador para ver su dirección, horario, disponibilidad y nivel de confianza.</p>
+        <ul class="leyenda" id="leyenda" aria-label="Convenciones del mapa"></ul>
+      </div>
 
-        <div class="detalle__calificacion">
-          <div class="estrellas" id="detalle-estrellas" role="img" aria-label="Calificación: 4.8 de 5">
-            <i class="bi bi-star-fill" aria-hidden="true"></i>
-            <i class="bi bi-star-fill" aria-hidden="true"></i>
-            <i class="bi bi-star-fill" aria-hidden="true"></i>
-            <i class="bi bi-star-fill" aria-hidden="true"></i>
-            <i class="bi bi-star-fill" aria-hidden="true"></i>
+      <div class="detalle__ficha" id="detalle-ficha" hidden>
+        <img class="detalle__imagen" id="detalle-imagen" src="img/mapa/centro-acopio.png" alt="">
+
+        <div class="detalle__contenido">
+          <div class="detalle__etiquetas">
+            <span class="etiqueta" id="detalle-tipo"></span>
+            <span class="etiqueta etiqueta--verificacion" id="detalle-verificacion"></span>
           </div>
-          <p class="detalle__confianza"><span id="detalle-puntaje">4.8</span> en índice de confianza</p>
-        </div>
 
-        <ul class="detalle__lista">
-          <li class="detalle__item">
-            <i class="bi bi-geo-alt" aria-hidden="true"></i>
-            <p><strong>Dirección:</strong> <span class="detalle__valor" id="detalle-direccion">Carrera 7 # 45-23</span></p>
-          </li>
-          <li class="detalle__item">
-            <i class="bi bi-clock" aria-hidden="true"></i>
-            <p><strong>Disponibilidad:</strong> <span class="detalle__valor" id="detalle-horario">Lunes a Viernes, de 8:00 am a 7:00 pm.</span></p>
-          </li>
-          <li class="detalle__item">
-            <i class="bi bi-cash-coin" aria-hidden="true"></i>
-            <p><strong>Abono o costo por ayuda:</strong> <span class="detalle__valor" id="detalle-costo">No</span></p>
-          </li>
-          <li class="detalle__item">
-            <i class="bi bi-telephone" aria-hidden="true"></i>
-            <p><strong>Número de contacto:</strong> <a class="detalle__valor" id="detalle-telefono" href="tel:3132458675">313 2458675</a></p>
-          </li>
-          <li class="detalle__item">
-            <i class="bi bi-globe" aria-hidden="true"></i>
-            <p><strong>Página web:</strong> <a class="detalle__valor" id="detalle-web" href="error.html">www.acopios.com</a></p>
-          </li>
-        </ul>
+          <h2 class="detalle__titulo" id="detalle-titulo" tabindex="-1"></h2>
 
-        <div class="detalle__acciones">
-          <button type="button" class="accion" id="accion-como-llegar">
-            <span class="accion__icono"><i class="bi bi-sign-turn-right-fill" aria-hidden="true"></i></span>
-            <span class="accion__texto">Cómo llegar</span>
-          </button>
-          <button type="button" class="accion" id="accion-guardar">
-            <span class="accion__icono"><i class="bi bi-bookmark-fill" aria-hidden="true"></i></span>
-            <span class="accion__texto">Guardar</span>
-          </button>
-          <button type="button" class="accion" id="accion-contactar">
-            <span class="accion__icono"><i class="bi bi-envelope-fill" aria-hidden="true"></i></span>
-            <span class="accion__texto">Contactar</span>
-          </button>
-          <button type="button" class="accion" id="accion-compartir">
-            <span class="accion__icono"><i class="bi bi-share-fill" aria-hidden="true"></i></span>
-            <span class="accion__texto">Compartir</span>
-          </button>
+          <div class="detalle__calificacion">
+            <div class="estrellas" id="detalle-estrellas" role="img" aria-label=""></div>
+            <p class="detalle__confianza"><span id="detalle-puntaje"></span> en índice de confianza</p>
+          </div>
+
+          <p class="detalle__descripcion" id="detalle-descripcion"></p>
+
+          <ul class="detalle__lista">
+            <li class="detalle__item">
+              <i class="bi bi-geo-alt" aria-hidden="true"></i>
+              <p><strong>Dirección:</strong> <span class="detalle__valor" id="detalle-direccion"></span>
+                <span class="detalle__distancia" id="detalle-distancia" hidden></span></p>
+            </li>
+            <li class="detalle__item">
+              <i class="bi bi-clock" aria-hidden="true"></i>
+              <p><strong>Disponibilidad:</strong> <span class="detalle__valor" id="detalle-horario"></span>
+                <span class="estado-apertura" id="detalle-abierto"></span></p>
+            </li>
+            <li class="detalle__item" id="detalle-item-cupos" hidden>
+              <i class="bi bi-people" aria-hidden="true"></i>
+              <p><strong>Cupos:</strong> <span class="detalle__valor" id="detalle-cupos"></span></p>
+            </li>
+            <li class="detalle__item">
+              <i class="bi bi-cash-coin" aria-hidden="true"></i>
+              <p><strong>Abono o costo por ayuda:</strong> <span class="detalle__valor" id="detalle-costo"></span></p>
+            </li>
+            <li class="detalle__item">
+              <i class="bi bi-telephone" aria-hidden="true"></i>
+              <p><strong>Número de contacto:</strong> <a class="detalle__valor" id="detalle-telefono"></a></p>
+            </li>
+            <li class="detalle__item">
+              <i class="bi bi-globe" aria-hidden="true"></i>
+              <p><strong>Página web:</strong> <a class="detalle__valor" id="detalle-web"></a></p>
+            </li>
+            <li class="detalle__item" id="detalle-item-servicios">
+              <i class="bi bi-list-check" aria-hidden="true"></i>
+              <div><strong>Servicios:</strong>
+                <ul class="detalle__servicios" id="detalle-servicios"></ul></div>
+            </li>
+          </ul>
+
+          <p class="detalle__fuente">
+            Fuente: <span id="detalle-fuente"></span> · Actualizado: <time id="detalle-actualizado"></time>
+          </p>
+
+          <div class="detalle__acciones">
+            <button type="button" class="accion" id="accion-como-llegar">
+              <span class="accion__icono"><i class="bi bi-sign-turn-right-fill" aria-hidden="true"></i></span>
+              <span class="accion__texto">Cómo llegar</span>
+            </button>
+            <button type="button" class="accion" id="accion-guardar" aria-pressed="false">
+              <span class="accion__icono"><i class="bi bi-bookmark" aria-hidden="true"></i></span>
+              <span class="accion__texto">Guardar</span>
+            </button>
+            <div class="accion-contenedor">
+              <button type="button" class="accion" id="accion-contactar" aria-expanded="false" aria-controls="menu-contacto">
+                <span class="accion__icono"><i class="bi bi-envelope-fill" aria-hidden="true"></i></span>
+                <span class="accion__texto">Contactar</span>
+              </button>
+              <ul class="menu-contacto" id="menu-contacto" aria-label="Formas de contacto" hidden></ul>
+            </div>
+            <button type="button" class="accion" id="accion-compartir">
+              <span class="accion__icono"><i class="bi bi-share-fill" aria-hidden="true"></i></span>
+              <span class="accion__texto">Compartir</span>
+            </button>
+          </div>
         </div>
       </div>
     </aside>

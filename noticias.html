@@ -13,15 +13,19 @@
   <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
+  <!--CSS-->
   <link rel="stylesheet" href="css/noticias.css">
-  <link rel="stylesheet" href="css/MenuUsuario.css">
+  <link rel="stylesheet" href="css/menu-usuario.css">
+  <link rel="stylesheet" href="css/accesibilidad.css">
+  <!--API Accesibilidad-->
+  <script src="js/accesibilidad.js"></script>
 </head>
 <body>
 
   <!-- ===================== ENCABEZADO ===================== -->
   <header class="encabezado">
     <a href="inicio.html" class="encabezado__logo" aria-label="Ir al inicio">
-      <img src="imags/logo 1.png" alt="Logo de REFUGIA">
+      <img src="img/logo-refugia.png" alt="Logo de REFUGIA">
     </a>
 
     <!-- Menú hamburguesa para móvil (solo CSS, sin JS) -->
@@ -115,7 +119,7 @@
         <!-- Noticia destacada -->
         <article class="noticia noticia--destacada">
           <div class="noticia__figura">
-            <img src="imags/Group 74.png" alt="Edificios destruidos tras el terremoto en Chocó">
+            <img src="img/noticias/terremoto-choco.png" alt="Edificios destruidos tras el terremoto en Chocó">
             <h2 class="noticia__titulo">Colombia continúa la recuperación tras el terremoto de magnitud 7,4 en Chocó</h2>
           </div>
           <div class="noticia__cuerpo">
@@ -137,7 +141,7 @@
 
           <article class="noticia">
             <div class="noticia__figura">
-              <img src="imags/Group 76.png" alt="Multitud participando en el simulacro en la Plaza de Bolívar">
+              <img src="img/noticias/simulacro-plaza-bolivar.png" alt="Multitud participando en el simulacro en la Plaza de Bolívar">
               <h2 class="noticia__titulo">Más de 105.000 personas participan en el Simulacro Nacional de Emergencias</h2>
             </div>
             <div class="noticia__cuerpo">
@@ -151,7 +155,7 @@
 
           <article class="noticia">
             <div class="noticia__figura">
-              <img src="imags/Group 75.png" alt="Familias damnificadas recibiendo ayudas en Caldas">
+              <img src="img/noticias/ayudas-caldas.png" alt="Familias damnificadas recibiendo ayudas en Caldas">
               <h2 class="noticia__titulo">UNGRD destina recursos para apoyar a familias damnificadas en Caldas</h2>
             </div>
             <div class="noticia__cuerpo">
@@ -165,7 +169,7 @@
 
           <article class="noticia">
             <div class="noticia__figura">
-              <img src="imags/Group 77.png" alt="Personas conversando frente a una vivienda averiada por el sismo">
+              <img src="img/noticias/vivienda-averiada.png" alt="Personas conversando frente a una vivienda averiada por el sismo">
               <h2 class="noticia__titulo">Continúa la recuperación de las comunidades afectadas por el sismo de agosto</h2>
             </div>
             <div class="noticia__cuerpo">
@@ -179,7 +183,7 @@
 
           <article class="noticia">
             <div class="noticia__figura">
-              <img src="imags/Group 78.png" alt="Maquinaria despejando un deslizamiento en una vía de Cundinamarca">
+              <img src="img/noticias/deslizamiento-cundinamarca.png" alt="Maquinaria despejando un deslizamiento en una vía de Cundinamarca">
               <h2 class="noticia__titulo">Lluvias dejan emergencias en varios municipios de Cundinamarca</h2>
             </div>
             <div class="noticia__cuerpo">
@@ -194,7 +198,7 @@
 
         </div>
 
-        <!-- Botones de accesibilidad (la funcionalidad se programa con JS) -->
+        <!-- Botones de accesibilidad (js/accesibilidad.js) -->
         <div class="accesibilidad" role="group" aria-label="Opciones de accesibilidad">
           <button type="button" class="accesibilidad__boton" id="btn-lector-voz" aria-label="Leer en voz alta">
             <i class="bi bi-volume-up-fill" aria-hidden="true"></i>
