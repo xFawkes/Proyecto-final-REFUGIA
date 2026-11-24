@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "REFUGIA — API",
-    "description": "Peticiones de la API de REFUGIA (Flask + MySQL). Antes de usarla, inicia el servidor con `python main.py`.\n\nOrden sugerido para probar el CRUD: 1) POST crea un punto y guarda su id, 2) GET por id, 3) PUT, 4) DELETE.\n\nNoticias: mismo orden (POST guarda {{id_noticia}}). La subida de imágenes (POST /api/noticias/imagen) se prueba desde el panel admin/noticias.html.",
+    "description": "Peticiones de la API de REFUGIA (Flask + MySQL). Antes de usarla, inicia el servidor con `python main.py`.\n\nOrden sugerido para probar el CRUD: 1) POST crea un punto y guarda su id, 2) GET por id, 3) PUT, 4) DELETE.\n\nNoticias y voluntariado: mismo orden (el POST guarda {{id_noticia}} o {{id_voluntariado}}). La subida de imágenes (POST /api/<sección>/imagen) se prueba desde los paneles de admin/.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -15,6 +15,10 @@
     },
     {
       "key": "id_noticia",
+      "value": "1"
+    },
+    {
+      "key": "id_voluntariado",
       "value": "1"
     }
   ],
@@ -634,6 +638,297 @@
                 "api",
                 "noticias",
                 "verificacion"
+              ]
+            },
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "Voluntariado — CRUD",
+      "description": "CRUD de la tabla voluntariados. Lo mismo que hace el panel admin/voluntariados.html.",
+      "item": [
+        {
+          "name": "1. POST — crear voluntariado",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/voluntariados",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "voluntariados"
+              ]
+            },
+            "description": "Crea un voluntariado (queda activo). Responde 201 y guarda su id en {{id_voluntariado}}.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"actividad\": \"Apoyo en ollas comunitarias\",\n  \"organizacion\": \"Junta de Acción Comunal\",\n  \"descripcion\": \"Prepara y sirve alimentos para familias damnificadas.\",\n  \"requisitos\": \"Mayor de edad\\nCarné de manipulación de alimentos\",\n  \"modalidad\": \"presencial\",\n  \"ubicacion\": \"Bogotá, Kennedy\",\n  \"enlace\": \"https://example.org/inscripcion\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 201', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('id_voluntariado', pm.response.json().id_voluntariado);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "2. GET — un voluntariado por id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/voluntariados/{{id_voluntariado}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "voluntariados",
+                "{{id_voluntariado}}"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "3. PUT — cerrar el voluntariado",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/voluntariados/{{id_voluntariado}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "voluntariados",
+                "{{id_voluntariado}}"
+              ]
+            },
+            "description": "Se pueden enviar solo los campos que cambian. Cerrado = ya no aparece en voluntariado.html.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"cerrado\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "4. DELETE — eliminar",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/voluntariados/{{id_voluntariado}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "voluntariados",
+                "{{id_voluntariado}}"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Ejemplo de error 400 — datos inválidos",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/voluntariados",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "voluntariados"
+              ]
+            },
+            "description": "Responde 400 con el detalle de cada campo en español (organización vacía, descripción muy corta…).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"actividad\": \"Ayuda\",\n  \"organizacion\": \"\",\n  \"descripcion\": \"corta\",\n  \"modalidad\": \"presencial\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Voluntariado — consultas (GET)",
+      "item": [
+        {
+          "name": "Voluntariados activos (lo que ve voluntariado.html)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/voluntariados",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "voluntariados"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Buscar por texto",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/voluntariados?q=acopio",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "voluntariados"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "acopio"
+                }
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Solo virtuales",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/voluntariados?modalidad=virtual",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "voluntariados"
+              ],
+              "query": [
+                {
+                  "key": "modalidad",
+                  "value": "virtual"
+                }
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Todos, activos y cerrados (panel de admin)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/voluntariados?estado=todos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "voluntariados"
+              ],
+              "query": [
+                {
+                  "key": "estado",
+                  "value": "todos"
+                }
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Solo cerrados",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/voluntariados?estado=cerrado",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "voluntariados"
+              ],
+              "query": [
+                {
+                  "key": "estado",
+                  "value": "cerrado"
+                }
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Modalidades y estados",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/voluntariados/catalogos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "voluntariados",
+                "catalogos"
               ]
             },
             "description": ""

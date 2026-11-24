@@ -10,11 +10,10 @@ from __future__ import annotations
 from marshmallow import EXCLUDE, ValidationError, fields, pre_load, validate, validates_schema
 
 from ..extensiones import ma
+from ..imagenes import RUTA_IMAGEN
 from ..utilidades import ZONA_COLOMBIA
 from .modelos import VERIFICACION, Noticia
 
-# Rutas de imagen permitidas: una imagen del proyecto (img/…) o un enlace web
-RUTA_IMAGEN = r"^(img/[\w\-/]+\.(png|jpe?g|webp|gif|avif)|https?://\S+)$"
 OPCIONALES = ("enlace", "imagen", "imagen_alt")
 
 

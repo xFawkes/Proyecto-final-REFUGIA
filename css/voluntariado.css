@@ -398,6 +398,164 @@ button {
   background-color: color-mix(in srgb, var(--azul) 60%, #000);
 }
 
+/* ---------- Datos que vienen de la API ---------- */
+.voluntariado__organizacion {
+  font-family: var(--fuente-titulo);
+  font-weight: 600;
+  color: var(--celeste);
+}
+
+.voluntariado__etiquetas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.voluntariado__etiqueta {
+  padding: 0.1rem 0.6rem;
+  border-radius: 999px;
+  background-color: var(--crema);
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: 0.7rem;
+  color: var(--vinotinto);
+}
+
+.voluntariado__requisitos summary {
+  width: fit-content;
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  color: var(--amarillo);
+  cursor: pointer;
+}
+
+.voluntariado__requisitos summary:focus-visible {
+  outline: 2px solid var(--amarillo);
+  outline-offset: 2px;
+}
+
+.voluntariado__requisitos ul {
+  margin-top: 0.3rem;
+  padding-left: 1.1rem;
+  list-style: disc;
+}
+
+/* Sin imagen, el texto ocupa toda la tarjeta */
+.voluntariado--sin-imagen {
+  grid-template-columns: 1fr;
+}
+
+/* ---------- Búsqueda (consulta la API de voluntariado) ---------- */
+.voluntariados__busqueda,
+.voluntariados__estado {
+  width: var(--ancho-contenido);
+  margin-inline: auto;
+}
+
+.voluntariados__busqueda {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.75rem 1rem;
+  margin-bottom: clamp(1.25rem, 3vw, 2rem);
+}
+
+.voluntariados__campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 11rem;
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--azul);
+}
+
+.voluntariados__campo--texto {
+  flex: 1 1 16rem;
+}
+
+.voluntariados__campo input,
+.voluntariados__campo select {
+  width: 100%;
+  min-height: 44px;
+  padding: 0.55rem 0.9rem;
+  border: 2px solid var(--azul);
+  border-radius: var(--radio);
+  background-color: var(--blanco);
+  font: 400 0.9rem var(--fuente-titulo);
+  color: #1d2433;
+}
+
+.voluntariados__campo input::placeholder {
+  color: #5f6b73;
+}
+
+.voluntariados__campo input:focus-visible,
+.voluntariados__campo select:focus-visible {
+  outline: 3px solid var(--vinotinto);
+  outline-offset: 2px;
+}
+
+.voluntariados__boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 44px;
+  padding: 0.55rem 1.4rem;
+  border-radius: var(--radio);
+  background-color: var(--azul);
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--blanco);
+  transition: scale var(--transicion), background-color var(--transicion), color var(--transicion);
+}
+
+.voluntariados__boton:hover,
+.voluntariados__boton:focus-visible {
+  scale: 1.05;
+  background-color: var(--amarillo);
+  color: var(--cafe);
+}
+
+.voluntariados__boton:focus-visible {
+  outline: 3px solid var(--vinotinto);
+  outline-offset: 2px;
+}
+
+.voluntariados__boton:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.voluntariados__mas {
+  display: flex;
+  margin: clamp(1.5rem, 4vw, 3rem) auto 0;
+}
+
+.voluntariados__mas[hidden],
+.voluntariados__estado[hidden] {
+  display: none;
+}
+
+/* Mensaje de carga, sin resultados o error */
+.voluntariados__estado {
+  margin-bottom: 1rem;
+  padding: 1rem 1.25rem;
+  border-radius: var(--radio);
+  background-color: var(--blanco);
+  font-family: var(--fuente-titulo);
+  font-weight: 600;
+  color: var(--azul);
+}
+
+.voluntariados__estado--error {
+  border-left: 6px solid var(--vinotinto);
+  color: var(--vinotinto);
+}
+
 /* ---------- Botones de accesibilidad (igual que en donaciones y mapa) ---------- */
 .accesibilidad {
   /* Fijos en la esquina inferior izquierda de la pantalla, aunque se haga scroll */
@@ -436,6 +594,11 @@ button {
 @media (max-width: 800px) {
   .voluntariados__grid {
     grid-template-columns: 1fr;
+    width: calc(100% - 2rem);
+  }
+
+  .voluntariados__busqueda,
+  .voluntariados__estado {
     width: calc(100% - 2rem);
   }
 }

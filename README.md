@@ -28,7 +28,8 @@ REFUGIA/
 │   ├── api.js                cliente de la API (fetch, errores, fechas) para todas las páginas
 │   ├── mapa.js               mapa, buscador y filtros
 │   ├── noticias.js           pinta las noticias desde la API, con búsqueda
-│   └── admin/                JavaScript del panel (noticias.js: CRUD; panel.js: contadores)
+│   ├── voluntariado.js       pinta los voluntariados desde la API, con búsqueda
+│   └── admin/                JavaScript del panel (un CRUD por página; panel.js: contadores)
 ├── img/                      imágenes compartidas (logo…) y una carpeta por sección
 ├── api/                      API en Flask
 │   ├── __init__.py           arma la app: conexión a MySQL, secciones y páginas
@@ -37,13 +38,16 @@ REFUGIA/
 │   ├── errores.py            errores en JSON y en español
 │   ├── paginas.py            sirve el HTML, CSS, JS e imágenes
 │   ├── utilidades.py         funciones comunes (tildes, distancias, horarios)
+│   ├── imagenes.py           subida de imágenes desde el panel (la usan todas las secciones)
 │   ├── mapa/                 sección Mapa: modelos, esquemas, rutas (GET/POST/PUT/DELETE)
 │   ├── noticias/             sección Noticias: igual, más subida de imágenes
+│   ├── voluntariado/         sección Voluntariado: igual
 │   └── _plantilla/           punto de partida para crear una sección nueva
 ├── tests/                    pruebas automáticas (python -m pytest)
 ├── docs/
 │   ├── api-mapa.md           detalle de la API del mapa y del módulo de accesibilidad
 │   ├── api-noticias.md       detalle de la API de noticias y del panel de administración
+│   ├── api-voluntariado.md   detalle de la API de voluntariado y de su panel
 │   └── REFUGIA.postman_collection.json   peticiones listas para importar en Postman
 ├── requirements.txt          librerías de Python
 └── .env.example              plantilla de la configuración de MySQL
@@ -139,10 +143,17 @@ peticiones listas, con ejemplos de JSON.
 | PUT | `/api/noticias/<id>` | Actualiza una noticia (ej. `{"publicada": true}` para aprobar un borrador) |
 | DELETE | `/api/noticias/<id>` | Elimina una noticia |
 | POST | `/api/noticias/imagen` | Sube una imagen (formulario *multipart*, campo `imagen`) |
+| GET | `/api/voluntariados` | Lista y busca voluntariados (`?q=acopio&modalidad=virtual&estado=todos`) |
+| GET | `/api/voluntariados/<id>` | Un voluntariado |
+| POST | `/api/voluntariados` | Crea un voluntariado |
+| PUT | `/api/voluntariados/<id>` | Actualiza un voluntariado (ej. `{"estado": "cerrado"}`) |
+| DELETE | `/api/voluntariados/<id>` | Elimina un voluntariado |
+| GET / POST | `/api/voluntariados/catalogos`, `/api/voluntariados/imagen` | Modalidades y estados; subir imagen |
 
 Si los datos no son válidos, la API responde **400** con el detalle de cada campo en español.
 Si el id no existe, responde **404**. El detalle de los campos y filtros está en
-[`docs/api-mapa.md`](docs/api-mapa.md) y [`docs/api-noticias.md`](docs/api-noticias.md).
+[`docs/api-mapa.md`](docs/api-mapa.md), [`docs/api-noticias.md`](docs/api-noticias.md) y
+[`docs/api-voluntariado.md`](docs/api-voluntariado.md).
 
 > Las rutas POST, PUT y DELETE todavía no piden inicio de sesión. Cuando exista el login
 > (requisito RF 7), hay que restringirlas a los administradores.
@@ -160,17 +171,17 @@ Cada sección es una carpeta dentro de `api/`, con las mismas piezas del tutoria
 | `rutas.py` | GET, GET por id, POST, PUT, DELETE | las funciones `@app.route(...)` |
 | `__init__.py` | Expone `bp` y `cargar_datos_ejemplo` | los `INSERT` de prueba en Workbench |
 
-`api/noticias` es un ejemplo completo hecho a partir de la plantilla (con búsqueda, filtros,
-paginación y su página de administración en `admin/noticias.html` + `js/admin/noticias.js`).
+`api/noticias` y `api/voluntariado` son ejemplos completos hechos a partir de la plantilla (con
+búsqueda, filtros, paginación, subida de imágenes y su página de administración en `admin/`).
 
-Pasos, con "voluntariado" como ejemplo:
+Pasos, con "donaciones" como ejemplo:
 
-1. Copia `api/_plantilla` y renómbrala `api/voluntariado`.
-2. En sus archivos cambia `Elemento`/`elementos` por `Voluntariado`/`voluntariados` y ajusta las columnas.
+1. Copia `api/_plantilla` y renómbrala `api/donaciones`.
+2. En sus archivos cambia `Elemento`/`elementos` por `Donacion`/`donaciones` y ajusta las columnas.
 3. En `api/__init__.py`:
    ```python
-   from . import mapa, noticias, voluntariado, paginas
-   SECCIONES = [mapa, noticias, voluntariado]
+   from . import donaciones, mapa, noticias, paginas, voluntariado
+   SECCIONES = [mapa, noticias, voluntariado, donaciones]
    ```
 4. Reinicia el servidor (`python main.py`). La tabla se crea sola en MySQL.
 
