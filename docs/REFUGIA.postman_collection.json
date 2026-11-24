@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "REFUGIA — API",
-    "description": "Peticiones de la API de REFUGIA (Flask + MySQL). Antes de usarla, inicia el servidor con `python main.py`.\n\nOrden sugerido para probar el CRUD: 1) POST crea un punto y guarda su id, 2) GET por id, 3) PUT, 4) DELETE.",
+    "description": "Peticiones de la API de REFUGIA (Flask + MySQL). Antes de usarla, inicia el servidor con `python main.py`.\n\nOrden sugerido para probar el CRUD: 1) POST crea un punto y guarda su id, 2) GET por id, 3) PUT, 4) DELETE.\n\nNoticias: mismo orden (POST guarda {{id_noticia}}). La subida de imágenes (POST /api/noticias/imagen) se prueba desde el panel admin/noticias.html.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -11,6 +11,10 @@
     },
     {
       "key": "id",
+      "value": "1"
+    },
+    {
+      "key": "id_noticia",
       "value": "1"
     }
   ],
@@ -339,7 +343,306 @@
       ]
     },
     {
-      "name": "Catálogos",
+      "name": "Noticias — CRUD",
+      "description": "CRUD de la tabla noticias. Lo mismo que hace el panel admin/noticias.html.",
+      "item": [
+        {
+          "name": "1. POST — crear noticia",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/noticias",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "noticias"
+              ]
+            },
+            "description": "Crea una noticia (aquí como borrador: publicada = false). Responde 201 y guarda su id en {{id_noticia}}.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Alerta por lluvias en Bogotá\",\n  \"contenido\": \"El IDIGER recomienda evitar zonas de ladera durante la temporada de lluvias.\\n\\nSegundo párrafo de la noticia.\",\n  \"fuente\": \"IDIGER\",\n  \"enlace\": \"https://www.idiger.gov.co\",\n  \"verificacion\": \"oficial\",\n  \"publicada\": false,\n  \"fecha_publicacion\": \"2026-11-24\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 201', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('id_noticia', pm.response.json().id_noticia);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "2. GET — una noticia por id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/noticias/{{id_noticia}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "noticias",
+                "{{id_noticia}}"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "3. PUT — aprobar (publicar) el borrador",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/noticias/{{id_noticia}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "noticias",
+                "{{id_noticia}}"
+              ]
+            },
+            "description": "Se pueden enviar solo los campos que cambian. destacada = true quita la marca a la destacada anterior.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"publicada\": true,\n  \"destacada\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "4. DELETE — eliminar",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/noticias/{{id_noticia}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "noticias",
+                "{{id_noticia}}"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Ejemplo de error 400 — datos inválidos",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/noticias",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "noticias"
+              ]
+            },
+            "description": "Responde 400 con el detalle de cada campo en español.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Hola\",\n  \"fuente\": \"\",\n  \"enlace\": \"no-es-un-enlace\",\n  \"imagen\": \"img/noticias/portada.png\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Noticias — consultas (GET)",
+      "item": [
+        {
+          "name": "Noticias publicadas (lo que ve noticias.html)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/noticias",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "noticias"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Buscar por texto",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/noticias?q=sismo",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "noticias"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "sismo"
+                }
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Solo fuentes oficiales",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/noticias?verificacion=oficial",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "noticias"
+              ],
+              "query": [
+                {
+                  "key": "verificacion",
+                  "value": "oficial"
+                }
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Borradores (panel de admin)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/noticias?publicada=false",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "noticias"
+              ],
+              "query": [
+                {
+                  "key": "publicada",
+                  "value": "false"
+                }
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Todas, publicadas y borradores, paginadas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/noticias?incluir_ocultas=true&limite=3&offset=0",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "noticias"
+              ],
+              "query": [
+                {
+                  "key": "incluir_ocultas",
+                  "value": "true"
+                },
+                {
+                  "key": "limite",
+                  "value": "3"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                }
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Niveles de verificación",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/noticias/verificacion",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "noticias",
+                "verificacion"
+              ]
+            },
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "Mapa — catálogos",
       "item": [
         {
           "name": "Tipos de lugar",

@@ -10,6 +10,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Myanmar+Khyay&family=Unbounded:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="../css/admin/inicio.css">
+  <script src="../js/api.js" defer></script>
+  <script src="../js/admin/panel.js" defer></script>
 </head>
 <body>
   <div class="admin">
@@ -41,7 +43,8 @@
       <div class="contenido__interior">
         <h1 class="contenido__titulo">Panel de admi</h1>
 
-        <!-- INTEGRACIÓN: reemplazar los 000 con los datos reales -->
+        <!-- INTEGRACIÓN: los números con data-api-total los llena js/admin/panel.js con el "total" que responde la API.
+             Para los demás, agreguen data-api-total="/api/su-seccion?filtro=…" cuando exista su API. -->
         <section class="resumen" aria-label="Resumen general">
           <article class="tarjeta">
             <h2 class="tarjeta__titulo">Reportes</h2>
@@ -51,7 +54,7 @@
 
           <article class="tarjeta">
             <h2 class="tarjeta__titulo">Borradores de Noticias</h2>
-            <strong class="tarjeta__numero">000</strong>
+            <strong class="tarjeta__numero" data-api-total="/api/noticias?publicada=false">000</strong>
             <p class="tarjeta__nota">verificación</p>
           </article>
 

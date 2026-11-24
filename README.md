@@ -25,7 +25,10 @@ REFUGIA/
 │   └── accesibilidad.css     alto contraste, tamaño de texto y avisos (compartido)
 ├── js/
 │   ├── accesibilidad.js      voz, contraste y tamaño de texto (todas las páginas)
-│   └── mapa.js               mapa, buscador y filtros
+│   ├── api.js                cliente de la API (fetch, errores, fechas) para todas las páginas
+│   ├── mapa.js               mapa, buscador y filtros
+│   ├── noticias.js           pinta las noticias desde la API, con búsqueda
+│   └── admin/                JavaScript del panel (noticias.js: CRUD; panel.js: contadores)
 ├── img/                      imágenes compartidas (logo…) y una carpeta por sección
 ├── api/                      API en Flask
 │   ├── __init__.py           arma la app: conexión a MySQL, secciones y páginas
@@ -35,10 +38,12 @@ REFUGIA/
 │   ├── paginas.py            sirve el HTML, CSS, JS e imágenes
 │   ├── utilidades.py         funciones comunes (tildes, distancias, horarios)
 │   ├── mapa/                 sección Mapa: modelos, esquemas, rutas (GET/POST/PUT/DELETE)
+│   ├── noticias/             sección Noticias: igual, más subida de imágenes
 │   └── _plantilla/           punto de partida para crear una sección nueva
 ├── tests/                    pruebas automáticas (python -m pytest)
 ├── docs/
 │   ├── api-mapa.md           detalle de la API del mapa y del módulo de accesibilidad
+│   ├── api-noticias.md       detalle de la API de noticias y del panel de administración
 │   └── REFUGIA.postman_collection.json   peticiones listas para importar en Postman
 ├── requirements.txt          librerías de Python
 └── .env.example              plantilla de la configuración de MySQL
@@ -128,10 +133,16 @@ peticiones listas, con ejemplos de JSON.
 | PUT | `/api/puntos/<id>` | Actualiza un punto; se pueden enviar solo los campos que cambian |
 | DELETE | `/api/puntos/<id>` | Elimina un punto |
 | GET | `/api/tipos`, `/api/servicios`, `/api/verificacion` | Catálogos para los filtros |
+| GET | `/api/noticias` | Lista y busca noticias (`?q=sismo&verificacion=oficial&publicada=false`) |
+| GET | `/api/noticias/<id>` | Una noticia |
+| POST | `/api/noticias` | Crea una noticia |
+| PUT | `/api/noticias/<id>` | Actualiza una noticia (ej. `{"publicada": true}` para aprobar un borrador) |
+| DELETE | `/api/noticias/<id>` | Elimina una noticia |
+| POST | `/api/noticias/imagen` | Sube una imagen (formulario *multipart*, campo `imagen`) |
 
 Si los datos no son válidos, la API responde **400** con el detalle de cada campo en español.
 Si el id no existe, responde **404**. El detalle de los campos y filtros está en
-[`docs/api-mapa.md`](docs/api-mapa.md).
+[`docs/api-mapa.md`](docs/api-mapa.md) y [`docs/api-noticias.md`](docs/api-noticias.md).
 
 > Las rutas POST, PUT y DELETE todavía no piden inicio de sesión. Cuando exista el login
 > (requisito RF 7), hay que restringirlas a los administradores.
@@ -149,14 +160,17 @@ Cada sección es una carpeta dentro de `api/`, con las mismas piezas del tutoria
 | `rutas.py` | GET, GET por id, POST, PUT, DELETE | las funciones `@app.route(...)` |
 | `__init__.py` | Expone `bp` y `cargar_datos_ejemplo` | los `INSERT` de prueba en Workbench |
 
-Pasos, con "noticias" como ejemplo:
+`api/noticias` es un ejemplo completo hecho a partir de la plantilla (con búsqueda, filtros,
+paginación y su página de administración en `admin/noticias.html` + `js/admin/noticias.js`).
 
-1. Copia `api/_plantilla` y renómbrala `api/noticias`.
-2. En sus archivos cambia `Elemento`/`elementos` por `Noticia`/`noticias` y ajusta las columnas.
+Pasos, con "voluntariado" como ejemplo:
+
+1. Copia `api/_plantilla` y renómbrala `api/voluntariado`.
+2. En sus archivos cambia `Elemento`/`elementos` por `Voluntariado`/`voluntariados` y ajusta las columnas.
 3. En `api/__init__.py`:
    ```python
-   from . import mapa, noticias, paginas
-   SECCIONES = [mapa, noticias]
+   from . import mapa, noticias, voluntariado, paginas
+   SECCIONES = [mapa, noticias, voluntariado]
    ```
 4. Reinicia el servidor (`python main.py`). La tabla se crea sola en MySQL.
 
