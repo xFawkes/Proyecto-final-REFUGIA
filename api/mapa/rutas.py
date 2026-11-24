@@ -1,89 +1,128 @@
-"""Mapa: endpoints de la API (/api/puntos, /api/tipos, /api/servicios, /api/verificacion)."""
+"""Mapa: rutas de la API (siguiendo los pasos del tutorial: GET, POST, PUT y DELETE).
 
-from __future__ import annotations
+  GET    /api/puntos           → buscar y filtrar puntos
+  GET    /api/puntos/<id>      → un punto
+  POST   /api/puntos           → crear un punto
+  PUT    /api/puntos/<id>      → actualizar un punto (se pueden enviar solo algunos campos)
+  DELETE /api/puntos/<id>      → eliminar un punto
+  GET    /api/tipos, /api/servicios, /api/verificacion → catálogos para los filtros
+"""
 
-from typing import Annotated
+from flask import Blueprint, abort, jsonify, request
+from marshmallow import ValidationError
 
-from fastapi import APIRouter, HTTPException, Query
-
-from .. import database
-from .busqueda import Filtros, buscar_puntos, contar_por_tipo, obtener_punto
+from ..extensiones import db
+from .busqueda import a_diccionario, buscar_puntos, contar_por_tipo
 from .catalogos import SERVICIOS, TIPOS, VERIFICACION
-from .modelos import ListaPuntos, NivelVerificacion, Orden, Punto, Servicio, Tipo, TipoPunto, Verificacion
+from .esquemas import leer_filtros, punto_entrada_schema
+from .modelos import Punto
 
-router = APIRouter(prefix="/api", tags=["Mapa"])
-
-
-@router.get("/puntos", response_model=ListaPuntos, summary="Buscar y filtrar puntos")
-def listar_puntos(
-    q: Annotated[str | None, Query(max_length=100, description="Texto libre: nombre, tipo, barrio, dirección, servicio…")] = None,
-    tipo: Annotated[list[TipoPunto], Query(description="Uno o varios tipos (repetir el parámetro)")] = [],
-    servicio: Annotated[list[str], Query(description="Servicios que el punto debe ofrecer TODOS")] = [],
-    verificacion: Annotated[list[NivelVerificacion], Query(description="Niveles de verificación aceptados")] = [],
-    abierto_ahora: Annotated[bool, Query(description="Solo lugares abiertos en este momento (hora de Colombia)")] = False,
-    gratuito: Annotated[bool, Query(description="Solo lugares sin costo")] = False,
-    con_cupos: Annotated[bool, Query(description="Solo albergues con cupos disponibles")] = False,
-    confianza_min: Annotated[float | None, Query(ge=0, le=5, description="Índice de confianza mínimo (0 a 5)")] = None,
-    ids: Annotated[str | None, Query(description="Lista de IDs separados por coma (ej. puntos guardados)", pattern=r"^\s*\d*(\s*,\s*\d+)*\s*$")] = None,
-    lat: Annotated[float | None, Query(ge=-90, le=90, description="Latitud del usuario")] = None,
-    lng: Annotated[float | None, Query(ge=-180, le=180, description="Longitud del usuario")] = None,
-    radio_km: Annotated[float | None, Query(gt=0, le=100, description="Radio máximo desde (lat, lng)")] = None,
-    orden: Annotated[Orden | None, Query(description="Por defecto: relevancia si hay texto, distancia si hay ubicación, si no confianza")] = None,
-    limite: Annotated[int, Query(ge=1, le=500)] = 100,
-    offset: Annotated[int, Query(ge=0)] = 0,
-):
-    if (lat is None) != (lng is None):
-        raise HTTPException(422, "Envía lat y lng juntos.")
-    if lat is None and (radio_km is not None or orden == "distancia"):
-        raise HTTPException(422, "radio_km y orden=distancia necesitan lat y lng.")
-
-    servicios_invalidos = [s for s in servicio if s not in SERVICIOS]
-    if servicios_invalidos:
-        raise HTTPException(422, f"Servicio desconocido: {', '.join(servicios_invalidos)}. Consulta /api/servicios.")
-
-    lista_ids = None
-    if ids is not None:
-        lista_ids = [int(i) for i in ids.split(",") if i.strip()]
-
-    filtros = Filtros(
-        q=q, tipos=list(tipo), servicios=servicio, verificacion=list(verificacion),
-        abierto_ahora=abierto_ahora, gratuito=gratuito, con_cupos=con_cupos,
-        confianza_min=confianza_min, ids=lista_ids, lat=lat, lng=lng, radio_km=radio_km,
-        orden=orden, limite=limite, offset=offset,
-    )
-    with database.conectar() as conexion:
-        total, resultados = buscar_puntos(conexion, filtros)
-    return {"total": total, "limite": limite, "offset": offset, "resultados": resultados}
+bp = Blueprint("mapa", __name__, url_prefix="/api")
 
 
-@router.get("/puntos/{punto_id}", response_model=Punto, summary="Detalle de un punto")
-def detalle_punto(
-    punto_id: int,
-    lat: Annotated[float | None, Query(ge=-90, le=90)] = None,
-    lng: Annotated[float | None, Query(ge=-180, le=180)] = None,
-):
-    with database.conectar() as conexion:
-        punto = obtener_punto(conexion, punto_id, lat, lng)
-    if punto is None:
-        raise HTTPException(404, "No existe un punto con ese ID.")
-    return punto
+def leer_json() -> dict:
+    """Como en el tutorial: request.get_json(force=True) lee el JSON enviado (ej. desde Postman)."""
+    datos = request.get_json(force=True, silent=True)
+    if not isinstance(datos, dict):
+        abort(400, description="El cuerpo de la petición debe ser un objeto JSON.")
+    return datos
 
 
-@router.get("/tipos", response_model=list[Tipo], summary="Tipos de lugar y cuántos hay")
-def listar_tipos():
-    with database.conectar() as conexion:
-        conteo = contar_por_tipo(conexion)
-    return [
+def ubicacion_usuario():
+    try:
+        lat, lng = request.args.get("lat", type=float), request.args.get("lng", type=float)
+    except ValueError:
+        return None, None
+    return (lat, lng) if lat is not None and lng is not None else (None, None)
+
+
+# ---------------------------------------------------------------------------
+# GET: consultar
+# ---------------------------------------------------------------------------
+@bp.route("/puntos", methods=["GET"])
+def get_puntos():
+    filtros = leer_filtros(request.args)  # valida los parámetros (?q=…&tipo=…)
+    total, resultados = buscar_puntos(filtros)
+    return jsonify({"total": total, "limite": filtros["limite"], "offset": filtros["offset"], "resultados": resultados})
+
+
+@bp.route("/puntos/<int:id>", methods=["GET"])
+def get_punto(id):
+    punto = db.get_or_404(Punto, id, description="No existe un punto con ese ID.")
+    return jsonify(a_diccionario(punto, *ubicacion_usuario()))
+
+
+# ---------------------------------------------------------------------------
+# POST: crear
+# ---------------------------------------------------------------------------
+@bp.route("/puntos", methods=["POST"])
+def insert_punto():
+    datos = punto_entrada_schema.load(leer_json())  # valida; si algo está mal responde 400 con el detalle
+
+    servicios = datos.pop("servicios", [])
+    nuevo_punto = Punto(**datos)  # crea el objeto con los datos recibidos
+    nuevo_punto.asignar_servicios(servicios)
+    nuevo_punto.actualizar_texto_busqueda()
+
+    db.session.add(nuevo_punto)  # INSERT
+    db.session.commit()          # ejecuta la sentencia
+    return jsonify(a_diccionario(nuevo_punto)), 201  # 201 = creado
+
+
+# ---------------------------------------------------------------------------
+# PUT: actualizar
+# ---------------------------------------------------------------------------
+@bp.route("/puntos/<int:id>", methods=["PUT"])
+def update_punto(id):
+    actualizar_punto = db.get_or_404(Punto, id, description="No existe un punto con ese ID.")
+    # partial=True: se pueden enviar solo los campos que cambian (ej. {"cupos_disponibles": 10})
+    datos = punto_entrada_schema.load(leer_json(), partial=True)
+
+    if "servicios" in datos:
+        actualizar_punto.asignar_servicios(datos.pop("servicios"))
+    for campo, valor in datos.items():
+        setattr(actualizar_punto, campo, valor)
+
+    # Revisar cupos contra la capacidad ya guardada (por si solo llegó uno de los dos)
+    cap, cupos = actualizar_punto.capacidad, actualizar_punto.cupos_disponibles
+    if cap is not None and cupos is not None and cupos > cap:
+        db.session.rollback()
+        raise ValidationError({"cupos_disponibles": ["No puede haber más cupos disponibles que la capacidad."]})
+
+    actualizar_punto.actualizar_texto_busqueda()
+    db.session.commit()  # UPDATE
+    return jsonify(a_diccionario(actualizar_punto))
+
+
+# ---------------------------------------------------------------------------
+# DELETE: eliminar
+# ---------------------------------------------------------------------------
+@bp.route("/puntos/<int:id>", methods=["DELETE"])
+def delete_punto(id):
+    eliminar_punto = db.get_or_404(Punto, id, description="No existe un punto con ese ID.")
+    respuesta = a_diccionario(eliminar_punto)  # se guarda antes de borrar, para devolverlo
+    db.session.delete(eliminar_punto)  # DELETE (sus servicios se borran también)
+    db.session.commit()
+    return jsonify(respuesta)
+
+
+# ---------------------------------------------------------------------------
+# Catálogos (para los filtros de la página)
+# ---------------------------------------------------------------------------
+@bp.route("/tipos", methods=["GET"])
+def get_tipos():
+    conteo = contar_por_tipo()
+    return jsonify([
         {"clave": clave, "nombre": t["nombre"], "plural": t["plural"], "total": conteo[clave]}
         for clave, t in TIPOS.items()
-    ]
+    ])
 
 
-@router.get("/servicios", response_model=list[Servicio], summary="Servicios filtrables")
-def listar_servicios():
-    return [{"clave": clave, "nombre": nombre} for clave, nombre in SERVICIOS.items()]
+@bp.route("/servicios", methods=["GET"])
+def get_servicios():
+    return jsonify([{"clave": clave, "nombre": nombre} for clave, nombre in SERVICIOS.items()])
 
 
-@router.get("/verificacion", response_model=list[Verificacion], summary="Niveles de verificación")
-def listar_verificacion():
-    return [{"clave": clave, "nombre": nombre} for clave, nombre in VERIFICACION.items()]
+@bp.route("/verificacion", methods=["GET"])
+def get_verificacion():
+    return jsonify([{"clave": clave, "nombre": nombre} for clave, nombre in VERIFICACION.items()])

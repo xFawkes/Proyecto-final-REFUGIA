@@ -8,7 +8,7 @@ __pycache__/
 *.pyc
 .pytest_cache/
 
-# Base de datos local: se crea sola al iniciar el servidor
+# Base de datos SQLite de la versión anterior (ahora se usa MySQL)
 api/refugia.db
 
 # Configuración local con datos privados

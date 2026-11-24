@@ -1,6 +1,6 @@
 # Mapa y accesibilidad
 
-API en **Python (FastAPI + SQLite)** y frontend en **JavaScript** para la sección *Mapa* de REFUGIA:
+API en **Python (Flask + SQLAlchemy + Marshmallow + MySQL)** y frontend en **JavaScript** para la sección *Mapa* de REFUGIA:
 muestra albergues, centros de salud, hospitales, centros de acopio y otros puntos de ayuda sobre un
 mapa de **Leaflet + OpenStreetMap** (gratuito, sin API key ni facturación), con búsqueda, filtros, panel de detalle, acciones (Cómo llegar, Guardar, Contactar,
 Compartir), "Cerca de mí" y un módulo de **accesibilidad reutilizable** en todas las páginas.
@@ -29,7 +29,10 @@ Compartir), "Cerca de mí" y un módulo de **accesibilidad reutilizable** en tod
 | Método | Ruta | Descripción |
 |---|---|---|
 | GET | `/api/puntos` | Busca y filtra puntos (parámetros abajo) |
-| GET | `/api/puntos/{id}` | Detalle de un punto (`?lat=&lng=` agrega la distancia) |
+| GET | `/api/puntos/<id>` | Detalle de un punto (`?lat=&lng=` agrega la distancia) |
+| POST | `/api/puntos` | Crea un punto. Responde **201** con el punto creado |
+| PUT | `/api/puntos/<id>` | Actualiza un punto. Se pueden enviar **solo los campos que cambian** |
+| DELETE | `/api/puntos/<id>` | Elimina un punto (y sus servicios). Responde con el punto eliminado |
 | GET | `/api/tipos` | Tipos de lugar con su cantidad |
 | GET | `/api/servicios` | Servicios por los que se puede filtrar |
 | GET | `/api/verificacion` | Niveles de verificación |
@@ -59,6 +62,64 @@ Ejemplo: albergues gratuitos con cupos a menos de 3 km que admitan mascotas:
 ```
 
 Las respuestas van comprimidas con gzip: la lista completa pesa unos 4 KB.
+
+---
+
+### Crear y actualizar (POST y PUT)
+
+En Postman: *Body* → *raw* → *JSON*. Ejemplo de POST:
+
+```json
+{
+  "nombre": "Albergue Comunal San Mateo",
+  "tipo": "albergue",
+  "direccion": "Calle 30 Sur # 12-40",
+  "barrio": "San Mateo",
+  "localidad": "Rafael Uribe Uribe",
+  "lat": 4.5772,
+  "lng": -74.1189,
+  "telefono": "601 000 0150",
+  "confianza": 4.0,
+  "verificacion": "comunitaria",
+  "capacidad": 60,
+  "cupos_disponibles": 25,
+  "horario": [{"dias": [0, 1, 2, 3, 4, 5, 6], "abre": "00:00", "cierra": "24:00"}],
+  "servicios": ["refugio", "alimentos", "agua"]
+}
+```
+
+Ejemplo de PUT, para actualizar solo los cupos: `{"cupos_disponibles": 10}`.
+
+| Campo | Obligatorio en POST | Regla |
+|---|---|---|
+| `nombre` | Sí | 2 a 150 caracteres |
+| `tipo` | Sí | `albergue`, `centro_salud`, `hospital`, `centro_acopio` u `otro` |
+| `direccion` | Sí | 3 a 200 caracteres |
+| `lat`, `lng` | Sí | Dentro de Colombia: lat entre -5 y 14, lng entre -82 y -66 (así se detectan si quedaron invertidas) |
+| `barrio`, `localidad`, `descripcion`, `fuente`, `costo_detalle`, `imagen` | No | Texto |
+| `ciudad` | No | Por defecto `Bogotá` |
+| `telefono`, `whatsapp` | No | Solo dígitos, espacios, `+` o `-` |
+| `correo` | No | Correo válido |
+| `sitio_web` | No | Debe empezar por `http://` o `https://` |
+| `gratuito` | No | `true` o `false` (por defecto `true`) |
+| `confianza` | No | De 0 a 5 (por defecto 0) |
+| `verificacion` | No | `oficial`, `comunitaria` o `sin_confirmar` (por defecto `sin_confirmar`) |
+| `capacidad`, `cupos_disponibles` | No | Enteros ≥ 0; los cupos no pueden superar la capacidad |
+| `horario` | No | Lista de franjas `{"dias": [0..6], "abre": "HH:MM", "cierra": "HH:MM"}` (0 = lunes; `"cierra": "24:00"` = medianoche; si cierra antes de abrir, cruza la medianoche) |
+| `servicios` | No | Lista de claves de `/api/servicios`. En PUT reemplaza la lista completa |
+
+Un campo con un nombre que no existe (por ejemplo `"nombr"`) se rechaza, para detectar errores de escritura.
+Si algo no es válido, la API responde **400** con el detalle en español:
+
+```json
+{
+  "error": "Los datos enviados no son válidos.",
+  "detalles": {
+    "lat": ["La latitud debe estar dentro de Colombia (entre -5 y 14)."],
+    "tipo": ["Debe ser uno de: albergue, centro_salud, hospital, centro_acopio, otro."]
+  }
+}
+```
 
 ---
 
@@ -127,13 +188,16 @@ se lee en esa página.
 
 | Qué | Archivo |
 |---|---|
-| Endpoints | `api/mapa/rutas.py` |
+| Rutas GET, POST, PUT, DELETE | `api/mapa/rutas.py` |
+| Tablas `puntos` y `punto_servicio` (SQLAlchemy) | `api/mapa/modelos.py` |
+| Conversión a JSON y validación (Marshmallow) | `api/mapa/esquemas.py` |
 | Búsqueda y filtros | `api/mapa/busqueda.py` |
-| Tablas y carga inicial | `api/mapa/tablas.py` |
+| Carga de los datos de ejemplo | `api/mapa/__init__.py` |
 | Los 26 puntos de ejemplo | `api/mapa/datos_ejemplo.py` |
 | Tipos, servicios y niveles de verificación | `api/mapa/catalogos.py` |
 | Horarios, distancias y búsqueda sin tildes | `api/utilidades.py` |
 | Frontend | `mapa.html`, `js/mapa.js`, `css/mapa.css` |
 
-Los datos se copian a `api/refugia.db` la primera vez que arranca el servidor. Si editas
-`datos_ejemplo.py`, detén el servidor, borra `api/refugia.db` y vuelve a iniciarlo.
+Los datos de ejemplo se insertan en MySQL la primera vez que arranca el servidor, solo si la tabla
+`puntos` está vacía. Para volver a cargarlos (por ejemplo, después de editar `datos_ejemplo.py`),
+borra las tablas `punto_servicio` y `puntos` en MySQL Workbench y reinicia el servidor.
