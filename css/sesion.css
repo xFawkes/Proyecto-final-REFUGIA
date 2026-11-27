@@ -1,0 +1,376 @@
+/* =========================================================
+   REFUGIA — Iniciar sesión y Registro
+   (iniciar-sesion.html y registro.html comparten este archivo)
+   ========================================================= */
+
+/* ---------- Variables ---------- */
+:root {
+  --amarillo: #E8BA63;
+  --mostaza: #D1AF63;        /* fondo de la tarjeta (prototipo) */
+  --cafe: #694E1C;
+  --cafe-oscuro: #4A3612;    /* textos pequeños sobre mostaza: contraste 5.5:1 */
+  --azul: #1C5568;
+  --crema: #E4CEA4;
+  --vinotinto: #692300;
+  --celeste: #D2EEF8;
+  --blanco: #ffffff;
+  --rojo-error: #8A1010;
+
+  --fuente-logo: "Unbounded", sans-serif;
+  --fuente-titulo: "Manrope", sans-serif;
+  --fuente-texto: "Myanmar Khyay", "Manrope", sans-serif;
+
+  --transicion: 0.25s ease;
+  --radio: 8px;
+}
+
+/* En alto contraste la tarjeta pasa a blanco y los textos a negro */
+html.a11y-contraste {
+  --mostaza: #ffffff;
+  --cafe-oscuro: #000000;
+  --rojo-error: #b00000;
+}
+
+/* ---------- Reset básico ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+button,
+input { font: inherit; }
+
+button { border: none; background: none; cursor: pointer; }
+
+[hidden] { display: none !important; }
+
+.pagina {
+  font-family: var(--fuente-texto);
+  background-color: var(--azul);
+  color: var(--blanco);
+  line-height: 1.5;
+}
+
+:focus-visible {
+  outline: 3px solid var(--amarillo);
+  outline-offset: 3px;
+}
+
+.contenido {
+  min-height: calc(100vh - 76px);
+  display: grid;
+  place-items: center;
+  padding: clamp(1.5rem, 6vw, 5rem) 0 6rem;
+}
+
+
+/* =========================================================
+   Encabezado (solo el logo, como en el prototipo)
+   ========================================================= */
+.encabezado {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  min-height: 76px;
+  padding: 0.6rem clamp(1rem, 3vw, 2rem);
+  background-color: var(--azul);
+  box-shadow: 0 3px 6px rgb(0 0 0 / 0.3);
+}
+
+.encabezado__logo {
+  width: 52px;
+  aspect-ratio: 1;
+  display: inline-block;
+  transition: scale var(--transicion);
+}
+
+.encabezado__logo:hover { scale: 1.1; }
+
+.encabezado__imagen {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+
+/* =========================================================
+   Tarjeta: foto + formulario
+   ========================================================= */
+.acceso {
+  display: grid;
+  grid-template-columns: 1fr;
+  width: min(92%, 880px);
+  background-color: var(--mostaza);
+  color: var(--cafe-oscuro);
+  box-shadow: 0 6px 20px rgb(0 0 0 / 0.35);
+}
+
+.acceso__foto {
+  display: block;
+  width: 100%;
+  height: 170px;          /* en el celular: franja arriba del formulario */
+  object-fit: cover;
+  object-position: center 30%;
+}
+
+/* En el registro la foto va a la derecha en escritorio, pero arriba en el celular */
+.acceso--registro .acceso__foto { order: -1; }
+
+.acceso__panel {
+  padding: clamp(1.5rem, 5vw, 2.5rem) clamp(1.25rem, 6vw, 3.5rem) clamp(1.75rem, 5vw, 2.75rem);
+}
+
+.acceso__titulo {
+  margin-bottom: 1.25rem;
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+  font-size: clamp(1.7rem, 3.2vw, 2.1rem);
+  line-height: 1.15;
+  color: var(--cafe);   /* texto grande: 3.7:1 sobre mostaza (AA para títulos) */
+}
+
+html.a11y-contraste .acceso__titulo { color: #000; }
+
+.acceso__formulario {
+  display: grid;
+  gap: 0.85rem;
+  max-width: 22rem;
+}
+
+.acceso__campo {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.acceso__campo label {
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--cafe-oscuro);
+}
+
+.acceso__campo input {
+  width: 100%;
+  min-height: 2.6rem;
+  padding: 0.45rem 0.65rem;
+  border: 1px solid var(--vinotinto);
+  border-radius: 0;
+  background-color: var(--blanco);
+  color: #1f1f1f;
+  font-family: var(--fuente-titulo);
+  font-size: 1rem;
+}
+
+.acceso__campo input:focus-visible {
+  outline: 3px solid var(--vinotinto);
+  outline-offset: 1px;
+}
+
+.acceso__campo input[aria-invalid="true"] {
+  border: 2px solid var(--rojo-error);
+}
+
+.acceso__ayuda {
+  font-family: var(--fuente-titulo);
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--cafe-oscuro);
+}
+
+.acceso__error-campo {
+  font-family: var(--fuente-titulo);
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--rojo-error);
+}
+
+.acceso__error-campo:empty { display: none; }
+
+.acceso__enlaces {
+  font-family: var(--fuente-titulo);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--cafe-oscuro);
+}
+
+.acceso__enlaces + .acceso__enlaces { margin-top: -0.45rem; }
+
+.acceso__enlace {
+  display: inline;
+  padding: 0;
+  font: inherit;
+  text-align: left;
+  color: var(--cafe-oscuro);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+  transition: color var(--transicion);
+}
+
+.acceso__enlace:hover { color: var(--vinotinto); }
+
+.acceso__enlace:focus-visible { outline-color: var(--vinotinto); }
+
+/* Avisos: error general (rojo) y aviso informativo (ej. "inicia sesión para continuar") */
+.acceso__alerta {
+  padding: 0.6rem 0.75rem;
+  border-left: 4px solid var(--rojo-error);
+  background-color: #fff3f0;
+  color: var(--rojo-error);
+  font-family: var(--fuente-titulo);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.acceso__alerta:empty { display: none; }
+
+.acceso__aviso {
+  margin: -0.5rem 0 1rem;
+  padding: 0.6rem 0.75rem;
+  max-width: 22rem;
+  border-left: 4px solid var(--azul);
+  background-color: var(--celeste);
+  color: var(--azul);
+  font-family: var(--fuente-titulo);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+html.a11y-contraste .acceso__aviso { color: #000; border-color: #000; }
+
+/* Botón principal (Siguiente / Registrarse) */
+.acceso__boton {
+  justify-self: center;
+  min-width: min(100%, 12.5rem);
+  min-height: 2.6rem;
+  margin-top: 0.4rem;
+  padding: 0.55rem 1.5rem;
+  border-radius: 6px;
+  background-color: var(--vinotinto);
+  color: var(--amarillo);
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: 0.95rem;
+  transition: scale var(--transicion), background-color var(--transicion), color var(--transicion);
+}
+
+.acceso__boton:hover,
+.acceso__boton:focus-visible {
+  scale: 1.05;
+  background-color: var(--cafe);
+  color: var(--blanco);
+}
+
+.acceso__boton:focus-visible { outline-color: var(--vinotinto); }
+
+.acceso__boton:disabled {
+  cursor: progress;
+  opacity: 0.75;
+  scale: 1;
+}
+
+html.a11y-contraste .acceso__boton { background-color: #000; color: #ffd60a; }
+
+.acceso__boton--pequeno { min-width: 8rem; margin-top: 0; }
+
+/* ---------- Escritorio: dos columnas como en el prototipo ---------- */
+@media (min-width: 720px) {
+  .acceso {
+    grid-template-columns: 1fr 1fr;
+    min-height: 430px;
+  }
+
+  .acceso__foto {
+    height: 100%;
+    min-height: 430px;
+  }
+
+  .acceso--registro .acceso__foto { order: 0; }
+
+  .acceso__panel { align-self: center; }
+}
+
+
+/* =========================================================
+   Ventana de ayuda (¿Olvidaste tus datos?)
+   ========================================================= */
+.dialogo {
+  width: min(92vw, 30rem);
+  margin: auto;
+  padding: 1.5rem 1.5rem 1.25rem;
+  border: none;
+  border-radius: var(--radio);
+  background-color: var(--mostaza);
+  color: var(--cafe-oscuro);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.45);
+}
+
+.dialogo::backdrop { background-color: rgb(0 0 0 / 0.55); }
+
+.dialogo__titulo {
+  margin-bottom: 0.75rem;
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+  font-size: 1.3rem;
+  color: var(--cafe-oscuro);
+}
+
+.dialogo__lista {
+  display: grid;
+  gap: 0.6rem;
+  padding-left: 1.1rem;
+  font-family: var(--fuente-titulo);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.dialogo__acciones {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.25rem;
+}
+
+
+/* ---------- Botones de accesibilidad (igual que en las demás páginas) ---------- */
+.accesibilidad {
+  position: fixed;
+  z-index: 50;
+  left: 1rem;
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  display: flex;
+  gap: 0.5rem;
+}
+
+.accesibilidad__boton {
+  width: 44px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 1.2rem;
+  background-color: var(--azul);
+  color: var(--celeste);
+  border: 2px solid var(--celeste);
+  box-shadow: 0 3px 10px rgb(0 0 0 / 0.3);
+  cursor: pointer;
+  transition: scale var(--transicion), background-color var(--transicion), color var(--transicion);
+}
+
+.accesibilidad__boton:hover,
+.accesibilidad__boton:focus-visible {
+  scale: 1.1;
+  background-color: var(--amarillo);
+  color: var(--cafe);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}

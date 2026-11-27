@@ -4,6 +4,15 @@ Diferencias con el tutorial, por la versión actual de las librerías:
   • Se usa un Blueprint (bp) en lugar de app, para que cada sección tenga su archivo.
   • db.get_or_404(Elemento, id) en lugar de Elemento.query.get(id): hace lo mismo
     y, si el id no existe, responde 404 en vez de fallar.
+
+Para que solo los administradores puedan crear, editar o borrar (como en las demás secciones),
+importa el decorador y ponlo debajo de @bp.route en POST, PUT y DELETE:
+
+    from ..autenticacion import requiere_admin
+
+    @bp.route("", methods=["POST"])
+    @requiere_admin
+    def insert_elemento(): ...
 """
 
 from flask import Blueprint, abort, jsonify, request

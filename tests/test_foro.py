@@ -7,8 +7,9 @@ NUEVA = {
     "contenido": "El comedor comunitario necesita manos para servir almuerzos el domingo.",
     "categoria": "necesidades",
     "ubicacion": "Bogotá, Ciudad Bolívar",
-    "autor": "Laura",
 }
+# El autor no se envía: es la persona que inició sesión (el cliente de las pruebas es el admin)
+AUTOR_ADMIN = "Administración REFUGIA"
 
 
 def crear(cliente, **extra):
@@ -45,10 +46,11 @@ def test_crear_responder_y_detalle(cliente):
     assert p["verificacion"] == "sin_confirmar" and p["respuestas"] == []
     assert "denuncias" not in p  # el público no ve las denuncias
 
-    r = cliente.post(f"/api/foro/publicaciones/{id_}/respuestas", json={"autor": "Pedro", "contenido": "Yo puedo ir."})
+    assert p["autor"] == AUTOR_ADMIN
+    r = cliente.post(f"/api/foro/publicaciones/{id_}/respuestas", json={"contenido": "Yo puedo ir."})
     assert r.status_code == 201
     p = cliente.get(f"/api/foro/publicaciones/{id_}").json
-    assert [x["autor"] for x in p["respuestas"]] == ["Pedro"] and p["total_respuestas"] == 1
+    assert [x["autor"] for x in p["respuestas"]] == [AUTOR_ADMIN] and p["total_respuestas"] == 1
     # Al responder, la publicación sube al primer lugar del listado
     assert cliente.get("/api/foro/publicaciones?limite=1").json["resultados"][0]["id_publicacion"] == id_
     cliente.delete(f"/api/foro/publicaciones/{id_}")
@@ -123,7 +125,6 @@ def test_eliminar_publicacion_borra_respuestas_y_denuncias(cliente, app):
     ({**NUEVA, "titulo": "Hola"}, "titulo"),
     ({**NUEVA, "contenido": "corto"}, "contenido"),
     ({**NUEVA, "categoria": "chismes"}, "categoria"),
-    ({**NUEVA, "autor": " "}, "autor"),
     ({**NUEVA, "verificacion": "confirmada"}, "verificacion"),  # el público no puede confirmarse a sí mismo
     ({k: v for k, v in NUEVA.items() if k != "titulo"}, "titulo"),
 ])
@@ -133,8 +134,8 @@ def test_validaciones_publicacion(cliente, datos, campo):
 
 
 def test_validaciones_respuesta_y_denuncia(cliente):
-    r = cliente.post("/api/foro/publicaciones/1/respuestas", json={"autor": "A", "contenido": ""})
-    assert r.status_code == 400 and {"autor", "contenido"} <= set(r.json["detalles"])
+    r = cliente.post("/api/foro/publicaciones/1/respuestas", json={"contenido": ""})
+    assert r.status_code == 400 and "contenido" in r.json["detalles"]
     r = cliente.post("/api/foro/publicaciones/1/denuncias", json={"motivo": "aburrida"})
     assert r.status_code == 400 and "motivo" in r.json["detalles"]
     assert cliente.post("/api/foro/publicaciones/99999/validar").status_code == 404

@@ -3,12 +3,12 @@
    ---------------------------------------------------------
      Listado        → GET  /api/foro/publicaciones?q=…&categoria=…
      Detalle        → GET  /api/foro/publicaciones/<id>      (foro.html?publicacion=<id>)
-     Publicar       → POST /api/foro/publicaciones
-     Responder      → POST /api/foro/publicaciones/<id>/respuestas
+     Publicar       → POST /api/foro/publicaciones                 (con sesión iniciada)
+     Responder      → POST /api/foro/publicaciones/<id>/respuestas (con sesión iniciada)
      Confirmar      → POST /api/foro/publicaciones/<id>/validar
      Denunciar      → POST /api/foro/publicaciones/<id>/denuncias
    La moderación se hace en admin/foro.html.
-   Requiere js/api.js y que la API esté corriendo:  python main.py
+   Requiere js/api.js, js/sesion.js y que la API esté corriendo:  python main.py
    ========================================================= */
 (() => {
   "use strict";
@@ -268,7 +268,7 @@
     const listaRespuestas = crear("ol", "foro__lista-respuestas");
     p.respuestas.forEach((r) => listaRespuestas.append(itemRespuesta(r)));
     if (!p.respuestas.length) listaRespuestas.append(crear("li", "foro__sin-respuestas", "Todavía no hay respuestas. Sé la primera persona en responder."));
-    respuestas.append(tituloRespuestas, listaRespuestas, formularioRespuesta(p, listaRespuestas, tituloRespuestas));
+    respuestas.append(tituloRespuestas, listaRespuestas, zonaRespuesta(p, listaRespuestas, tituloRespuestas));
 
     detalle.replaceChildren(botonVolver(), articulo, respuestas);
   }
@@ -393,11 +393,6 @@
         <textarea id="respuesta-contenido" rows="3" maxlength="2000" required aria-describedby="error-respuesta-contenido"></textarea>
         <p class="foro__error-campo" id="error-respuesta-contenido"></p>
       </div>
-      <div class="foro__campo">
-        <label for="respuesta-autor">Tu nombre *</label>
-        <input type="text" id="respuesta-autor" maxlength="80" autocomplete="name" required aria-describedby="error-respuesta-autor">
-        <p class="foro__error-campo" id="error-respuesta-autor"></p>
-      </div>
       <div class="foro__acciones">
         <button type="submit" class="foro__boton foro__boton--principal">Publicar respuesta</button>
       </div>`;
@@ -406,14 +401,13 @@
       limpiarErrores(form);
       const errores = validarRequeridos(form, "respuesta", [
         ["contenido", 2, "Escribe tu mensaje."],
-        ["autor", 2, "Escribe tu nombre."],
       ]);
       if (Object.keys(errores).length) return mostrarErrores(form, "respuesta", errores);
       const boton = $('button[type="submit"]', form);
       boton.disabled = true;
       try {
+        // El autor no se envía: la API usa el nombre de quien inició sesión
         const r = await RefugiaAPI.crear(`/api/foro/publicaciones/${p.id_publicacion}/respuestas`, {
-          autor: $("#respuesta-autor", form).value.trim(),
           contenido: $("#respuesta-contenido", form).value.trim(),
         });
         $(".foro__sin-respuestas", listaRespuestas)?.remove();
@@ -422,12 +416,33 @@
         $("#respuesta-contenido", form).value = "";
         anunciar("Tu respuesta fue publicada.");
       } catch (error) {
+        if (error.estado === 401) error.message = "Tu sesión terminó. Vuelve a iniciar sesión para responder.";
         mostrarErrores(form, "respuesta", error.detalles, error.message);
       } finally {
         boton.disabled = false;
       }
     });
     return form;
+  }
+
+  /** Para responder hay que iniciar sesión: a los invitados se les muestra un enlace. */
+  function zonaRespuesta(p, listaRespuestas, tituloRespuestas) {
+    const zona = crear("div", "foro__zona-respuesta");
+    RefugiaSesion.listo.then((usuario) => {
+      if (usuario) {
+        zona.replaceChildren(formularioRespuesta(p, listaRespuestas, tituloRespuestas));
+        return;
+      }
+      const aviso = crear("p", "foro__nota");
+      const enlace = crear("a", "", "Inicia sesión");
+      enlace.href = RefugiaSesion.urlIniciarSesion();
+      aviso.append(enlace, " o ");
+      const registro = crear("a", "", "crea una cuenta");
+      registro.href = "registro.html";
+      aviso.append(registro, " para responder.");
+      zona.replaceChildren(aviso);
+    });
+    return zona;
   }
 
   // =========================================================
@@ -448,7 +463,14 @@
     btnNueva.setAttribute("aria-expanded", "false");
   }
 
-  btnNueva.addEventListener("click", () => (panelNueva.hidden ? abrirNueva() : cerrarNueva()));
+  btnNueva.addEventListener("click", async () => {
+    // Para publicar hay que iniciar sesión (la API usa ese nombre como autor)
+    if (!(await RefugiaSesion.listo)) {
+      location.assign(RefugiaSesion.urlIniciarSesion());
+      return;
+    }
+    panelNueva.hidden ? abrirNueva() : cerrarNueva();
+  });
   $("#btn-cancelar-nueva").addEventListener("click", () => {
     formNueva.reset();
     limpiarErrores(formNueva);
@@ -462,7 +484,6 @@
     const errores = validarRequeridos(formNueva, "nueva", [
       ["titulo", 5, "Escribe un título de al menos 5 caracteres."],
       ["contenido", 10, "Escribe tu mensaje (al menos 10 caracteres)."],
-      ["autor", 2, "Escribe tu nombre."],
     ]);
     if (Object.keys(errores).length) return mostrarErrores(formNueva, "nueva", errores);
 
@@ -474,13 +495,13 @@
         categoria: $("#nueva-categoria").value,
         ubicacion: $("#nueva-ubicacion").value.trim(),
         contenido: $("#nueva-contenido").value.trim(),
-        autor: $("#nueva-autor").value.trim(),
       });
       formNueva.reset();
       cerrarNueva();
       anunciar("Tu publicación fue creada. Aparece como sin confirmar hasta que la revise un moderador.");
       abrirDetalle(nueva.id_publicacion, { guardarHistorial: true });
     } catch (error) {
+      if (error.estado === 401) error.message = "Tu sesión terminó. Vuelve a iniciar sesión para publicar.";
       mostrarErrores(formNueva, "nueva", error.detalles, error.message);
     } finally {
       boton.disabled = false;

@@ -17,15 +17,17 @@
    Si la API responde con error, la promesa falla con un Error que trae:
      error.message  → mensaje para mostrar
      error.detalles → { campo: ["mensaje"] } cuando los datos no son válidos (400)
-     error.estado   → código HTTP (0 si no hubo conexión)
+     error.estado   → código HTTP (0 si no hubo conexión; 401 = falta iniciar sesión; 403 = sin permiso)
    ========================================================= */
 (function () {
   "use strict";
 
   // Con Live Server (puerto 5500) la API está en el 5000; si la página la sirve Flask, es la misma dirección.
+  // Se usa el mismo nombre de equipo de la página (127.0.0.1 o localhost) para que el navegador
+  // envíe la cookie de sesión: si fueran distintos, la sesión no funcionaría con Live Server.
   const BASE =
     window.REFUGIA_API_BASE ??
-    (["5500", "5501"].includes(location.port) ? "http://127.0.0.1:5000" : "");
+    (["5500", "5501"].includes(location.port) ? `http://${location.hostname}:5000` : "");
 
   function construirUrl(ruta, parametros) {
     const url = new URL(BASE + ruta, location.origin);
@@ -37,7 +39,8 @@
   }
 
   async function pedir(metodo, ruta, { parametros, datos, formulario } = {}) {
-    const opciones = { method: metodo, headers: { Accept: "application/json" } };
+    // credentials "include": envía la cookie de sesión (también desde Live Server)
+    const opciones = { method: metodo, headers: { Accept: "application/json" }, credentials: "include" };
     if (datos !== undefined) {
       opciones.headers["Content-Type"] = "application/json";
       opciones.body = JSON.stringify(datos);

@@ -98,7 +98,8 @@ proveedor con sus llaves de prueba, y recibir su confirmación en una ruta nueva
 pasarela real, los datos de la tarjeta no pasan por nuestro servidor: los recibe directamente el
 formulario o widget del proveedor.
 
-## Pendiente
+## Sesiones
 
-Las rutas del panel (listar, anular y eliminar donaciones, y el CRUD de organizaciones) todavía no
-piden inicio de sesión. Se protegerán cuando se implementen las sesiones del panel de administración.
+Las rutas del panel (listar, resumen, anular y eliminar donaciones, y crear, editar o borrar
+organizaciones) son **solo para administradores**: 401 sin sesión y 403 si no es administrador.
+Donar, pagar y ver el comprobante siguen abiertos a todos. Ver qué rutas piden sesión en [`api-sesiones.md`](api-sesiones.md).

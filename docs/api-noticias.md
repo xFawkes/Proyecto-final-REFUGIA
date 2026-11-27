@@ -84,7 +84,7 @@ Error de validación (400):
 - Se guardan en `img/subidas/noticias/` con un nombre aleatorio (lo hace `api/imagenes.py`, común a todas las secciones). Esa carpeta **no se sube a GitHub**
   (está en `.gitignore`), igual que la base de datos: cada integrante tiene las suyas.
 
-## Pendiente
+## Sesiones
 
-POST, PUT, DELETE y la subida de imágenes todavía no piden inicio de sesión. Se protegerán cuando
-se implementen las sesiones del panel de administración.
+POST, PUT, DELETE, la subida de imágenes y los filtros del panel son **solo para administradores**:
+401 sin sesión y 403 si no es administrador. Las consultas públicas siguen abiertas. Ver qué rutas piden sesión en [`api-sesiones.md`](api-sesiones.md).

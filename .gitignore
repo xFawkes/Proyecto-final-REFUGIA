@@ -13,6 +13,7 @@ api/refugia.db
 
 # Configuración local con datos privados
 .env
+.clave_secreta
 
 # Archivos del sistema operativo
 Thumbs.db

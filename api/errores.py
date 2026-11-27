@@ -34,8 +34,11 @@ PATRONES = [
 # Mensajes por defecto de Flask cuando la ruta no da uno propio (ej. una URL que no existe)
 MENSAJES_HTTP = {
     400: "La petición no es válida.",
+    401: "Inicia sesión para continuar.",
+    403: "No tienes permiso para hacer esto.",
     404: "La ruta solicitada no existe.",
     405: "Este método HTTP no está permitido en esta ruta.",
+    409: "La operación no se puede hacer en el estado actual.",
     413: "El archivo enviado es demasiado grande.",
     415: "Tipo de contenido no soportado.",
     500: "Error interno del servidor.",

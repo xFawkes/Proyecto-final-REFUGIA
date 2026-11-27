@@ -25,8 +25,10 @@ con llaves foráneas:
    - **Aprobar**: queda confirmada y visible, y sus denuncias quedan revisadas.
    - **Ocultar / Mostrar**, **Eliminar** la publicación o **eliminar respuestas** sueltas.
 
-Sin inicio de sesión no se puede saber quién confirma o denuncia: la página evita que el mismo
-navegador lo haga dos veces (con `localStorage`). Con sesiones, se guardaría el usuario.
+Para **publicar y responder** hay que iniciar sesión: el `autor` es el nombre de quien inició sesión
+(no se puede publicar a nombre de otra persona). **Confirmar y denunciar** siguen abiertos a todos;
+la página evita que el mismo navegador lo haga dos veces (con `localStorage`). La **moderación** es
+solo para administradores.
 
 ## Rutas
 
@@ -37,12 +39,12 @@ navegador lo haga dos veces (con `localStorage`). Con sesiones, se guardaría el
 | GET | `/api/foro/catalogos` | Categorías, niveles de verificación y motivos de denuncia |
 | GET | `/api/foro/publicaciones` | Listar (no incluye las ocultas). Ordena por la actividad más reciente |
 | GET | `/api/foro/publicaciones/<id>` | Una publicación con sus respuestas (404 si está oculta) |
-| POST | `/api/foro/publicaciones` | Crear (queda sin confirmar) |
-| POST | `/api/foro/publicaciones/<id>/respuestas` | Responder (el tema sube al primer lugar) |
+| POST | `/api/foro/publicaciones` | Crear (queda sin confirmar). **Con sesión** |
+| POST | `/api/foro/publicaciones/<id>/respuestas` | Responder (el tema sube al primer lugar). **Con sesión** |
 | POST | `/api/foro/publicaciones/<id>/validar` | Confirmar la información (+1) |
 | POST | `/api/foro/publicaciones/<id>/denuncias` | Denunciar (`motivo` y `detalle` opcional) |
 
-### Moderación (`admin/foro.html`)
+### Moderación (`admin/foro.html`, solo administradores)
 
 | Método | Ruta | Qué hace |
 |---|---|---|
@@ -66,14 +68,15 @@ navegador lo haga dos veces (con `localStorage`). Con sesiones, se guardaría el
 ## Campos
 
 **Publicación (POST):** `titulo` (5 a 150), `contenido` (10 a 3000), `categoria` (por defecto `general`),
-`ubicacion` (opcional, máx. 150) y `autor` (2 a 80). El público no puede enviar `verificacion`: una
-publicación no se puede confirmar a sí misma.
+y `ubicacion` (opcional, máx. 150). El `autor` no se envía: la API usa el nombre de quien inició sesión
+(si se envía, se ignora). El público no puede enviar `verificacion`: una publicación no se puede
+confirmar a sí misma.
 
-**Respuesta:** `autor` (2 a 80) y `contenido` (2 a 2000).
+**Respuesta:** `contenido` (2 a 2000); el autor también sale de la sesión.
 
 **Denuncia:** `motivo` (`falsa`, `ofensiva`, `datos_personales`, `spam`, `otro`) y `detalle` (opcional, máx. 300).
 
-## Pendiente
+## Sesiones
 
-Las rutas de moderación todavía no piden inicio de sesión. Cuando existan las sesiones, el `autor`
-saldrá del usuario que inició sesión y las rutas de moderación quedarán solo para administradores.
+Sin sesión, `POST` de publicaciones y respuestas responde **401**; las rutas de moderación responden
+**401** sin sesión y **403** a un usuario que no es administrador. Ver qué rutas piden sesión en [`api-sesiones.md`](api-sesiones.md).
