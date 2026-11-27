@@ -10,8 +10,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Myanmar+Khyay&family=Unbounded:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="../css/admin/inicio.css">
+  <script src="../js/api.js" defer></script>
+  <script src="../js/sesion.js" defer></script>  <!-- solo administradores; cerrar sesión -->
+  <script src="../js/admin/panel.js" defer></script>
 </head>
-<body>
+<body data-requiere="admin">
   <div class="admin">
 
     <!-- ===================== MENÚ LATERAL ===================== -->
@@ -31,7 +34,9 @@
         <a href="noticias.html" class="menu__enlace">Noticias</a>
         <a href="foro.html" class="menu__enlace">Foro</a>
         <a href="voluntariados.html" class="menu__enlace">Voluntariados</a>
-        <a href="../inicio.html" class="menu__enlace">Cerrar sesion</a>
+        <a href="donaciones.html" class="menu__enlace">Donaciones</a>
+        <a href="usuarios.html" class="menu__enlace">Usuarios</a>
+        <a href="../inicio.html" class="menu__enlace" data-cerrar-sesion>Cerrar sesión</a>
       </nav>
     </aside>
 
@@ -41,23 +46,24 @@
       <div class="contenido__interior">
         <h1 class="contenido__titulo">Panel de admi</h1>
 
-        <!-- INTEGRACIÓN: reemplazar los 000 con los datos reales -->
+        <!-- INTEGRACIÓN: los números con data-api-total los llena js/admin/panel.js con el "total" que responde la API.
+             Para los demás, agreguen data-api-total="/api/su-seccion?filtro=…" cuando exista su API. -->
         <section class="resumen" aria-label="Resumen general">
           <article class="tarjeta">
             <h2 class="tarjeta__titulo">Reportes</h2>
-            <strong class="tarjeta__numero">000</strong>
+            <strong class="tarjeta__numero" data-api-total="/api/foro/publicaciones?moderacion=true&amp;revision=pendiente">000</strong>
             <p class="tarjeta__nota">Foro de moderación</p>
           </article>
 
           <article class="tarjeta">
             <h2 class="tarjeta__titulo">Borradores de Noticias</h2>
-            <strong class="tarjeta__numero">000</strong>
+            <strong class="tarjeta__numero" data-api-total="/api/noticias?publicada=false">000</strong>
             <p class="tarjeta__nota">verificación</p>
           </article>
 
           <article class="tarjeta resumen__ancha">
             <h2 class="tarjeta__titulo">Voluntariados Activos</h2>
-            <strong class="tarjeta__numero">000</strong>
+            <strong class="tarjeta__numero" data-api-total="/api/voluntariados?estado=activo">000</strong>
             <p class="tarjeta__nota">Publicados en la plataforma</p>
           </article>
         </section>
@@ -75,37 +81,10 @@
                   <th scope="col">Acción</th>
                 </tr>
               </thead>
-              <!-- INTEGRACIÓN: repetir cada <tr> con las tareas reales -->
-              <tbody>
+              <!-- Las filas las crea js/admin/panel.js con las publicaciones del foro por revisar -->
+              <tbody id="tareas-pendientes">
                 <tr>
-                  <td>Foro</td>
-                  <td>Reporte sin confirmar</td>
-                  <td>00/00/0000</td>
-                  <td><a href="foro.html" class="tareas__accion">Revisar</a></td>
-                </tr>
-                <tr>
-                  <td>Foro</td>
-                  <td>Reporte sin confirmar</td>
-                  <td>00/00/0000</td>
-                  <td><a href="foro.html" class="tareas__accion">Revisar</a></td>
-                </tr>
-                <tr>
-                  <td>Foro</td>
-                  <td>Reporte sin confirmar</td>
-                  <td>00/00/0000</td>
-                  <td><a href="foro.html" class="tareas__accion">Revisar</a></td>
-                </tr>
-                <tr>
-                  <td>Foro</td>
-                  <td>Reporte sin confirmar</td>
-                  <td>00/00/0000</td>
-                  <td><a href="foro.html" class="tareas__accion">Revisar</a></td>
-                </tr>
-                <tr>
-                  <td>Foro</td>
-                  <td>Reporte sin confirmar</td>
-                  <td>00/00/0000</td>
-                  <td><a href="foro.html" class="tareas__accion">Revisar</a></td>
+                  <td colspan="4">Cargando tareas…</td>
                 </tr>
               </tbody>
             </table>

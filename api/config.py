@@ -9,6 +9,8 @@ puerto_bd y nombre_bd.
 from __future__ import annotations
 
 import os
+import secrets
+from datetime import timedelta
 from pathlib import Path
 from urllib.parse import quote_plus
 
@@ -45,6 +47,21 @@ def uri_mysql(d: dict) -> str:
     )
 
 
+def clave_secreta() -> str:
+    """Clave con la que Flask firma la cookie de sesión (si alguien la cambia, deja de servir).
+
+    Se toma de CLAVE_SECRETA en el .env. Si no está, se crea una al azar la primera vez y se
+    guarda en el archivo .clave_secreta (no se sube a GitHub), para que las sesiones no se
+    cierren cada vez que se reinicia el servidor.
+    """
+    if os.environ.get("CLAVE_SECRETA"):
+        return os.environ["CLAVE_SECRETA"]
+    archivo = RAIZ_PROYECTO / ".clave_secreta"
+    if not archivo.exists():
+        archivo.write_text(secrets.token_hex(32), encoding="utf-8")
+    return archivo.read_text(encoding="utf-8").strip()
+
+
 def configuracion() -> dict:
     cargar_env()
     return {
@@ -56,4 +73,11 @@ def configuracion() -> dict:
         "SQLALCHEMY_ENGINE_OPTIONS": {"pool_pre_ping": True, "pool_recycle": 280},
         # Orígenes extra que pueden llamar la API (ej. el dominio donde se publique)
         "ORIGENES_CORS": [o.strip() for o in os.environ.get("REFUGIA_CORS", "").split(",") if o.strip()],
+        # Sesiones (inicio de sesión): cookie firmada, que JavaScript no puede leer (HttpOnly)
+        # y que el navegador no envía desde otros sitios (SameSite=Lax)
+        "SECRET_KEY": clave_secreta(),
+        "SESSION_COOKIE_NAME": "refugia_sesion",
+        "SESSION_COOKIE_HTTPONLY": True,
+        "SESSION_COOKIE_SAMESITE": "Lax",
+        "PERMANENT_SESSION_LIFETIME": timedelta(hours=12),  # después hay que volver a iniciar sesión
     }

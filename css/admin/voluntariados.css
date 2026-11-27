@@ -314,7 +314,8 @@ button { border: none; cursor: pointer; }
 /* ---------- Dos tarjetas lado a lado ---------- */
 .voluntariados {
   display: grid;
-  grid-template-columns: 1fr;
+  /* minmax(0, 1fr): la tabla se desplaza dentro de su tarjeta en vez de ensanchar la página en el celular */
+  grid-template-columns: minmax(0, 1fr);
   gap: clamp(0.75rem, 2vw, 1.25rem);
   align-items: start;
 }
@@ -466,6 +467,210 @@ button { border: none; cursor: pointer; }
 .formulario__boton--cancelar:hover,
 .formulario__boton--cancelar:focus-visible {
   background-color: #8a2e00;
+}
+
+/* =========================================================
+   Conexión con la API: botones reales, errores, avisos e imagen
+   ========================================================= */
+.visualmente-oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.tareas__boton,
+.formulario__boton {
+  border: none;
+}
+
+.tareas__boton:focus-visible,
+.formulario__boton:focus-visible {
+  outline: 3px solid var(--azul);
+  outline-offset: 2px;
+}
+
+.formulario__boton:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.formulario__boton--secundario {
+  background-color: var(--blanco);
+  box-shadow: inset 0 0 0 2px var(--azul);
+  color: var(--azul);
+}
+
+.formulario__boton--secundario:hover,
+.formulario__boton--secundario:focus-visible {
+  background-color: var(--celeste);
+}
+
+.formulario__boton--eliminar {
+  background-color: #8a1c1c;
+  color: var(--blanco);
+}
+
+.formulario__boton--eliminar:hover,
+.formulario__boton--eliminar:focus-visible {
+  background-color: var(--vinotinto);
+}
+
+.tareas__cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.tareas__cabecera .tareas__titulo {
+  margin-bottom: 0;
+}
+
+.tareas__filtro {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 9rem;
+}
+
+.tareas__resumen {
+  margin-bottom: 0.5rem;
+  font-size: 0.75rem;
+  color: #555;
+}
+
+.tareas__resumen--error {
+  font-weight: 700;
+  color: #8a1c1c;
+}
+
+.tareas__estado--cerrado {
+  background-color: #5c5c5c;
+}
+
+.formulario__nota {
+  font-size: 0.7rem;
+  color: #555;
+}
+
+.formulario__estado {
+  padding: 0.5rem 0.75rem;
+  border-radius: 12px;
+  background-color: var(--blanco);
+  font-family: var(--fuente-titulo);
+  font-weight: 600;
+  font-size: 0.75rem;
+  color: var(--azul);
+}
+
+.formulario__estado[hidden] {
+  display: none;
+}
+
+.formulario__error {
+  padding-left: 0.25rem;
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: 0.75rem;
+  color: #8a1c1c;
+}
+
+.formulario__error:empty {
+  display: none;
+}
+
+.formulario__campo[aria-invalid="true"] {
+  border-color: #8a1c1c;
+  background-color: #fff4f2;
+}
+
+.formulario__imagen {
+  min-width: 0;
+  padding: 0.75rem;
+  border: 2px dashed var(--gris-linea);
+  border-radius: 16px;
+}
+
+.formulario__imagen legend {
+  padding-inline: 0.4rem;
+}
+
+.imagen__vista {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.imagen__vista[hidden] {
+  display: none;
+}
+
+.imagen__vista img {
+  width: min(100%, 180px);
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.2);
+}
+
+.imagen__vista .formulario__boton {
+  padding-inline: 1rem;
+}
+
+/* Avisos (guardado, error de la API…) */
+.aviso {
+  margin-bottom: 1rem;
+  padding: 0.85rem 1.1rem;
+  border-left: 6px solid var(--azul);
+  border-radius: 12px;
+  background-color: var(--blanco);
+  font-family: var(--fuente-titulo);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--azul);
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
+}
+
+.aviso[hidden] {
+  display: none;
+}
+
+.aviso--exito { border-color: #2E7D32; color: #1f5a22; }
+.aviso--error { border-color: #8a1c1c; color: #8a1c1c; }
+
+/* Confirmación para eliminar */
+.dialogo {
+  width: min(92vw, 420px);
+  margin: auto;
+  padding: 1.5rem;
+  border: none;
+  border-radius: var(--radio-tarjeta);
+  background-color: var(--blanco);
+  color: var(--texto);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.3);
+}
+
+.dialogo::backdrop {
+  background-color: rgb(28 85 104 / 0.55);
+}
+
+.dialogo__titulo {
+  margin-bottom: 0.5rem;
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+  font-size: 1.2rem;
+  color: var(--vinotinto);
+}
+
+.dialogo__texto {
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
 }
 
 @media (prefers-reduced-motion: reduce) {

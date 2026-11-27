@@ -17,15 +17,26 @@ Proyecto de Tecnologías del Internet — Universidad Militar Nueva Granada, 202
 REFUGIA/
 ├── main.py                   ← inicia el servidor:  python main.py
 ├── inicio.html, mapa.html, noticias.html, voluntariado.html,
-│   donaciones.html, foro.html, ayuda.html, perfil.html, error.html   ← páginas del sitio
+│   donaciones.html, foro.html, ayuda.html, perfil.html, error.html,
+│   iniciar-sesion.html, registro.html                                 ← páginas del sitio
 ├── admin/                    páginas del panel de administración
 ├── css/                      un archivo por página (mismo nombre que el .html)
 │   ├── admin/                estilos del panel de administración
 │   ├── menu-usuario.css      menú del perfil (compartido)
+│   ├── sesion.css            iniciar sesión y registro (las dos páginas)
 │   └── accesibilidad.css     alto contraste, tamaño de texto y avisos (compartido)
 ├── js/
 │   ├── accesibilidad.js      voz, contraste y tamaño de texto (todas las páginas)
-│   └── mapa.js               mapa, buscador y filtros
+│   ├── api.js                cliente de la API (fetch, errores, fechas) para todas las páginas
+│   ├── sesion.js             menú de usuario, cerrar sesión y páginas que piden sesión (todas las páginas)
+│   ├── acceso.js             formularios de iniciar sesión y registro
+│   ├── perfil.js             Mi perfil: editar datos y cambiar contraseña
+│   ├── mapa.js               mapa, buscador y filtros
+│   ├── noticias.js           pinta las noticias desde la API, con búsqueda
+│   ├── voluntariado.js       pinta los voluntariados desde la API, con búsqueda
+│   ├── donaciones.js         organizaciones, formulario de donación y pasarela de pagos simulada
+│   ├── foro.js               foro: temas, respuestas, confirmar y denunciar
+│   └── admin/                JavaScript del panel (un CRUD por página; panel.js: contadores)
 ├── img/                      imágenes compartidas (logo…) y una carpeta por sección
 ├── api/                      API en Flask
 │   ├── __init__.py           arma la app: conexión a MySQL, secciones y páginas
@@ -34,11 +45,23 @@ REFUGIA/
 │   ├── errores.py            errores en JSON y en español
 │   ├── paginas.py            sirve el HTML, CSS, JS e imágenes
 │   ├── utilidades.py         funciones comunes (tildes, distancias, horarios)
+│   ├── imagenes.py           subida de imágenes desde el panel (la usan todas las secciones)
+│   ├── autenticacion.py      sesiones: quién hizo la petición; @requiere_admin y @requiere_sesion
+│   ├── usuarios/             sección Usuarios: cuentas, roles, iniciar/cerrar sesión y registro
 │   ├── mapa/                 sección Mapa: modelos, esquemas, rutas (GET/POST/PUT/DELETE)
+│   ├── noticias/             sección Noticias: igual, más subida de imágenes
+│   ├── voluntariado/         sección Voluntariado: igual
+│   ├── donaciones/           sección Donaciones: organizaciones (CRUD), donaciones y pasarela simulada
+│   ├── foro/                 sección Foro: publicaciones, respuestas, denuncias y moderación
 │   └── _plantilla/           punto de partida para crear una sección nueva
 ├── tests/                    pruebas automáticas (python -m pytest)
 ├── docs/
 │   ├── api-mapa.md           detalle de la API del mapa y del módulo de accesibilidad
+│   ├── api-noticias.md       detalle de la API de noticias y del panel de administración
+│   ├── api-voluntariado.md   detalle de la API de voluntariado y de su panel
+│   ├── api-donaciones.md     detalle de la API de donaciones y de la pasarela simulada (datos de prueba)
+│   ├── api-foro.md           detalle de la API del foro y de la moderación
+│   ├── api-sesiones.md       usuarios, roles, sesiones, cuentas de prueba y rutas protegidas
 │   └── REFUGIA.postman_collection.json   peticiones listas para importar en Postman
 ├── requirements.txt          librerías de Python
 └── .env.example              plantilla de la configuración de MySQL
@@ -55,6 +78,13 @@ REFUGIA/
   <script src="js/accesibilidad.js"></script>
   ```
   y los botones con `id="btn-lector-voz"`, `id="btn-contraste"` e `id="btn-zoom"`.
+- **Sesión**: toda página con el menú de usuario lleva también
+  ```html
+  <script src="js/api.js" defer></script>
+  <script src="js/sesion.js" defer></script>
+  ```
+  y el menú con `data-sesion-ver="invitado" | "sesion" | "admin"` (cópialo de `inicio.html`).
+  Una página que solo deben ver administradores lleva `<body data-requiere="admin">`.
 
 ---
 
@@ -104,12 +134,23 @@ python main.py
 | Qué | Dirección |
 |---|---|
 | Sitio | http://127.0.0.1:5000/ |
-| Panel de administración | http://127.0.0.1:5000/admin/inicio.html |
+| Iniciar sesión | http://127.0.0.1:5000/iniciar-sesion.html |
+| Panel de administración | http://127.0.0.1:5000/admin/inicio.html (pide iniciar sesión como administrador) |
 | API (ejemplo) | http://127.0.0.1:5000/api/puntos |
 
 Abre siempre el sitio desde `http://127.0.0.1:5000/`, no con doble clic sobre el `.html`: así el mapa
 encuentra la API y OpenStreetMap no bloquea las imágenes. El sitio solo funciona mientras la
 terminal con `python main.py` esté abierta (`Ctrl+C` lo detiene).
+
+**Cuentas de prueba** (se crean solas la primera vez; puedes escribir el usuario o el correo):
+
+| Rol | Usuario | Contraseña |
+|---|---|---|
+| Administrador (va al panel) | `admin` | `Admin2026*` |
+| Usuario común (va al inicio) | `ana.gomez` | `Usuario2026*` |
+
+Hay más cuentas en [`docs/api-sesiones.md`](docs/api-sesiones.md). Son solo para probar: si el sitio
+se publica, cambien sus contraseñas o elimínenlas desde `admin/usuarios.html`.
 
 ---
 
@@ -128,13 +169,46 @@ peticiones listas, con ejemplos de JSON.
 | PUT | `/api/puntos/<id>` | Actualiza un punto; se pueden enviar solo los campos que cambian |
 | DELETE | `/api/puntos/<id>` | Elimina un punto |
 | GET | `/api/tipos`, `/api/servicios`, `/api/verificacion` | Catálogos para los filtros |
+| GET | `/api/noticias` | Lista y busca noticias (`?q=sismo&verificacion=oficial&publicada=false`) |
+| GET | `/api/noticias/<id>` | Una noticia |
+| POST | `/api/noticias` | Crea una noticia |
+| PUT | `/api/noticias/<id>` | Actualiza una noticia (ej. `{"publicada": true}` para aprobar un borrador) |
+| DELETE | `/api/noticias/<id>` | Elimina una noticia |
+| POST | `/api/noticias/imagen` | Sube una imagen (formulario *multipart*, campo `imagen`) |
+| GET | `/api/voluntariados` | Lista y busca voluntariados (`?q=acopio&modalidad=virtual&estado=todos`) |
+| GET | `/api/voluntariados/<id>` | Un voluntariado |
+| POST | `/api/voluntariados` | Crea un voluntariado |
+| PUT | `/api/voluntariados/<id>` | Actualiza un voluntariado (ej. `{"estado": "cerrado"}`) |
+| DELETE | `/api/voluntariados/<id>` | Elimina un voluntariado |
+| GET / POST | `/api/voluntariados/catalogos`, `/api/voluntariados/imagen` | Modalidades y estados; subir imagen |
+| GET, POST, PUT, DELETE | `/api/organizaciones` y `/api/organizaciones/<id>` | CRUD de las organizaciones que reciben donaciones |
+| POST | `/api/donaciones` | Crea una donación (queda pendiente de pago) |
+| POST | `/api/donaciones/<referencia>/pago` | Paga en la **pasarela simulada** (no cobra dinero real) |
+| GET | `/api/donaciones/<referencia>` | Comprobante de una donación |
+| GET | `/api/donaciones`, `/api/donaciones/resumen` | Listado y total recaudado (panel de administración) |
+| PUT, DELETE | `/api/donaciones/<referencia>` | Anular una donación aprobada o eliminar una no aprobada |
+| GET, POST | `/api/foro/publicaciones` | Listar y crear temas del foro |
+| GET, PUT, DELETE | `/api/foro/publicaciones/<id>` | Un tema con sus respuestas; moderar (aprobar u ocultar); eliminar |
+| POST | `/api/foro/publicaciones/<id>/respuestas`, `/validar`, `/denuncias` | Responder, confirmar la información y denunciar |
+| DELETE | `/api/foro/respuestas/<id>` | Eliminar una respuesta (moderación) |
+| GET, POST, DELETE | `/api/sesion` | ¿Quién soy?, iniciar sesión y cerrar sesión |
+| POST | `/api/usuarios` | Crear una cuenta (registro) |
+| PUT | `/api/usuarios/yo`, `/api/usuarios/yo/contrasena` | Editar mis datos y cambiar mi contraseña |
+| GET, PUT, DELETE | `/api/usuarios`, `/api/usuarios/<id>` | Cuentas: listar, cambiar rol, activar/desactivar, eliminar (panel) |
+| POST | `/api/usuarios/<id>/contrasena-temporal` | Contraseña temporal para quien olvidó la suya (panel) |
 
 Si los datos no son válidos, la API responde **400** con el detalle de cada campo en español.
 Si el id no existe, responde **404**. El detalle de los campos y filtros está en
-[`docs/api-mapa.md`](docs/api-mapa.md).
+[`docs/api-mapa.md`](docs/api-mapa.md), [`docs/api-noticias.md`](docs/api-noticias.md),
+[`docs/api-voluntariado.md`](docs/api-voluntariado.md), [`docs/api-donaciones.md`](docs/api-donaciones.md)
+(con los datos de prueba de la pasarela de pagos), [`docs/api-foro.md`](docs/api-foro.md) y
+[`docs/api-sesiones.md`](docs/api-sesiones.md).
 
-> Las rutas POST, PUT y DELETE todavía no piden inicio de sesión. Cuando exista el login
-> (requisito RF 7), hay que restringirlas a los administradores.
+**Sesiones:** crear, editar y borrar (POST, PUT y DELETE del panel) es **solo para administradores**:
+sin sesión la API responde **401** y a un usuario común **403**. Publicar y responder en el foro pide
+iniciar sesión. En Postman, ejecuta primero *Sesión y usuarios → Iniciar sesión (admin)*: Postman
+guarda la cookie y la envía en las demás peticiones. La tabla completa de rutas protegidas está en
+[`docs/api-sesiones.md`](docs/api-sesiones.md).
 
 ---
 
@@ -149,16 +223,21 @@ Cada sección es una carpeta dentro de `api/`, con las mismas piezas del tutoria
 | `rutas.py` | GET, GET por id, POST, PUT, DELETE | las funciones `@app.route(...)` |
 | `__init__.py` | Expone `bp` y `cargar_datos_ejemplo` | los `INSERT` de prueba en Workbench |
 
-Pasos, con "noticias" como ejemplo:
+`api/noticias`, `api/voluntariado`, `api/donaciones` y `api/foro` son ejemplos completos hechos a partir de la plantilla (con
+búsqueda, filtros, paginación, subida de imágenes y su página de administración en `admin/`).
 
-1. Copia `api/_plantilla` y renómbrala `api/noticias`.
-2. En sus archivos cambia `Elemento`/`elementos` por `Noticia`/`noticias` y ajusta las columnas.
+Pasos, con una sección nueva "alertas" como ejemplo:
+
+1. Copia `api/_plantilla` y renómbrala `api/alertas`.
+2. En sus archivos cambia `Elemento`/`elementos` por `Alerta`/`alertas` y ajusta las columnas.
 3. En `api/__init__.py`:
    ```python
-   from . import mapa, noticias, paginas
-   SECCIONES = [mapa, noticias]
+   from . import alertas, donaciones, foro, mapa, noticias, paginas, usuarios, voluntariado
+   SECCIONES = [usuarios, mapa, noticias, voluntariado, donaciones, foro, alertas]
    ```
-4. Reinicia el servidor (`python main.py`). La tabla se crea sola en MySQL.
+4. Para que solo los administradores puedan crear, editar o borrar, pon `@requiere_admin`
+   (de `api/autenticacion.py`) debajo de `@bp.route` en POST, PUT y DELETE.
+5. Reinicia el servidor (`python main.py`). La tabla se crea sola en MySQL.
 
 `db.create_all()` crea las tablas que faltan, pero **no modifica las que ya existen**. Si cambias
 las columnas de una tabla que ya se creó, bórrala en MySQL Workbench (clic derecho → *Drop Table*)
@@ -180,8 +259,9 @@ $env:REFUGIA_TEST_DB = "mysql+pymysql://root:tu_contraseña@localhost:3306/refug
 python -m pytest
 ```
 
-Prueban la búsqueda y los filtros, el CRUD completo (incluidos datos inválidos) y que todas las páginas
-carguen sus CSS, scripts e imágenes.
+Prueban la búsqueda y los filtros, el CRUD completo (incluidos datos inválidos), las sesiones (iniciar
+sesión, registro, roles y que cada ruta protegida responda 401 o 403) y que todas las páginas carguen sus
+CSS, scripts e imágenes. El cliente de las pruebas (`cliente`) inicia sesión como administrador.
 
 ---
 

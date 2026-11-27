@@ -19,8 +19,12 @@
     <link rel="stylesheet" href="css/accesibilidad.css">
     <!--API Accesibilidad-->
     <script src="js/accesibilidad.js"></script>
+    <!--Sesión del usuario: menú de perfil y cerrar sesión (js/sesion.js)-->
+    <script src="js/api.js" defer></script>
+    <script src="js/sesion.js" defer></script>
+    <script src="js/perfil.js" defer></script>
 </head>
-<body class="pagina">
+<body class="pagina" data-requiere="sesion">
 
     <!-- ===================== ENCABEZADO ===================== -->
     <header class="encabezado">
@@ -61,31 +65,50 @@
             <div class="usuario-menu__avatar">
               <i class="bi bi-person-fill usuario-menu__avatar-icono" aria-hidden="true"></i>
             </div>
-            <p class="usuario-menu__nombre">TU NOMBRE</p>
-            <p class="usuario-menu__id">ID:123456789 #LAN</p>
+            <p class="usuario-menu__nombre" data-sesion-nombre>Invitado</p>
+            <p class="usuario-menu__id" data-sesion-detalle>Inicia sesión para participar</p>
           </div>
 
+          <!-- Opciones según la sesión (js/sesion.js): data-sesion-ver="invitado" | "sesion" | "admin" -->
           <ul class="usuario-menu__lista">
-            <li class="usuario-menu__elemento">
+            <li class="usuario-menu__elemento" data-sesion-ver="invitado">
+              <a href="iniciar-sesion.html" class="usuario-menu__enlace">
+                <i class="bi bi-box-arrow-in-right usuario-menu__icono" aria-hidden="true"></i>
+                <span class="usuario-menu__texto">Iniciar Sesión</span>
+              </a>
+            </li>
+            <li class="usuario-menu__elemento" data-sesion-ver="invitado">
+              <a href="registro.html" class="usuario-menu__enlace">
+                <i class="bi bi-person-plus usuario-menu__icono" aria-hidden="true"></i>
+                <span class="usuario-menu__texto">Registrarse</span>
+              </a>
+            </li>
+            <li class="usuario-menu__elemento" data-sesion-ver="admin" hidden>
+              <a href="admin/inicio.html" class="usuario-menu__enlace">
+                <i class="bi bi-speedometer2 usuario-menu__icono" aria-hidden="true"></i>
+                <span class="usuario-menu__texto">Panel de Administración</span>
+              </a>
+            </li>
+            <li class="usuario-menu__elemento" data-sesion-ver="sesion" hidden>
               <a href="perfil.html" class="usuario-menu__enlace">
                 <i class="bi bi-person usuario-menu__icono" aria-hidden="true"></i>
                 <span class="usuario-menu__texto">Mi Perfil</span>
               </a>
             </li>
-            <li class="usuario-menu__elemento">
+            <li class="usuario-menu__elemento" data-sesion-ver="sesion" hidden>
               <a href="error.html" class="usuario-menu__enlace">
                 <i class="bi bi-gear-fill usuario-menu__icono" aria-hidden="true"></i>
                 <span class="usuario-menu__texto">Configuración</span>
               </a>
             </li>
-            <li class="usuario-menu__elemento">
+            <li class="usuario-menu__elemento" data-sesion-ver="sesion" hidden>
               <a href="error.html" class="usuario-menu__enlace">
                 <i class="bi bi-bell-fill usuario-menu__icono" aria-hidden="true"></i>
                 <span class="usuario-menu__texto">Notificaciones</span>
               </a>
             </li>
-            <li class="usuario-menu__elemento">
-              <a href="inicio.html" class="usuario-menu__enlace">
+            <li class="usuario-menu__elemento" data-sesion-ver="sesion" hidden>
+              <a href="inicio.html" class="usuario-menu__enlace" data-cerrar-sesion>
                 <i class="bi bi-box-arrow-right usuario-menu__icono" aria-hidden="true"></i>
                 <span class="usuario-menu__texto">Cerrar Sesión</span>
               </a>
@@ -96,8 +119,9 @@
 
     <main class="contenido">
 
-        <!-- ===================== TARJETA DE USUARIO ===================== -->
-        
+        <!-- ===================== TARJETA DE USUARIO =====================
+             Los datos los llena js/perfil.js con la sesión iniciada (GET /api/sesion)
+             y se guardan con PUT /api/usuarios/yo -->
         <section class="usuario" aria-labelledby="usuario-id">
 
             <input type="checkbox" id="modo-edicion" class="usuario__toggle">
@@ -106,77 +130,127 @@
             <div class="usuario__cabecera">
 
                 <div class="usuario__avatar">
-                    <i class="bi bi-person-fill usuario__avatar-icono"></i>
+                    <i class="bi bi-person-fill usuario__avatar-icono" aria-hidden="true"></i>
                 </div>
 
-                <h1 class="usuario__id" id="usuario-id">
-                    ID: 123456789 #LAN
-                </h1>
+                <div class="usuario__titulos">
+                    <h1 class="usuario__id" id="usuario-id">Mi perfil</h1>
+                    <p class="usuario__rol" id="usuario-rol"></p>
+                </div>
 
-                <!-- EDITAR -->
-                <label for="modo-edicion" class="usuario__editar"
-                    aria-label="Editar perfil">
-                    <i class="bi bi-pencil-fill"></i>
+                <!-- EDITAR (activa la casilla #modo-edicion) -->
+                <label for="modo-edicion" class="usuario__editar">
+                    <i class="bi bi-pencil-fill" aria-hidden="true"></i>
+                    <span class="sr-only">Editar perfil</span>
                 </label>
 
                 <!-- GUARDAR Y CANCELAR -->
                 <div class="usuario__acciones">
-                    <label for="modo-edicion" class="usuario__guardar">
-                        Guardar
-                    </label>
-
-                    <label for="modo-edicion" class="usuario__cancelar">
-                        Cancelar
-                    </label>
+                    <button type="submit" form="form-perfil" class="usuario__guardar">Guardar</button>
+                    <button type="button" class="usuario__cancelar" id="btn-cancelar-perfil">Cancelar</button>
                 </div>
 
             </div>
 
             <!-- DATOS -->
-            <div class="usuario__datos">
+            <form class="usuario__datos" id="form-perfil" novalidate>
 
                 <div class="usuario__dato">
                     <label class="usuario__etiqueta" for="nombre">Nombre:</label>
-                    <input class="usuario__valor" id="nombre"
-                        type="text" value="Tú nombre">
+                    <div class="usuario__campo">
+                        <input class="usuario__valor" id="nombre" name="nombre" type="text" maxlength="80"
+                            autocomplete="name" placeholder="Añadir nombre" readonly aria-describedby="error-nombre">
+                        <p class="usuario__error" id="error-nombre"></p>
+                    </div>
                 </div>
 
                 <div class="usuario__dato">
                     <label class="usuario__etiqueta" for="correo">Correo:</label>
-                    <input class="usuario__valor" id="correo"
-                        type="email" value="Tunombre@gmail.com">
+                    <div class="usuario__campo">
+                        <input class="usuario__valor" id="correo" name="correo" type="email" maxlength="120"
+                            autocomplete="email" readonly aria-describedby="error-correo">
+                        <p class="usuario__error" id="error-correo"></p>
+                    </div>
                 </div>
 
                 <div class="usuario__dato">
                     <label class="usuario__etiqueta" for="numero">Número:</label>
-                    <input class="usuario__valor" id="numero"
-                        type="tel" value="Añadir número">
+                    <div class="usuario__campo">
+                        <input class="usuario__valor" id="numero" name="telefono" type="tel" maxlength="20"
+                            autocomplete="tel" placeholder="Añadir número" readonly aria-describedby="error-telefono">
+                        <p class="usuario__error" id="error-telefono"></p>
+                    </div>
                 </div>
 
                 <div class="usuario__dato">
                     <label class="usuario__etiqueta" for="locacion">Locación:</label>
-                    <input class="usuario__valor" id="locacion"
-                        type="text" value="COLOMBIA">
+                    <div class="usuario__campo">
+                        <input class="usuario__valor" id="locacion" name="ubicacion" type="text" maxlength="100"
+                            autocomplete="address-level2" placeholder="Añadir ciudad o municipio" readonly
+                            aria-describedby="error-ubicacion">
+                        <p class="usuario__error" id="error-ubicacion"></p>
+                    </div>
                 </div>
 
-            </div>
+                <p class="usuario__estado" id="estado-perfil" role="status"></p>
+            </form>
 
         </section>
 
-    </main>
+        <!-- ===================== CAMBIAR CONTRASEÑA (PUT /api/usuarios/yo/contrasena) ===================== -->
+        <section class="usuario usuario--clave" aria-labelledby="titulo-clave">
+            <h2 class="usuario__subtitulo" id="titulo-clave">Cambiar contraseña</h2>
 
-  <!-- Botones de accesibilidad (js/accesibilidad.js) -->
-  <div class="accesibilidad" role="group" aria-label="Opciones de accesibilidad">
-    <button type="button" class="accesibilidad__boton" id="btn-lector-voz" aria-label="Leer en voz alta">
-      <i class="bi bi-volume-up-fill" aria-hidden="true"></i>
-    </button>
-    <button type="button" class="accesibilidad__boton" id="btn-contraste" aria-label="Modo de alto contraste">
-      <i class="bi bi-eye-fill" aria-hidden="true"></i>
-    </button>
-    <button type="button" class="accesibilidad__boton" id="btn-zoom" aria-label="Ampliar texto">
-      <i class="bi bi-zoom-in" aria-hidden="true"></i>
-    </button>
-  </div>
+            <form class="usuario__datos" id="form-contrasena" novalidate>
+                <div class="usuario__dato">
+                    <label class="usuario__etiqueta" for="clave-actual">Contraseña actual:</label>
+                    <div class="usuario__campo">
+                        <input class="usuario__valor usuario__valor--editable" id="clave-actual" name="actual" type="password"
+                            maxlength="128" autocomplete="current-password" required aria-describedby="error-actual">
+                        <p class="usuario__error" id="error-actual"></p>
+                    </div>
+                </div>
+
+                <div class="usuario__dato">
+                    <label class="usuario__etiqueta" for="clave-nueva">Nueva contraseña:</label>
+                    <div class="usuario__campo">
+                        <input class="usuario__valor usuario__valor--editable" id="clave-nueva" name="nueva" type="password"
+                            maxlength="128" autocomplete="new-password" required aria-describedby="ayuda-nueva error-nueva">
+                        <p class="usuario__ayuda" id="ayuda-nueva">Mínimo 8 caracteres, con letras y números.</p>
+                        <p class="usuario__error" id="error-nueva"></p>
+                    </div>
+                </div>
+
+                <div class="usuario__dato">
+                    <label class="usuario__etiqueta" for="clave-confirmar">Repite la nueva:</label>
+                    <div class="usuario__campo">
+                        <input class="usuario__valor usuario__valor--editable" id="clave-confirmar" name="confirmar" type="password"
+                            maxlength="128" autocomplete="new-password" required aria-describedby="error-confirmar">
+                        <p class="usuario__error" id="error-confirmar"></p>
+                    </div>
+                </div>
+
+                <div class="usuario__pie">
+                    <p class="usuario__estado" id="estado-contrasena" role="status"></p>
+                    <button type="submit" class="usuario__guardar">Cambiar contraseña</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Botones de accesibilidad (js/accesibilidad.js): dentro de <main> para que estén en una región -->
+        <div class="accesibilidad" role="group" aria-label="Opciones de accesibilidad">
+          <button type="button" class="accesibilidad__boton" id="btn-lector-voz" aria-label="Leer en voz alta">
+            <i class="bi bi-volume-up-fill" aria-hidden="true"></i>
+          </button>
+          <button type="button" class="accesibilidad__boton" id="btn-contraste" aria-label="Modo de alto contraste">
+            <i class="bi bi-eye-fill" aria-hidden="true"></i>
+          </button>
+          <button type="button" class="accesibilidad__boton" id="btn-zoom" aria-label="Ampliar texto">
+            <i class="bi bi-zoom-in" aria-hidden="true"></i>
+          </button>
+        </div>
+
+    </main>
 
 </body>
 </html>

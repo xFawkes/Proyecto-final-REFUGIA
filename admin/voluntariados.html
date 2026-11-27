@@ -11,8 +11,13 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
   <link rel="stylesheet" href="../css/admin/voluntariados.css">
+
+  <!-- CRUD de voluntariados: js/admin/voluntariados.js usa la API (GET, POST, PUT y DELETE /api/voluntariados) -->
+  <script src="../js/api.js" defer></script>
+  <script src="../js/sesion.js" defer></script>  <!-- solo administradores; cerrar sesión -->
+  <script src="../js/admin/voluntariados.js" defer></script>
 </head>
-<body>
+<body data-requiere="admin">
   <div class="admin">
 
     <!-- ===================== MENÚ LATERAL ===================== -->
@@ -32,7 +37,9 @@
         <a href="noticias.html" class="menu__enlace">Noticias</a>
         <a href="foro.html" class="menu__enlace">Foro</a>
         <a href="voluntariados.html" class="menu__enlace menu__enlace--activo" aria-current="page">Voluntariados</a>
-        <a href="../inicio.html" class="menu__enlace">Cerrar sesion</a>
+        <a href="donaciones.html" class="menu__enlace">Donaciones</a>
+        <a href="usuarios.html" class="menu__enlace">Usuarios</a>
+        <a href="../inicio.html" class="menu__enlace" data-cerrar-sesion>Cerrar sesión</a>
       </nav>
     </aside>
 
@@ -42,14 +49,29 @@
       <div class="contenido__interior contenido__interior--ancho">
         <h1 class="contenido__titulo">Voluntariados</h1>
 
+        <!-- Mensajes del sistema (guardado, errores de la API…) -->
+        <p class="aviso" id="aviso" role="status" hidden></p>
+
         <div class="voluntariados">
 
-          <!-- ---------- Tareas pendientes ---------- -->
+          <!-- ---------- Listado (GET /api/voluntariados?estado=todos) ---------- -->
           <section class="tarjeta tareas" aria-labelledby="titulo-tareas">
-            <h2 class="tareas__titulo" id="titulo-tareas">Tareas Pendientes</h2>
+            <div class="tareas__cabecera">
+              <h2 class="tareas__titulo" id="titulo-tareas">Voluntariados registrados</h2>
+              <div class="tareas__filtro">
+                <label class="formulario__etiqueta" for="filtro-estado">Mostrar</label>
+                <select class="formulario__campo" id="filtro-estado">
+                  <option value="todos">Todos</option>
+                  <option value="activo">Activos</option>
+                  <option value="cerrado">Cerrados</option>
+                </select>
+              </div>
+            </div>
+            <p class="tareas__resumen" id="listado-estado" role="status">Cargando voluntariados…</p>
 
             <div class="tareas__contenedor">
               <table class="tareas__tabla">
+                <caption class="visualmente-oculto">Voluntariados registrados, con su estado y la acción para revisarlos</caption>
                 <thead>
                   <tr>
                     <th scope="col" class="tareas__celda--centro">Actividad</th>
@@ -58,65 +80,88 @@
                     <th scope="col" class="tareas__celda--centro">Acción</th>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr>
-                    <td class="tareas__celda--negrita">Distribución de ayudas</td>
-                    <td class="tareas__celda--negrita">Nombre de la organización</td>
-                    <td class="tareas__celda--centro"><span class="tareas__estado">Activo</span></td>
-                    <td class="tareas__celda--centro">
-                      <div class="tareas__boton" role="button" tabindex="0">Revisar</div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="tareas__celda--negrita">Distribución de ayudas</td>
-                    <td class="tareas__celda--negrita">Nombre de la organización</td>
-                    <td class="tareas__celda--centro"><span class="tareas__estado">Activo</span></td>
-                    <td class="tareas__celda--centro">
-                      <div class="tareas__boton" role="button" tabindex="0">Revisar</div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="tareas__celda--negrita">Distribución de ayudas</td>
-                    <td class="tareas__celda--negrita">Nombre de la organización</td>
-                    <td class="tareas__celda--centro"><span class="tareas__estado">Cerrado</span></td>
-                    <td class="tareas__celda--centro">
-                      <div class="tareas__boton" role="button" tabindex="0">Revisar</div>
-                    </td>
-                  </tr>
-                </tbody>
+                <!-- Las filas las crea js/admin/voluntariados.js -->
+                <tbody id="listado"></tbody>
               </table>
             </div>
           </section>
 
-          <!-- ---------- Publicar voluntariado ---------- -->
+          <!-- ---------- Publicar / editar voluntariado ---------- -->
           <section class="tarjeta formulario" aria-labelledby="titulo-formulario">
             <h2 class="formulario__titulo" id="titulo-formulario">Publicar voluntariado</h2>
 
-            <form class="formulario__cuerpo" action="#" method="post">
+            <form class="formulario__cuerpo" id="formulario-voluntariado" novalidate>
+              <p class="formulario__nota">Los campos con <span aria-hidden="true">*</span><span class="visualmente-oculto">asterisco</span> son obligatorios.</p>
 
               <div class="formulario__grupo">
-                <label class="formulario__etiqueta" for="actividad">Actividad</label>
-                <input class="formulario__campo" type="text" id="actividad" name="actividad" placeholder="Título de la actividad">
+                <label class="formulario__etiqueta" for="actividad">Actividad *</label>
+                <input class="formulario__campo" type="text" id="actividad" name="actividad" placeholder="Título de la actividad" required minlength="5" maxlength="150" aria-describedby="error-actividad">
+                <p class="formulario__error" id="error-actividad"></p>
               </div>
 
               <div class="formulario__grupo">
-                <label class="formulario__etiqueta" for="organizacion">Organización responsable</label>
-                <input class="formulario__campo" type="text" id="organizacion" name="organizacion" placeholder="Nombre de la entidad">
+                <label class="formulario__etiqueta" for="organizacion">Organización responsable *</label>
+                <input class="formulario__campo" type="text" id="organizacion" name="organizacion" placeholder="Nombre de la entidad" required minlength="2" maxlength="150" aria-describedby="error-organizacion">
+                <p class="formulario__error" id="error-organizacion"></p>
+              </div>
+
+              <div class="formulario__grupo">
+                <label class="formulario__etiqueta" for="descripcion">Descripción *</label>
+                <textarea class="formulario__campo formulario__campo--grande" id="descripcion" name="descripcion" placeholder="Qué harán los voluntarios (se muestra en la página)" required minlength="10" maxlength="2000" aria-describedby="error-descripcion"></textarea>
+                <p class="formulario__error" id="error-descripcion"></p>
               </div>
 
               <div class="formulario__grupo">
                 <label class="formulario__etiqueta" for="requisitos">Requisitos</label>
-                <textarea class="formulario__campo formulario__campo--grande" id="requisitos" name="requisitos" placeholder="Describe los requisitos para participar"></textarea>
+                <textarea class="formulario__campo formulario__campo--grande" id="requisitos" name="requisitos" placeholder="Describe los requisitos para participar (uno por línea)" maxlength="2000" aria-describedby="error-requisitos"></textarea>
+                <p class="formulario__error" id="error-requisitos"></p>
+              </div>
+
+              <div class="formulario__grupo">
+                <label class="formulario__etiqueta" for="modalidad">Modalidad</label>
+                <select class="formulario__campo" id="modalidad" name="modalidad" aria-describedby="error-modalidad">
+                  <option value="presencial">Presencial</option>
+                  <option value="virtual">Virtual</option>
+                  <option value="mixta">Presencial y virtual</option>
+                </select>
+                <p class="formulario__error" id="error-modalidad"></p>
+              </div>
+
+              <div class="formulario__grupo">
+                <label class="formulario__etiqueta" for="ubicacion">Ubicación <span id="ubicacion-obligatoria">*</span></label>
+                <input class="formulario__campo" type="text" id="ubicacion" name="ubicacion" placeholder="Ciudad o lugar (ej. Bogotá, Kennedy)" maxlength="150" aria-describedby="error-ubicacion">
+                <p class="formulario__error" id="error-ubicacion"></p>
               </div>
 
               <div class="formulario__grupo">
                 <label class="formulario__etiqueta" for="enlace">Enlace de inscripción oficial</label>
-                <input class="formulario__campo" type="url" id="enlace" name="enlace" placeholder="https://">
+                <input class="formulario__campo" type="url" id="enlace" name="enlace" placeholder="https://" maxlength="500" aria-describedby="error-enlace">
+                <p class="formulario__error" id="error-enlace"></p>
               </div>
 
+              <!-- Imagen: se sube a la API (POST /api/voluntariados/imagen) al guardar -->
+              <fieldset class="formulario__grupo formulario__imagen">
+                <legend class="formulario__etiqueta">Imagen</legend>
+                <div class="imagen__vista" id="imagen-vista" hidden>
+                  <img id="imagen-previa" src="data:," alt="Vista previa de la imagen del voluntariado">
+                  <button type="button" class="formulario__boton formulario__boton--secundario" id="btn-quitar-imagen">Quitar imagen</button>
+                </div>
+                <label class="formulario__etiqueta" for="archivo-imagen">Subir imagen (PNG, JPG, WEBP o GIF, máximo 5 MB)</label>
+                <input class="formulario__campo" type="file" id="archivo-imagen" accept="image/png,image/jpeg,image/webp,image/gif" aria-describedby="error-imagen">
+                <p class="formulario__error" id="error-imagen"></p>
+
+                <label class="formulario__etiqueta" for="imagen_alt">Descripción de la imagen (para lectores de pantalla)</label>
+                <input class="formulario__campo" type="text" id="imagen_alt" name="imagen_alt" maxlength="200" placeholder="Ej.: Voluntarios empacando mercados" aria-describedby="error-imagen_alt">
+                <p class="formulario__error" id="error-imagen_alt"></p>
+              </fieldset>
+
+              <p class="formulario__estado" id="estado-actual" hidden></p>
+
               <div class="formulario__acciones">
-                <div class="formulario__boton formulario__boton--aprobar" role="button" tabindex="0">Aprobar</div>
-                <div class="formulario__boton formulario__boton--cancelar" role="button" tabindex="0">Cancelar</div>
+                <button type="submit" class="formulario__boton formulario__boton--aprobar" id="btn-aprobar">Aprobar</button>
+                <button type="button" class="formulario__boton formulario__boton--cancelar" id="btn-cancelar">Cancelar</button>
+                <button type="button" class="formulario__boton formulario__boton--secundario" id="btn-estado" hidden>Cerrar voluntariado</button>
+                <button type="button" class="formulario__boton formulario__boton--eliminar" id="btn-eliminar" hidden>Eliminar</button>
               </div>
 
             </form>
@@ -127,5 +172,15 @@
     </main>
 
   </div>
+
+  <!-- Confirmación antes de eliminar -->
+  <dialog class="dialogo" id="dialogo-eliminar" aria-labelledby="dialogo-titulo" aria-describedby="dialogo-texto">
+    <h2 class="dialogo__titulo" id="dialogo-titulo">¿Eliminar este voluntariado?</h2>
+    <p class="dialogo__texto" id="dialogo-texto"></p>
+    <form method="dialog" class="formulario__acciones">
+      <button type="submit" class="formulario__boton formulario__boton--eliminar" value="eliminar">Eliminar</button>
+      <button type="submit" class="formulario__boton formulario__boton--secundario" value="cancelar" autofocus>Cancelar</button>
+    </form>
+  </dialog>
 </body>
 </html>

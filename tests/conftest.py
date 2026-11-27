@@ -39,6 +39,28 @@ def app():
     yield app
 
 
+def iniciar_sesion(cliente, usuario: str, contrasena: str):
+    r = cliente.post("/api/sesion", json={"usuario": usuario, "contrasena": contrasena})
+    assert r.status_code == 200, r.json
+    return cliente
+
+
 @pytest.fixture(scope="session")
 def cliente(app):
+    """Cliente con la sesión de un ADMINISTRADOR iniciada (cuenta de prueba de api/usuarios/datos_ejemplo.py).
+
+    Así las pruebas del CRUD pueden crear, editar y borrar como lo hace el panel.
+    """
+    return iniciar_sesion(app.test_client(), "admin", "Admin2026*")
+
+
+@pytest.fixture
+def anonimo(app):
+    """Cliente nuevo, sin sesión: como una persona que no ha iniciado sesión."""
     return app.test_client()
+
+
+@pytest.fixture
+def usuario_comun(app):
+    """Cliente nuevo con la sesión de un usuario común (no administrador)."""
+    return iniciar_sesion(app.test_client(), "ana.gomez", "Usuario2026*")

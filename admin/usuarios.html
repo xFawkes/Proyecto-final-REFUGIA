@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>REFUGIA | Administración de usuarios</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Myanmar+Khyay&family=Unbounded:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <link rel="stylesheet" href="../css/admin/usuarios.css">
+
+  <!-- Usuarios: js/admin/usuarios.js usa la API (/api/usuarios) -->
+  <script src="../js/api.js" defer></script>
+  <script src="../js/sesion.js" defer></script>  <!-- solo administradores; cerrar sesión -->
+  <script src="../js/admin/usuarios.js" defer></script>
+</head>
+<body class="pagina" data-requiere="admin">
+  <div class="admin">
+
+    <!-- ===================== MENÚ LATERAL ===================== -->
+    <aside class="menu">
+      <div class="menu__marca">
+        <span class="menu__logo">REFUGIA</span>
+        <span class="menu__subtitulo">Administración</span>
+      </div>
+
+      <input type="checkbox" id="menu-toggle" class="menu__toggle">
+      <label for="menu-toggle" class="menu__hamburguesa" aria-label="Abrir menú">
+        <i class="bi bi-list" aria-hidden="true"></i>
+      </label>
+
+      <nav class="menu__lista" aria-label="Navegación de administración">
+        <a href="inicio.html" class="menu__enlace">Panel</a>
+        <a href="noticias.html" class="menu__enlace">Noticias</a>
+        <a href="foro.html" class="menu__enlace">Foro</a>
+        <a href="voluntariados.html" class="menu__enlace">Voluntariados</a>
+        <a href="donaciones.html" class="menu__enlace">Donaciones</a>
+        <a href="usuarios.html" class="menu__enlace menu__enlace--activo" aria-current="page">Usuarios</a>
+        <a href="../inicio.html" class="menu__enlace" data-cerrar-sesion>Cerrar sesión</a>
+      </nav>
+    </aside>
+
+    <!-- ===================== CONTENIDO ===================== -->
+    <main class="contenido">
+      <div class="contenido__interior contenido__interior--ancho">
+        <h1 class="contenido__titulo">Usuarios</h1>
+
+        <p class="aviso" id="aviso" role="status" hidden></p>
+
+        <!-- ===================== RESUMEN (totales de GET /api/usuarios) ===================== -->
+        <section class="resumen" aria-label="Resumen de cuentas">
+          <article class="resumen__tarjeta">
+            <h2 class="resumen__titulo">Cuentas</h2>
+            <strong class="resumen__numero" id="resumen-total">—</strong>
+            <p class="resumen__nota">Registradas en REFUGIA</p>
+          </article>
+          <article class="resumen__tarjeta">
+            <h2 class="resumen__titulo">Administradores</h2>
+            <strong class="resumen__numero" id="resumen-admin">—</strong>
+            <p class="resumen__nota">Pueden entrar a este panel</p>
+          </article>
+          <article class="resumen__tarjeta">
+            <h2 class="resumen__titulo">Desactivadas</h2>
+            <strong class="resumen__numero" id="resumen-inactivas">—</strong>
+            <p class="resumen__nota">No pueden iniciar sesión</p>
+          </article>
+        </section>
+
+        <!-- ===================== CUENTAS (GET, PUT y DELETE /api/usuarios) ===================== -->
+        <section class="tarjeta" aria-labelledby="titulo-usuarios">
+          <h2 class="tarjeta__titulo" id="titulo-usuarios">Cuentas registradas</h2>
+          <p class="formulario__nota">Las cuentas se crean desde la página de registro. Aquí puedes cambiar el rol, desactivar una cuenta o darle una contraseña temporal a quien olvidó la suya.</p>
+
+          <form class="filtros" id="filtros-usuarios" role="search" aria-label="Filtrar usuarios" autocomplete="off">
+            <div class="formulario__grupo">
+              <label class="formulario__etiqueta" for="filtro-q">Buscar</label>
+              <input class="formulario__campo" type="search" id="filtro-q" placeholder="Usuario, nombre o correo" maxlength="100">
+            </div>
+            <div class="formulario__grupo">
+              <label class="formulario__etiqueta" for="filtro-rol">Rol</label>
+              <select class="formulario__campo" id="filtro-rol">
+                <option value="">Todos</option>
+                <option value="administrador">Administradores</option>
+                <option value="usuario">Usuarios</option>
+              </select>
+            </div>
+            <div class="formulario__grupo">
+              <label class="formulario__etiqueta" for="filtro-activo">Estado</label>
+              <select class="formulario__campo" id="filtro-activo">
+                <option value="">Todas</option>
+                <option value="true">Activas</option>
+                <option value="false">Desactivadas</option>
+              </select>
+            </div>
+            <button type="submit" class="formulario__boton formulario__boton--aprobar">Buscar</button>
+          </form>
+
+          <p class="listado__estado" id="usuarios-estado" role="status">Cargando cuentas…</p>
+          <div class="tabla__contenedor">
+            <table class="tabla">
+              <caption class="visualmente-oculto">Cuentas de usuario con su rol, estado y acciones</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Usuario</th>
+                  <th scope="col">Correo</th>
+                  <th scope="col">Rol</th>
+                  <th scope="col">Estado</th>
+                  <th scope="col">Último acceso</th>
+                  <th scope="col">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="tabla-usuarios"></tbody>
+            </table>
+          </div>
+          <button type="button" class="formulario__boton formulario__boton--secundario mas" id="usuarios-mas" hidden>Ver más cuentas</button>
+        </section>
+      </div>
+    </main>
+
+  </div>
+
+  <!-- Confirmación de acciones (cambiar rol, desactivar, eliminar) -->
+  <dialog class="dialogo" id="dialogo-confirmar" aria-labelledby="dialogo-titulo" aria-describedby="dialogo-texto">
+    <h2 class="dialogo__titulo" id="dialogo-titulo"></h2>
+    <p class="dialogo__texto" id="dialogo-texto"></p>
+    <form method="dialog" class="formulario__acciones">
+      <button type="submit" class="formulario__boton formulario__boton--eliminar" value="confirmar" id="dialogo-confirmar-boton">Confirmar</button>
+      <button type="submit" class="formulario__boton formulario__boton--secundario" value="cancelar" autofocus>Cancelar</button>
+    </form>
+  </dialog>
+
+  <!-- Contraseña temporal (se muestra una sola vez) -->
+  <dialog class="dialogo" id="dialogo-temporal" aria-labelledby="temporal-titulo" aria-describedby="temporal-texto">
+    <h2 class="dialogo__titulo" id="temporal-titulo">Contraseña temporal</h2>
+    <p class="dialogo__texto" id="temporal-texto"></p>
+    <p class="temporal">
+      <output class="temporal__clave" id="temporal-clave" aria-label="Contraseña temporal"></output>
+      <button type="button" class="formulario__boton formulario__boton--secundario" id="btn-copiar-temporal">Copiar</button>
+    </p>
+    <p class="dialogo__texto">La persona debe entrar con ella y cambiarla en <strong>Mi perfil</strong>.</p>
+    <form method="dialog" class="formulario__acciones">
+      <button type="submit" class="formulario__boton formulario__boton--aprobar" autofocus>Listo</button>
+    </form>
+  </dialog>
+</body>
+</html>

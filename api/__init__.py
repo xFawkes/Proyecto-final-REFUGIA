@@ -13,17 +13,18 @@ from flask import Flask
 from flask_cors import CORS
 from sqlalchemy.engine import make_url
 
-from . import mapa, paginas
+from . import donaciones, foro, mapa, noticias, paginas, usuarios, voluntariado
 from .config import configuracion
 from .errores import registrar_errores
 from .extensiones import db, ma
 
 # ---------------------------------------------------------------------------
 # Secciones de la API. Para agregar una (ver api/_plantilla):
-#     from . import mapa, noticias, paginas
-#     SECCIONES = [mapa, noticias]
+#     from . import alertas, donaciones, foro, mapa, noticias, paginas, usuarios, voluntariado
+#     SECCIONES = [usuarios, mapa, noticias, voluntariado, donaciones, foro, alertas]
+# usuarios va primero: las demás secciones usan sus sesiones (api/autenticacion.py)
 # ---------------------------------------------------------------------------
-SECCIONES = [mapa]
+SECCIONES = [usuarios, mapa, noticias, voluntariado, donaciones, foro]
 
 
 def crear_app(config_extra: dict | None = None) -> Flask:
@@ -37,9 +38,10 @@ def crear_app(config_extra: dict | None = None) -> Flask:
     db.init_app(app)
     ma.init_app(app)
 
-    # Permite llamar la API desde Live Server de VS Code (puerto 5500)
+    # Permite llamar la API desde Live Server de VS Code (puerto 5500).
+    # supports_credentials: el navegador envía la cookie de sesión también desde Live Server.
     origenes = ["http://localhost:5500", "http://127.0.0.1:5500", *app.config["ORIGENES_CORS"]]
-    CORS(app, resources={r"/api/*": {"origins": origenes}})
+    CORS(app, resources={r"/api/*": {"origins": origenes}}, supports_credentials=True)
 
     for seccion in SECCIONES:
         app.register_blueprint(seccion.bp)

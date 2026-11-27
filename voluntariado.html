@@ -18,6 +18,10 @@
   <link rel="stylesheet" href="css/accesibilidad.css">
   <!--API Accesibilidad-->
   <script src="js/accesibilidad.js"></script>
+  <!--API de voluntariado-->
+  <script src="js/api.js" defer></script>
+  <script src="js/sesion.js" defer></script>
+  <script src="js/voluntariado.js" defer></script>
 </head>
 <body>
 
@@ -61,31 +65,50 @@
         <div class="usuario-menu__avatar">
           <i class="bi bi-person-fill usuario-menu__avatar-icono" aria-hidden="true"></i>
         </div>
-        <p class="usuario-menu__nombre">TU NOMBRE</p>
-        <p class="usuario-menu__id">ID:123456789 #LAN</p>
+        <p class="usuario-menu__nombre" data-sesion-nombre>Invitado</p>
+        <p class="usuario-menu__id" data-sesion-detalle>Inicia sesión para participar</p>
       </div>
 
+      <!-- Opciones según la sesión (js/sesion.js): data-sesion-ver="invitado" | "sesion" | "admin" -->
       <ul class="usuario-menu__lista">
-        <li class="usuario-menu__elemento">
+        <li class="usuario-menu__elemento" data-sesion-ver="invitado">
+          <a href="iniciar-sesion.html" class="usuario-menu__enlace">
+            <i class="bi bi-box-arrow-in-right usuario-menu__icono" aria-hidden="true"></i>
+            <span class="usuario-menu__texto">Iniciar Sesión</span>
+          </a>
+        </li>
+        <li class="usuario-menu__elemento" data-sesion-ver="invitado">
+          <a href="registro.html" class="usuario-menu__enlace">
+            <i class="bi bi-person-plus usuario-menu__icono" aria-hidden="true"></i>
+            <span class="usuario-menu__texto">Registrarse</span>
+          </a>
+        </li>
+        <li class="usuario-menu__elemento" data-sesion-ver="admin" hidden>
+          <a href="admin/inicio.html" class="usuario-menu__enlace">
+            <i class="bi bi-speedometer2 usuario-menu__icono" aria-hidden="true"></i>
+            <span class="usuario-menu__texto">Panel de Administración</span>
+          </a>
+        </li>
+        <li class="usuario-menu__elemento" data-sesion-ver="sesion" hidden>
           <a href="perfil.html" class="usuario-menu__enlace">
             <i class="bi bi-person usuario-menu__icono" aria-hidden="true"></i>
             <span class="usuario-menu__texto">Mi Perfil</span>
           </a>
         </li>
-        <li class="usuario-menu__elemento">
+        <li class="usuario-menu__elemento" data-sesion-ver="sesion" hidden>
           <a href="error.html" class="usuario-menu__enlace">
             <i class="bi bi-gear-fill usuario-menu__icono" aria-hidden="true"></i>
             <span class="usuario-menu__texto">Configuración</span>
           </a>
         </li>
-        <li class="usuario-menu__elemento">
+        <li class="usuario-menu__elemento" data-sesion-ver="sesion" hidden>
           <a href="error.html" class="usuario-menu__enlace">
             <i class="bi bi-bell-fill usuario-menu__icono" aria-hidden="true"></i>
             <span class="usuario-menu__texto">Notificaciones</span>
           </a>
         </li>
-        <li class="usuario-menu__elemento">
-          <a href="inicio.html" class="usuario-menu__enlace">
+        <li class="usuario-menu__elemento" data-sesion-ver="sesion" hidden>
+          <a href="inicio.html" class="usuario-menu__enlace" data-cerrar-sesion>
             <i class="bi bi-box-arrow-right usuario-menu__icono" aria-hidden="true"></i>
             <span class="usuario-menu__texto">Cerrar Sesión</span>
           </a>
@@ -110,85 +133,34 @@
     </section>
 
     <!-- ===================== VOLUNTARIADOS ===================== -->
-    <section class="voluntariados">
+    <section class="voluntariados" aria-label="Listado de voluntariados">
       <div class="contenedor">
 
-        <!-- INTEGRACIÓN: reemplazar href="error.html" por la página oficial de cada voluntariado -->
-        <div class="voluntariados__grid">
+        <!-- Búsqueda: consulta GET /api/voluntariados?q=…&modalidad=… -->
+        <form class="voluntariados__busqueda" id="voluntariados-busqueda" role="search" aria-label="Buscar voluntariados" autocomplete="off">
+          <div class="voluntariados__campo voluntariados__campo--texto">
+            <label for="voluntariados-q">Buscar</label>
+            <input type="search" id="voluntariados-q" name="q" maxlength="100" placeholder="Ej.: acopio, logística, Bogotá">
+          </div>
+          <div class="voluntariados__campo">
+            <label for="voluntariados-modalidad">Modalidad</label>
+            <select id="voluntariados-modalidad" name="modalidad">
+              <option value="">Todas</option>
+              <option value="presencial">Presencial</option>
+              <option value="virtual">Virtual</option>
+              <option value="mixta">Presencial y virtual</option>
+            </select>
+          </div>
+          <button type="submit" class="voluntariados__boton">
+            <i class="bi bi-search" aria-hidden="true"></i> Buscar
+          </button>
+        </form>
 
-          <article class="voluntariado">
-            <div class="voluntariado__cuerpo">
-              <h2 class="voluntariado__titulo">Voluntariado en distribución de ayudas</h2>
-              <p>
-                Apoya la entrega de alimentos, ropa, agua y productos de primera necesidad a las
-                personas afectadas por desastres naturales.
-              </p>
-              <a href="error.html" class="voluntariado__enlace">Da click aquí para ir a la página</a>
-            </div>
-            <img class="voluntariado__imagen" src="img/voluntariado/caja-alimentos.png" alt="Caja con frutas y alimentos para entregar como ayuda">
-          </article>
-
-          <article class="voluntariado">
-            <div class="voluntariado__cuerpo">
-              <h2 class="voluntariado__titulo">Voluntariado en centros de acopio</h2>
-              <p>
-                Ayuda a clasificar, organizar y empacar las donaciones para garantizar que los
-                recursos lleguen a quienes más los necesitan.
-              </p>
-              <a href="error.html" class="voluntariado__enlace">Da click aquí para ir a la página</a>
-            </div>
-            <img class="voluntariado__imagen" src="img/voluntariado/voluntarios-centro-acopio.png" alt="Voluntarios con camisetas rojas y credenciales en un centro de acopio">
-          </article>
-
-          <article class="voluntariado">
-            <div class="voluntariado__cuerpo">
-              <h2 class="voluntariado__titulo">Voluntariado en reconstrucción</h2>
-              <p>
-                Participa en jornadas comunitarias de limpieza y recuperación de espacios afectados,
-                siguiendo las indicaciones de las organizaciones responsables.
-              </p>
-              <a href="error.html" class="voluntariado__enlace">Da click aquí para ir a la página</a>
-            </div>
-            <img class="voluntariado__imagen" src="img/voluntariado/retiro-escombros.png" alt="Personas retirando escombros en una jornada de reconstrucción">
-          </article>
-
-          <article class="voluntariado">
-            <div class="voluntariado__cuerpo">
-              <h2 class="voluntariado__titulo">Voluntariado de acompañamiento</h2>
-              <p>
-                Brinda compañía, escucha y apoyo humano a las personas damnificadas, en coordinación
-                con equipos capacitados.
-              </p>
-              <a href="error.html" class="voluntariado__enlace">Da click aquí para ir a la página</a>
-            </div>
-            <img class="voluntariado__imagen" src="img/voluntariado/acompanamiento-damnificado.png" alt="Voluntario acompañando y saludando a una persona damnificada">
-          </article>
-
-          <article class="voluntariado">
-            <div class="voluntariado__cuerpo">
-              <h2 class="voluntariado__titulo">Voluntariado en logística</h2>
-              <p>
-                Colabora con la organización y el transporte de suministros para facilitar que las
-                ayudas lleguen a las zonas afectadas.
-              </p>
-              <a href="error.html" class="voluntariado__enlace">Da click aquí para ir a la página</a>
-            </div>
-            <img class="voluntariado__imagen" src="img/voluntariado/carga-suministros.png" alt="Voluntarios cargando suministros en una camioneta">
-          </article>
-
-          <article class="voluntariado">
-            <div class="voluntariado__cuerpo">
-              <h2 class="voluntariado__titulo">Voluntariado digital</h2>
-              <p>
-                Utiliza tus habilidades para difundir información verificada, apoyar campañas
-                solidarias y compartir oportunidades de ayuda en medios digitales.
-              </p>
-              <a href="error.html" class="voluntariado__enlace">Da click aquí para ir a la página</a>
-            </div>
-            <img class="voluntariado__imagen" src="img/voluntariado/voluntarios-donaciones.png" alt="Voluntarios trabajando con un portátil junto a cajas de donaciones">
-          </article>
-
-        </div>
+        <!-- Los voluntariados los pinta js/voluntariado.js con los datos de la API (se administran en admin/voluntariados.html) -->
+        <p class="voluntariados__estado" id="voluntariados-estado" role="status">Cargando voluntariados…</p>
+        <div class="voluntariados__grid" id="voluntariados-grid" data-a11y-leer></div>
+        <button type="button" class="voluntariados__boton voluntariados__mas" id="voluntariados-mas" hidden>Ver más voluntariados</button>
+        <noscript><p class="voluntariados__estado">Activa JavaScript para ver los voluntariados.</p></noscript>
 
         <!-- Botones de accesibilidad (js/accesibilidad.js) -->
         <div class="accesibilidad" role="group" aria-label="Opciones de accesibilidad">

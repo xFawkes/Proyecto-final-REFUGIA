@@ -481,3 +481,126 @@ button { font: inherit; border: none; background: none; cursor: pointer; }
     outline: 3px solid var(--azul);
     outline-offset: 3px;
 }
+
+
+/* =========================================================
+   Perfil conectado a la API (js/perfil.js)
+   ========================================================= */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.usuario__titulos {
+  display: grid;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.usuario__rol {
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: clamp(0.85rem, 1.5vw, 1rem);
+  color: var(--vinotinto);
+}
+
+.usuario__rol:empty { display: none; }
+
+.usuario__campo {
+  display: grid;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+/* Botones Guardar y Cancelar (ahora son <button>) */
+.usuario__guardar:focus-visible,
+.usuario__cancelar:focus-visible {
+  outline: 3px solid var(--azul);
+  outline-offset: 3px;
+}
+
+.usuario__guardar:disabled { cursor: progress; opacity: 0.75; }
+
+/* Errores y mensajes */
+.usuario__error {
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #8A1010;
+}
+
+.usuario__error:empty { display: none; }
+
+.usuario__valor[aria-invalid="true"] { border-color: #8A1010 !important; }
+
+.usuario__ayuda {
+  font-family: var(--fuente-titulo);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--cafe);
+}
+
+.usuario__estado {
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--azul);
+}
+
+.usuario__estado:empty { display: none; }
+
+.usuario__estado--error { color: #8A1010; }
+
+/* Tarjeta de contraseña */
+.usuario--clave {
+  margin-top: clamp(1.5rem, 4vw, 2.5rem);
+  padding-bottom: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+.usuario__subtitulo {
+  padding: 0 clamp(0rem, 3vw, 2.5rem);
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+  font-size: clamp(1.15rem, 2.6vw, 1.5rem);
+  color: var(--cafe);
+}
+
+.usuario--clave .usuario__dato { grid-template-columns: minmax(80px, 17ch) 1fr; }
+
+/* Los campos de contraseña siempre se ven editables */
+.usuario__valor--editable {
+  border-color: var(--azul);
+  background-color: var(--blanco);
+}
+
+.usuario__pie {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem 1rem;
+}
+
+.usuario__pie .usuario__estado { margin-right: auto; }
+
+@media (max-width: 520px) {
+  .usuario--clave .usuario__dato { grid-template-columns: 1fr; }
+}
+
+/* Datos y ayudas en café oscuro: el café normal (#694E1C) no alcanza el contraste
+   mínimo de 4.5:1 sobre el amarillo de la tarjeta */
+.usuario__valor,
+.usuario__ayuda { color: #4A3612; }
+
+.usuario__valor::placeholder { color: #5C4A2A; opacity: 1; }
+
+html.a11y-contraste .usuario__valor,
+html.a11y-contraste .usuario__ayuda,
+html.a11y-contraste .usuario__valor::placeholder { color: #000; }
