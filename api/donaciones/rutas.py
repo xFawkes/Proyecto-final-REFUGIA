@@ -23,6 +23,7 @@ from __future__ import annotations
 
 from flask import Blueprint, abort, jsonify, request
 
+from ..autenticacion import exigir_admin, requiere_admin
 from ..extensiones import db
 from ..imagenes import borrar_imagen_subida, guardar_imagen_subida
 from .catalogos import (BANCOS_PRUEBA, BILLETERAS_PRUEBA, DESTINO_GENERAL, ESTADOS, FRECUENCIAS, METODOS,
@@ -74,7 +75,9 @@ def nombre_repetido(nombre: str, sin_contar: int | None = None) -> bool:
 def get_organizaciones():
     incluir_inactivas = request.args.get("incluir_inactivas", "").lower() in ("true", "1", "si", "sí")
     consulta = db.select(Organizacion).order_by(Organizacion.id_organizacion)
-    if not incluir_inactivas:
+    if incluir_inactivas:
+        exigir_admin()  # las inactivas solo las ve el panel de administración
+    else:
         consulta = consulta.where(Organizacion.activa.is_(True))
     return jsonify(organizaciones_schema.dump(db.session.scalars(consulta).all()))
 
@@ -85,6 +88,7 @@ def get_organizacion(id):
 
 
 @bp.route("/organizaciones", methods=["POST"])
+@requiere_admin
 def insert_organizacion():
     datos = organizacion_entrada_schema.load(leer_json())
     if nombre_repetido(datos["nombre"]):
@@ -96,6 +100,7 @@ def insert_organizacion():
 
 
 @bp.route("/organizaciones/<int:id>", methods=["PUT"])
+@requiere_admin
 def update_organizacion(id):
     actualizar_organizacion = buscar_organizacion(id)
     datos = organizacion_entrada_schema.load(leer_json(), partial=True)
@@ -111,6 +116,7 @@ def update_organizacion(id):
 
 
 @bp.route("/organizaciones/<int:id>", methods=["DELETE"])
+@requiere_admin
 def delete_organizacion(id):
     eliminar_organizacion = buscar_organizacion(id)
     respuesta = organizacion_schema.dump(eliminar_organizacion)
@@ -129,6 +135,7 @@ def delete_organizacion(id):
 
 
 @bp.route("/organizaciones/imagen", methods=["POST"])
+@requiere_admin
 def subir_imagen_organizacion():
     return jsonify({"imagen": guardar_imagen_subida("donaciones")}), 201
 
@@ -204,6 +211,7 @@ def get_donacion(referencia):
 
 
 @bp.route("/donaciones", methods=["GET"])
+@requiere_admin
 def get_donaciones():
     """Listado para el panel de administración."""
     filtros = leer_filtros(request.args)
@@ -231,6 +239,7 @@ def get_donaciones():
 
 
 @bp.route("/donaciones/resumen", methods=["GET"])
+@requiere_admin
 def get_resumen():
     """Totales para el panel: lo recaudado (solo aprobadas) y cuántas hay en cada estado."""
     por_estado = dict(db.session.execute(
@@ -251,6 +260,7 @@ def get_resumen():
 
 
 @bp.route("/donaciones/<referencia>", methods=["PUT"])
+@requiere_admin
 def update_donacion(referencia):
     """El administrador puede anular una donación aprobada (simula un reembolso) o escribir una nota."""
     donacion = buscar_donacion(referencia)
@@ -264,6 +274,7 @@ def update_donacion(referencia):
 
 
 @bp.route("/donaciones/<referencia>", methods=["DELETE"])
+@requiere_admin
 def delete_donacion(referencia):
     donacion = buscar_donacion(referencia)
     if donacion.estado == "aprobada":

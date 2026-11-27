@@ -20,6 +20,7 @@ from __future__ import annotations
 
 from flask import Blueprint, abort, jsonify, request
 
+from ..autenticacion import exigir_admin, requiere_admin, requiere_sesion, usuario_actual
 from ..extensiones import db
 from .esquemas import (denuncia_a_dict, denuncia_entrada_schema, leer_filtros, moderacion_schema,
                        publicacion_completa, publicacion_entrada_schema, publicaciones_schema,
@@ -39,7 +40,15 @@ def leer_json() -> dict:
 
 
 def es_moderacion() -> bool:
-    return request.args.get("moderacion", "").lower() in ("true", "1", "si", "sí")
+    moderacion = request.args.get("moderacion", "").lower() in ("true", "1", "si", "sí")
+    if moderacion:
+        exigir_admin()  # la vista de moderación es solo del panel de administración
+    return moderacion
+
+
+def leer_json_con_autor() -> dict:
+    """El autor es la persona que inició sesión (no se puede publicar a nombre de otra)."""
+    return {**leer_json(), "autor": usuario_actual().nombre_visible}
 
 
 def buscar_publicacion(id, permitir_oculta: bool = False) -> Publicacion:
@@ -65,6 +74,8 @@ def get_catalogos():
 @bp.route("/publicaciones", methods=["GET"])
 def get_publicaciones():
     filtros = leer_filtros(request.args)
+    if filtros["moderacion"]:
+        exigir_admin()  # la vista de moderación es solo del panel de administración
     consulta = db.select(Publicacion)
 
     if not filtros["moderacion"]:
@@ -120,8 +131,9 @@ def get_publicacion(id):
 # POST: crear publicación, responder, validar y denunciar
 # ---------------------------------------------------------------------------
 @bp.route("/publicaciones", methods=["POST"])
+@requiere_sesion
 def insert_publicacion():
-    datos = publicacion_entrada_schema.load(leer_json())
+    datos = publicacion_entrada_schema.load(leer_json_con_autor())
     nueva_publicacion = Publicacion(**datos)  # queda "sin confirmar" hasta que la apruebe un moderador
     db.session.add(nueva_publicacion)         # INSERT
     db.session.commit()
@@ -129,9 +141,10 @@ def insert_publicacion():
 
 
 @bp.route("/publicaciones/<int:id>/respuestas", methods=["POST"])
+@requiere_sesion
 def insert_respuesta(id):
     publicacion = buscar_publicacion(id)
-    datos = respuesta_entrada_schema.load(leer_json())
+    datos = respuesta_entrada_schema.load(leer_json_con_autor())
     nueva_respuesta = Respuesta(id_publicacion=id, **datos)
     db.session.add(nueva_respuesta)
     publicacion.ultima_actividad = ahora_colombia()  # el tema sube en el listado
@@ -172,6 +185,7 @@ def insert_denuncia(id):
 # PUT: moderar
 # ---------------------------------------------------------------------------
 @bp.route("/publicaciones/<int:id>", methods=["PUT"])
+@requiere_admin
 def update_publicacion(id):
     """El moderador puede aprobar ({"verificacion": "confirmada", "oculta": false}), ocultar o corregir.
 
@@ -192,6 +206,7 @@ def update_publicacion(id):
 # DELETE: eliminar
 # ---------------------------------------------------------------------------
 @bp.route("/publicaciones/<int:id>", methods=["DELETE"])
+@requiere_admin
 def delete_publicacion(id):
     eliminar_publicacion = buscar_publicacion(id, permitir_oculta=True)
     respuesta = publicacion_completa(eliminar_publicacion, moderacion=True)
@@ -201,6 +216,7 @@ def delete_publicacion(id):
 
 
 @bp.route("/respuestas/<int:id>", methods=["DELETE"])
+@requiere_admin
 def delete_respuesta(id):
     eliminar_respuesta = db.get_or_404(Respuesta, id, description="No existe una respuesta con ese ID.")
     respuesta = respuesta_a_dict(eliminar_respuesta)

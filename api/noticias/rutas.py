@@ -14,6 +14,7 @@ from __future__ import annotations
 from flask import Blueprint, abort, jsonify, request
 from marshmallow import ValidationError
 
+from ..autenticacion import es_admin, exigir_admin, requiere_admin
 from ..extensiones import db
 from ..imagenes import borrar_imagen_subida, guardar_imagen_subida
 from .esquemas import leer_filtros, noticia_entrada_schema, noticia_schema, noticias_schema
@@ -54,6 +55,8 @@ def revisar_descripcion_imagen(noticia: Noticia) -> None:
 @bp.route("", methods=["GET"])
 def get_noticias():
     filtros = leer_filtros(request.args)  # valida ?q=…&verificacion=…&limite=…
+    if filtros["publicada"] is not None or filtros["incluir_ocultas"]:
+        exigir_admin()  # los borradores solo los ve el panel de administración
     consulta = db.select(Noticia)
 
     if filtros["publicada"] is not None:      # ?publicada=false → solo borradores
@@ -88,7 +91,10 @@ def get_noticias():
 
 @bp.route("/<int:id>", methods=["GET"])
 def get_noticia(id):
-    return jsonify(noticia_schema.dump(buscar_noticia(id)))
+    noticia = buscar_noticia(id)
+    if not noticia.publicada and not es_admin():  # un borrador no existe para el público
+        abort(404, description="No existe una noticia con ese ID.")
+    return jsonify(noticia_schema.dump(noticia))
 
 
 @bp.route("/verificacion", methods=["GET"])
@@ -100,6 +106,7 @@ def get_verificacion():
 # POST: crear
 # ---------------------------------------------------------------------------
 @bp.route("", methods=["POST"])
+@requiere_admin
 def insert_noticia():
     datos = noticia_entrada_schema.load(leer_json())  # valida; si algo está mal responde 400 con el detalle
     nueva_noticia = Noticia(**datos)
@@ -115,6 +122,7 @@ def insert_noticia():
 # PUT: actualizar
 # ---------------------------------------------------------------------------
 @bp.route("/<int:id>", methods=["PUT"])
+@requiere_admin
 def update_noticia(id):
     actualizar_noticia = buscar_noticia(id)
     # partial=True: se pueden enviar solo los campos que cambian (ej. {"publicada": true} para aprobar un borrador)
@@ -132,6 +140,7 @@ def update_noticia(id):
 # DELETE: eliminar
 # ---------------------------------------------------------------------------
 @bp.route("/<int:id>", methods=["DELETE"])
+@requiere_admin
 def delete_noticia(id):
     eliminar_noticia = buscar_noticia(id)
     respuesta = noticia_schema.dump(eliminar_noticia)  # se guarda antes de borrar, para devolverlo
@@ -148,6 +157,7 @@ def delete_noticia(id):
 # Subir imagen (desde el panel de administración)
 # ---------------------------------------------------------------------------
 @bp.route("/imagen", methods=["POST"])
+@requiere_admin
 def subir_imagen():
     """Guarda la imagen en img/subidas/noticias/ y responde su ruta, para enviarla luego en POST o PUT."""
     return jsonify({"imagen": guardar_imagen_subida("noticias")}), 201

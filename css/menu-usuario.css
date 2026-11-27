@@ -13,6 +13,11 @@
   --menu-tam-avatar: 76px;
 }
 
+/* Opciones que js/sesion.js oculta según la sesión (ej. "Cerrar sesión" para invitados) */
+.usuario-menu [hidden] {
+  display: none !important;
+}
+
 /* ---------- Checkbox oculto que abre/cierra el menú ---------- */
 .usuario-menu__toggle {
   position: absolute;

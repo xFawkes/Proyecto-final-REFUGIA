@@ -20,6 +20,7 @@
   <script src="js/accesibilidad.js"></script>
   <!--API de voluntariado-->
   <script src="js/api.js" defer></script>
+  <script src="js/sesion.js" defer></script>
   <script src="js/voluntariado.js" defer></script>
 </head>
 <body>
@@ -64,31 +65,50 @@
         <div class="usuario-menu__avatar">
           <i class="bi bi-person-fill usuario-menu__avatar-icono" aria-hidden="true"></i>
         </div>
-        <p class="usuario-menu__nombre">TU NOMBRE</p>
-        <p class="usuario-menu__id">ID:123456789 #LAN</p>
+        <p class="usuario-menu__nombre" data-sesion-nombre>Invitado</p>
+        <p class="usuario-menu__id" data-sesion-detalle>Inicia sesión para participar</p>
       </div>
 
+      <!-- Opciones según la sesión (js/sesion.js): data-sesion-ver="invitado" | "sesion" | "admin" -->
       <ul class="usuario-menu__lista">
-        <li class="usuario-menu__elemento">
+        <li class="usuario-menu__elemento" data-sesion-ver="invitado">
+          <a href="iniciar-sesion.html" class="usuario-menu__enlace">
+            <i class="bi bi-box-arrow-in-right usuario-menu__icono" aria-hidden="true"></i>
+            <span class="usuario-menu__texto">Iniciar Sesión</span>
+          </a>
+        </li>
+        <li class="usuario-menu__elemento" data-sesion-ver="invitado">
+          <a href="registro.html" class="usuario-menu__enlace">
+            <i class="bi bi-person-plus usuario-menu__icono" aria-hidden="true"></i>
+            <span class="usuario-menu__texto">Registrarse</span>
+          </a>
+        </li>
+        <li class="usuario-menu__elemento" data-sesion-ver="admin" hidden>
+          <a href="admin/inicio.html" class="usuario-menu__enlace">
+            <i class="bi bi-speedometer2 usuario-menu__icono" aria-hidden="true"></i>
+            <span class="usuario-menu__texto">Panel de Administración</span>
+          </a>
+        </li>
+        <li class="usuario-menu__elemento" data-sesion-ver="sesion" hidden>
           <a href="perfil.html" class="usuario-menu__enlace">
             <i class="bi bi-person usuario-menu__icono" aria-hidden="true"></i>
             <span class="usuario-menu__texto">Mi Perfil</span>
           </a>
         </li>
-        <li class="usuario-menu__elemento">
+        <li class="usuario-menu__elemento" data-sesion-ver="sesion" hidden>
           <a href="error.html" class="usuario-menu__enlace">
             <i class="bi bi-gear-fill usuario-menu__icono" aria-hidden="true"></i>
             <span class="usuario-menu__texto">Configuración</span>
           </a>
         </li>
-        <li class="usuario-menu__elemento">
+        <li class="usuario-menu__elemento" data-sesion-ver="sesion" hidden>
           <a href="error.html" class="usuario-menu__enlace">
             <i class="bi bi-bell-fill usuario-menu__icono" aria-hidden="true"></i>
             <span class="usuario-menu__texto">Notificaciones</span>
           </a>
         </li>
-        <li class="usuario-menu__elemento">
-          <a href="inicio.html" class="usuario-menu__enlace">
+        <li class="usuario-menu__elemento" data-sesion-ver="sesion" hidden>
+          <a href="inicio.html" class="usuario-menu__enlace" data-cerrar-sesion>
             <i class="bi bi-box-arrow-right usuario-menu__icono" aria-hidden="true"></i>
             <span class="usuario-menu__texto">Cerrar Sesión</span>
           </a>

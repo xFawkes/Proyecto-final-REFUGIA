@@ -11,6 +11,7 @@
 from flask import Blueprint, abort, jsonify, request
 from marshmallow import ValidationError
 
+from ..autenticacion import requiere_admin
 from ..extensiones import db
 from .busqueda import a_diccionario, buscar_puntos, contar_por_tipo
 from .catalogos import SERVICIOS, TIPOS, VERIFICACION
@@ -56,6 +57,7 @@ def get_punto(id):
 # POST: crear
 # ---------------------------------------------------------------------------
 @bp.route("/puntos", methods=["POST"])
+@requiere_admin
 def insert_punto():
     datos = punto_entrada_schema.load(leer_json())  # valida; si algo está mal responde 400 con el detalle
 
@@ -73,6 +75,7 @@ def insert_punto():
 # PUT: actualizar
 # ---------------------------------------------------------------------------
 @bp.route("/puntos/<int:id>", methods=["PUT"])
+@requiere_admin
 def update_punto(id):
     actualizar_punto = db.get_or_404(Punto, id, description="No existe un punto con ese ID.")
     # partial=True: se pueden enviar solo los campos que cambian (ej. {"cupos_disponibles": 10})
@@ -98,6 +101,7 @@ def update_punto(id):
 # DELETE: eliminar
 # ---------------------------------------------------------------------------
 @bp.route("/puntos/<int:id>", methods=["DELETE"])
+@requiere_admin
 def delete_punto(id):
     eliminar_punto = db.get_or_404(Punto, id, description="No existe un punto con ese ID.")
     respuesta = a_diccionario(eliminar_punto)  # se guarda antes de borrar, para devolverlo

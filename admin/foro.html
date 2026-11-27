@@ -13,9 +13,10 @@
 
   <!-- Moderación: js/admin/foro.js usa la API (GET, PUT y DELETE /api/foro/...) -->
   <script src="../js/api.js" defer></script>
+  <script src="../js/sesion.js" defer></script>  <!-- solo administradores; cerrar sesión -->
   <script src="../js/admin/foro.js" defer></script>
 </head>
-<body>
+<body data-requiere="admin">
   <div class="admin">
 
     <!--  MENÚ  -->
@@ -36,7 +37,8 @@
         <a href="foro.html" class="menu__enlace menu__enlace--activo" aria-current="page">Foro</a>
         <a href="voluntariados.html" class="menu__enlace">Voluntariados</a>
         <a href="donaciones.html" class="menu__enlace">Donaciones</a>
-        <a href="../inicio.html" class="menu__enlace">Cerrar sesion</a>
+        <a href="usuarios.html" class="menu__enlace">Usuarios</a>
+        <a href="../inicio.html" class="menu__enlace" data-cerrar-sesion>Cerrar sesión</a>
       </nav>
     </aside>
 

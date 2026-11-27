@@ -358,4 +358,13 @@
   }
 
   cargarOrganizaciones();
+
+  // Si la persona inició sesión, se llenan su nombre y correo (los puede cambiar)
+  window.RefugiaSesion?.listo.then((usuario) => {
+    if (!usuario) return;
+    const nombre = document.getElementById("donacion-nombre");
+    const correo = document.getElementById("donacion-correo");
+    if (!nombre.value) nombre.value = usuario.nombre_visible;
+    if (!correo.value) correo.value = usuario.correo;
+  });
 })();

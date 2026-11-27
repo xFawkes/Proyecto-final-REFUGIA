@@ -14,6 +14,7 @@ from __future__ import annotations
 from flask import Blueprint, abort, jsonify, request
 from marshmallow import ValidationError
 
+from ..autenticacion import exigir_admin, requiere_admin
 from ..extensiones import db
 from ..imagenes import borrar_imagen_subida, guardar_imagen_subida
 from .esquemas import (leer_filtros, revisar_coherencia, voluntariado_entrada_schema, voluntariado_schema,
@@ -43,6 +44,8 @@ def buscar_voluntariado(id) -> Voluntariado:
 @bp.route("", methods=["GET"])
 def get_voluntariados():
     filtros = leer_filtros(request.args)  # valida ?q=…&modalidad=…&estado=…
+    if filtros["estado"] != "activo":
+        exigir_admin()  # los cerrados solo los ve el panel de administración
     consulta = db.select(Voluntariado)
 
     if filtros["estado"] != "todos":
@@ -91,6 +94,7 @@ def get_catalogos():
 # POST: crear
 # ---------------------------------------------------------------------------
 @bp.route("", methods=["POST"])
+@requiere_admin
 def insert_voluntariado():
     datos = voluntariado_entrada_schema.load(leer_json())  # valida; si algo está mal responde 400 con el detalle
     nuevo_voluntariado = Voluntariado(**datos)
@@ -103,6 +107,7 @@ def insert_voluntariado():
 # PUT: actualizar
 # ---------------------------------------------------------------------------
 @bp.route("/<int:id>", methods=["PUT"])
+@requiere_admin
 def update_voluntariado(id):
     actualizar_voluntariado = buscar_voluntariado(id)
     # partial=True: se pueden enviar solo los campos que cambian (ej. {"estado": "cerrado"})
@@ -124,6 +129,7 @@ def update_voluntariado(id):
 # DELETE: eliminar
 # ---------------------------------------------------------------------------
 @bp.route("/<int:id>", methods=["DELETE"])
+@requiere_admin
 def delete_voluntariado(id):
     eliminar_voluntariado = buscar_voluntariado(id)
     respuesta = voluntariado_schema.dump(eliminar_voluntariado)  # se guarda antes de borrar, para devolverlo
@@ -142,6 +148,7 @@ def delete_voluntariado(id):
 # Subir imagen (desde el panel de administración)
 # ---------------------------------------------------------------------------
 @bp.route("/imagen", methods=["POST"])
+@requiere_admin
 def subir_imagen():
     """Guarda la imagen en img/subidas/voluntariado/ y responde su ruta, para enviarla luego en POST o PUT."""
     return jsonify({"imagen": guardar_imagen_subida("voluntariado")}), 201

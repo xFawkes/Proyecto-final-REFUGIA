@@ -73,7 +73,7 @@ Ejemplo de POST:
   conserva en el panel y se puede reabrir. Es lo recomendado cuando ya no recibe voluntarios.
 - **Eliminar** (`DELETE`): lo borra de la base de datos.
 
-## Pendiente
+## Sesiones
 
-POST, PUT, DELETE y la subida de imágenes todavía no piden inicio de sesión. Se protegerán cuando
-se implementen las sesiones del panel de administración.
+POST, PUT, DELETE, la subida de imágenes y los filtros del panel son **solo para administradores**:
+401 sin sesión y 403 si no es administrador. Las consultas públicas siguen abiertas. Ver qué rutas piden sesión en [`api-sesiones.md`](api-sesiones.md).

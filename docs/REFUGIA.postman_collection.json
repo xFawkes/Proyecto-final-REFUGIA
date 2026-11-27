@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "REFUGIA — API",
-    "description": "Peticiones de la API de REFUGIA (Flask + MySQL). Antes de usarla, inicia el servidor con `python main.py`.\n\nOrden sugerido para probar el CRUD: 1) POST crea un punto y guarda su id, 2) GET por id, 3) PUT, 4) DELETE.\n\nNoticias y voluntariado: mismo orden (el POST guarda {{id_noticia}} o {{id_voluntariado}}). La subida de imágenes (POST /api/<sección>/imagen) se prueba desde los paneles de admin/.\n\nDonaciones: la pasarela de pagos es SIMULADA (no cobra dinero). Sigue el orden 0 → 1 → 2 → 3 de su carpeta.\n\nForo: carpeta 'comunidad' en orden 1 → 5 y luego 'moderación'.",
+    "description": "SESIONES: las rutas de crear, editar y borrar son solo para administradores. Ejecuta primero 'Sesión y usuarios → 1. POST — iniciar sesión (admin)' (admin / Admin2026*); Postman guarda la cookie y la envía sola. Publicar y responder en el foro piden iniciar sesión (cualquier usuario).\n\nPeticiones de la API de REFUGIA (Flask + MySQL). Antes de usarla, inicia el servidor con `python main.py`.\n\nOrden sugerido para probar el CRUD: 1) POST crea un punto y guarda su id, 2) GET por id, 3) PUT, 4) DELETE.\n\nNoticias y voluntariado: mismo orden (el POST guarda {{id_noticia}} o {{id_voluntariado}}). La subida de imágenes (POST /api/<sección>/imagen) se prueba desde los paneles de admin/.\n\nDonaciones: la pasarela de pagos es SIMULADA (no cobra dinero). Sigue el orden 0 → 1 → 2 → 3 de su carpeta.\n\nForo: carpeta 'comunidad' en orden 1 → 5 y luego 'moderación'.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -36,9 +36,531 @@
     {
       "key": "id_respuesta",
       "value": "1"
+    },
+    {
+      "key": "id_usuario",
+      "value": "1"
     }
   ],
   "item": [
+    {
+      "name": "Sesión y usuarios — iniciar sesión (EMPIEZA AQUÍ)",
+      "description": "Cuentas de prueba: admin / Admin2026* (administrador) y ana.gomez / Usuario2026* (usuario). Detalle en docs/api-sesiones.md.",
+      "item": [
+        {
+          "name": "1. POST — iniciar sesión (admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/sesion",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sesion"
+              ]
+            },
+            "description": "Ejecútala PRIMERO: las rutas de crear, editar y borrar de las demás carpetas son solo para administradores. Postman guarda la cookie de sesión (refugia_sesion) y la envía sola en las siguientes peticiones. Responde \"redireccion\": \"admin/inicio.html\". También se puede escribir el correo (admin@refugia.test).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuario\": \"admin\",\n  \"contrasena\": \"Admin2026*\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "2. GET — ¿quién soy?",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/sesion",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sesion"
+              ]
+            },
+            "description": "{\"autenticado\": true, \"usuario\": {...}} o {\"autenticado\": false, \"usuario\": null}."
+          }
+        },
+        {
+          "name": "3. POST — iniciar sesión con datos incorrectos (401)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/sesion",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sesion"
+              ]
+            },
+            "description": "Responde 401 \"Usuario o contraseña incorrectos.\" (el mismo mensaje si el usuario no existe). La sesión que ya estaba iniciada se conserva.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuario\": \"admin\",\n  \"contrasena\": \"otra-clave1\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "4. POST — iniciar sesión con cuenta desactivada (403)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/sesion",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sesion"
+              ]
+            },
+            "description": "Responde 403: la cuenta está desactivada.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuario\": \"cuenta.inactiva\",\n  \"contrasena\": \"Usuario2026*\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "5. POST — iniciar sesión (usuario común)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/sesion",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sesion"
+              ]
+            },
+            "description": "Ejemplo con un usuario común: responde \"redireccion\": \"inicio.html\". Después vuelve a ejecutar la 1 para seguir como administrador.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuario\": \"ana.gomez\",\n  \"contrasena\": \"Usuario2026*\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "6. POST — iniciar sesión (admin) otra vez",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/sesion",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sesion"
+              ]
+            },
+            "description": "Ejecútala PRIMERO: las rutas de crear, editar y borrar de las demás carpetas son solo para administradores. Postman guarda la cookie de sesión (refugia_sesion) y la envía sola en las siguientes peticiones. Responde \"redireccion\": \"admin/inicio.html\". También se puede escribir el correo (admin@refugia.test).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuario\": \"admin\",\n  \"contrasena\": \"Admin2026*\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Sesión y usuarios — mi cuenta",
+      "item": [
+        {
+          "name": "1. POST — registro (crea un usuario e inicia su sesión)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/usuarios",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "usuarios"
+              ]
+            },
+            "description": "Crea un usuario común (nunca administrador) y deja su sesión iniciada: después de esta petición ya NO eres administrador. Guarda {{id_usuario}}. Si responde 400 porque el usuario ya existe, cambia nombre_usuario y correo.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre_usuario\": \"maria.perez\",\n  \"correo\": \"maria.perez@correo.com\",\n  \"contrasena\": \"Segura2026\",\n  \"nombre\": \"María Pérez\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) pm.collectionVariables.set('id_usuario', pm.response.json().usuario.id_usuario);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "2. PUT — editar mis datos (Mi perfil)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/usuarios/yo",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "usuarios",
+                "yo"
+              ]
+            },
+            "description": "Con sesión iniciada. Se envían solo los campos que cambian (nombre, correo, telefono, ubicacion). \"\" borra los opcionales.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"telefono\": \"3001234567\",\n  \"ubicacion\": \"Bogotá\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "3. PUT — cambiar mi contraseña",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/usuarios/yo/contrasena",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "usuarios",
+                "yo",
+                "contrasena"
+              ]
+            },
+            "description": "Con sesión iniciada. Cierra las sesiones de esta cuenta en otros dispositivos (esta sigue abierta).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"actual\": \"Segura2026\",\n  \"nueva\": \"Nueva2026x\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "4. GET — listar usuarios sin ser admin (403)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/usuarios",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "usuarios"
+              ]
+            },
+            "description": "Con la sesión de un usuario común responde 403 \"Solo un administrador puede hacer esto.\"; sin sesión, 401."
+          }
+        },
+        {
+          "name": "5. DELETE — cerrar sesión",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/sesion",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sesion"
+              ]
+            },
+            "description": "Borra la sesión. Después, las rutas protegidas responden 401 hasta volver a iniciar sesión."
+          }
+        },
+        {
+          "name": "6. POST — volver a iniciar sesión (admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/sesion",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sesion"
+              ]
+            },
+            "description": "Vuelve a entrar como administrador para seguir con el panel de usuarios y las demás carpetas.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuario\": \"admin\",\n  \"contrasena\": \"Admin2026*\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "description": "Registro, Mi perfil y cambio de contraseña con una cuenta nueva. Al final vuelve a iniciar sesión como admin."
+    },
+    {
+      "name": "Sesión y usuarios — panel (solo admin)",
+      "description": "Antes, ejecuta 'Iniciar sesión (admin)'.",
+      "item": [
+        {
+          "name": "1. GET — listar y buscar usuarios",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/usuarios?q=ana",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "usuarios"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "ana"
+                },
+                {
+                  "key": "rol",
+                  "value": "administrador",
+                  "disabled": true
+                },
+                {
+                  "key": "activo",
+                  "value": "false",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Requiere iniciar sesión como admin. Filtros: q (usuario, nombre o correo), rol (usuario | administrador), activo (true | false), limite, offset."
+          }
+        },
+        {
+          "name": "2. GET — usuario por id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/usuarios/{{id_usuario}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "usuarios",
+                "{{id_usuario}}"
+              ]
+            },
+            "description": "{{id_usuario}} lo guarda la petición de registro."
+          }
+        },
+        {
+          "name": "3. PUT — hacer administrador",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/usuarios/{{id_usuario}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "usuarios",
+                "{{id_usuario}}"
+              ]
+            },
+            "description": "También: {\"activo\": false} desactiva la cuenta (y cierra su sesión). Un administrador no puede quitarse el rol ni desactivarse a sí mismo (409).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rol\": \"administrador\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "4. POST — contraseña temporal",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/usuarios/{{id_usuario}}/contrasena-temporal",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "usuarios",
+                "{{id_usuario}}",
+                "contrasena-temporal"
+              ]
+            },
+            "description": "Para quien olvidó su contraseña: responde \"contrasena_temporal\" una sola vez. La persona entra con ella y la cambia en Mi perfil."
+          }
+        },
+        {
+          "name": "5. DELETE — eliminar usuario",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/usuarios/{{id_usuario}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "usuarios",
+                "{{id_usuario}}"
+              ]
+            },
+            "description": "No se puede eliminar la propia cuenta (409)."
+          }
+        },
+        {
+          "name": "6. GET — catálogo de roles",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/usuarios/catalogos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "usuarios",
+                "catalogos"
+              ]
+            },
+            "description": "Abierto a todos."
+          }
+        }
+      ]
+    },
     {
       "name": "Mapa — CRUD (como en el tutorial)",
       "item": [
@@ -1516,10 +2038,10 @@
                 "publicaciones"
               ]
             },
-            "description": "Queda 'sin confirmar' hasta que la apruebe un moderador. Guarda su id en {{id_publicacion}}.",
+            "description": "Queda 'sin confirmar' hasta que la apruebe un moderador. Guarda su id en {{id_publicacion}}. Requiere iniciar sesión: el autor es quien inició sesión (no se envía).",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"titulo\": \"Se necesitan voluntarios en Ciudad Bolívar\",\n  \"contenido\": \"El comedor comunitario necesita manos para servir almuerzos el domingo.\",\n  \"categoria\": \"necesidades\",\n  \"ubicacion\": \"Bogotá, Ciudad Bolívar\",\n  \"autor\": \"Laura\"\n}",
+              "raw": "{\n  \"titulo\": \"Se necesitan voluntarios en Ciudad Bolívar\",\n  \"contenido\": \"El comedor comunitario necesita manos para servir almuerzos el domingo.\",\n  \"categoria\": \"necesidades\",\n  \"ubicacion\": \"Bogotá, Ciudad Bolívar\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1583,10 +2105,10 @@
                 "respuestas"
               ]
             },
-            "description": "",
+            "description": "Requiere iniciar sesión: el autor es quien inició sesión (no se envía).",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"autor\": \"Pedro\",\n  \"contenido\": \"Yo puedo ir el domingo.\"\n}",
+              "raw": "{\n  \"contenido\": \"Yo puedo ir el domingo.\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1764,10 +2286,10 @@
                 "publicaciones"
               ]
             },
-            "description": "Responde 400 con el detalle de cada campo en español.",
+            "description": "Responde 400 con el detalle de cada campo en español. Requiere iniciar sesión: el autor es quien inició sesión (no se envía).",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"titulo\": \"Hola\",\n  \"contenido\": \"corto\",\n  \"categoria\": \"chismes\",\n  \"autor\": \"\"\n}",
+              "raw": "{\n  \"titulo\": \"Hola\",\n  \"contenido\": \"corto\",\n  \"categoria\": \"chismes\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
